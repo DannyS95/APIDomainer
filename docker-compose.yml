@@ -1,0 +1,51 @@
+services:
+  robots-api:
+    build:
+      context: .
+    container_name: robots-api
+    image: robots-api
+    networks:
+      - app
+    depends_on:
+      - mysql
+    volumes:
+      - app:/app/
+    tty: true
+
+  mysql:
+    image: mysql:8.3
+    container_name: db
+    restart: always
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_DATABASE: 'robots'
+      MYSQL_ROOT_PASSWORD: '123'
+    ports:
+      - '3306:3306'
+    networks:
+      - app
+    tty: true
+
+  httpd:
+    image: httpd:2.4
+    container_name: apache
+    ports: 
+      - 8080:80
+    volumes:
+      - app:/app
+      - ./httpd/my-httpd.conf:/usr/local/apache2/conf/httpd.conf
+    networks:
+      - app
+    depends_on:
+      - robots-api
+    tty: true
+
+volumes:
+  app:
+    driver: local 
+    driver_opts:
+      o: bind
+      type: none
+      device: ./
+networks:
+  app:
