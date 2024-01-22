@@ -19,5 +19,5 @@ services:
             - '../src/Kernel.php'
        # ...
     _instanceof:
-        App\Infrastructure\Filter\FilterInterface:
+        App\Robot\Infrastructure\ApiResource\Filter\FilterInterface:
             tags: ['api_platform.filter']

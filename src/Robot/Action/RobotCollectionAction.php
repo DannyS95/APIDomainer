@@ -10,7 +10,7 @@ class RobotCollectionAction
 {
     public function __invoke(Request $request): void
     {
-        echo $request->get('id');
+        echo $request->get('name');
         die();
     }
 }

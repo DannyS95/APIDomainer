@@ -1,5 +1,5 @@
 <?php
 
-namespace App\Infrastructure\Filter;
+namespace App\Robot\Infrastructure\ApiResource\Filter;
 
 interface FilterInterface {}

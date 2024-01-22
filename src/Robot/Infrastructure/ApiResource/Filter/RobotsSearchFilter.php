@@ -1,8 +1,8 @@
 <?php
-namespace App\Infrastructure\Filter;
+namespace App\Robot\Infrastructure\ApiResource\Filter;
 
-use App\Infrastructure\Filter\FilterInterface;
 use Symfony\Component\PropertyInfo\Type;
+use App\Robot\Infrastructure\ApiResource\Filter\FilterInterface;
 
 class RobotsSearchFilter implements FilterInterface
 {

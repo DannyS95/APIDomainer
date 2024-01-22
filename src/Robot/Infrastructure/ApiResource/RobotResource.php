@@ -2,10 +2,11 @@
 
 namespace App\Robot\Infrastructure\ApiResource;
 
-use App\Infrastructure\Filter\RobotsSearchFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Robot\Action\RobotCollectionAction;
+use App\Robot\Infrastructure\ApiResource\Filter\RobotsSearchFilter;
+ 
 
 #[ApiResource(
     routePrefix: '/robots',
