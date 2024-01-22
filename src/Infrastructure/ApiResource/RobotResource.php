@@ -1,29 +1,26 @@
 <?php
 
-namespace App\Robot\Infrastructure\ApiResource;
+namespace App\Infrastructure\ApiResource;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
-use App\Robot\Action\RobotCollectionAction;
-use App\Robot\Infrastructure\ApiResource\Filter\RobotsSearchFilter;
- 
+use App\Action\RobotCollectionAction;
+use App\Infrastructure\ApiResource\Filter\RobotSearchFilter;
 
 #[ApiResource(
     routePrefix: '/robots',
-    paginationEnabled: false,
+    paginationEnabled: true,
+    paginationItemsPerPage: 10,
     operations: [
         new GetCollection(
             uriTemplate: '/',
             name: 'robots',
             controller: RobotCollectionAction::class,
             read: false,
-            filters: [
-                RobotsSearchFilter::class
-            ]
+            filters: [ RobotSearchFilter::class, ],
         )
     ]
 )]
 class RobotResource
 {
 }
-    

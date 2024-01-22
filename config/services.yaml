@@ -17,7 +17,5 @@ services:
         resource: '../src/'
         exclude:
             - '../src/Kernel.php'
-       # ...
-    _instanceof:
-        App\Robot\Infrastructure\ApiResource\Filter\FilterInterface:
-            tags: ['api_platform.filter']
+            - '../src/Infrastructure/'
+ 
