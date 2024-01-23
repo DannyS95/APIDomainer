@@ -4,6 +4,7 @@ namespace App\Action;
 
 use App\Domain\RobotService;
 use App\Action\AbstractAction;
+use App\Infrastructure\DTO\ApiFiltersDTO;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
@@ -26,6 +27,8 @@ final class RobotCollectionAction extends AbstractAction
 
         $itemsPerPage = $request->query->get('itemsPerPage');
 
-        $models = $this->robotService->getRobots(page: $page, itemsPerPage: $itemsPerPage, filters: $filters, operations: $operations);
+        $apiFiltersDTO = new ApiFiltersDTO(filters: $filters, operations: $operations, page: $page, itemsPerPage: $itemsPerPage);
+
+        $models = $this->robotService->getRobots($apiFiltersDTO);
     }
 }

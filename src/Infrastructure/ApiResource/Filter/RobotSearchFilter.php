@@ -14,7 +14,7 @@ class RobotSearchFilter implements FilterInterface
 
         $properties = [
             'id' => [
-                'operations' => ['gt', 'gte', 'st', 'ste'],
+                'operations' => ['gt', 'gte', 'st', 'lte'],
                 'type' => Type::BUILTIN_TYPE_STRING,
             ],
             'name' => [
@@ -26,7 +26,7 @@ class RobotSearchFilter implements FilterInterface
                 'type' => Type::BUILTIN_TYPE_STRING,
             ],
             'experience' => [
-                'operations' => ['gt', 'gte', 'st', 'ste'],
+                'operations' => ['gt', 'gte', 'st', 'lte'],
                 'type' => Type::BUILTIN_TYPE_INT,
             ],
             'outOfOrder' => [

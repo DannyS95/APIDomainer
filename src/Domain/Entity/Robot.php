@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Entity;
+namespace App\Domain\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\RobotRepository;
+use App\Infrastructure\Repository\RobotRepository;
 
 #[ORM\Entity(repositoryClass: RobotRepository::class)]
+#[ORM\Table(name: 'robots')]
 #[ORM\HasLifecycleCallbacks]
 class Robot
 {
@@ -28,12 +29,6 @@ class Robot
 
     #[ORM\Column(length: 2000, nullable: true)]
     private ?string $avatar = null;
-
-    #[ORM\Column(type: 'datetime')]
-    private ?\DateTimeInterface $createdAt = null;
-
-    #[ORM\Column(type: 'datetime')]
-    private ?\DateTimeInterface $updatedAt = null;
 
     public function getId(): ?int
     {
@@ -98,28 +93,5 @@ class Robot
         $this->avatar = $avatar;
 
         return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    #[ORM\PrePersist]
-    public function setCreatedAtValue(): void
-    {
-        $this->createdAt = new \DateTime();
-        $this->updatedAt = new \DateTime();
-    }
-
-    #[ORM\PreUpdate]
-    public function setUpdatedAtValue(): void
-    {
-        $this->updatedAt = new \DateTime();
     }
 }

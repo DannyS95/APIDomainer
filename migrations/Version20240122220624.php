@@ -19,12 +19,12 @@ final class Version20240122220624 extends AbstractMigration
                 name VARCHAR(100) NOT NULL,
                 powermove VARCHAR(50) NOT NULL,
                 experience INT NOT NULL,
-                outOfOrder BOOLEAN NOT NULL,
+                out_of_order BOOLEAN NOT NULL,
                 avatar VARCHAR(2000) NOT NULL
             )
         ');
 
-        $this->addSql("INSERT INTO robots (name, powermove, experience, outOfOrder, avatar)
+        $this->addSql("INSERT INTO robots (name, powermove, experience, out_of_order, avatar)
             VALUES
                 ('Groovy Jane', 'Windmill Spin', 8, false, 'https://robohash.org/groovy-jane.png'),
                 ('Breakbeat Billy', 'Backflip Kick', 7, true, 'https://robohash.org/breakbeat-billy.png'),
@@ -50,12 +50,12 @@ final class Version20240122220624 extends AbstractMigration
         $this->addSql('CREATE INDEX idx_name ON robots (name);');
         $this->addSql('CREATE INDEX idx_powermove ON robots (powermove);');
         $this->addSql('CREATE INDEX idx_experience ON robots (experience);');
-        $this->addSql('CREATE INDEX idx_outOfOrder ON robots (outOfOrder);');
+        $this->addSql('CREATE INDEX out_of_order ON robots (out_of_order);');
 
         $this->addSql('CREATE TABLE dance_offs (
             robot_one VARCHAR(255) NOT NULL,
             robot_two VARCHAR(255) NOT NULL,
-            winner VARCHAR(255) NOT NULL
+            winner VARCHAR(255) NOT NULL)
         ');
     }
 

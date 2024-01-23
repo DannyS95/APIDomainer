@@ -2,6 +2,7 @@
 
 namespace App\Domain;
 
+use App\Infrastructure\DTO\ApiFiltersDTO;
 use App\Domain\Repository\RobotRepositoryInterface;
 
 final class RobotService
@@ -11,14 +12,13 @@ final class RobotService
     }
 
     /**
-     * Find all Robot Resources agains't given filters and operations.
+     * Find all Robot Resources agains't given API Filters.
      *
-     * @param array<string, string> $filters
-     * @param array<string, string> $operations
+     * @param ApiFiltersDTO $filters
      * @return void
      */
-    public function getRobots(?int $page, ?int $itemsPerPage, ?array $filters, ?array $operations)
+    public function getRobots(ApiFiltersDTO $apiFiltersDTO)
     {
-        $this->robotRepository->findAll(page: $page, itemsPerPage: $itemsPerPage, filters: $filters, operations: $operations);
+        $robots = $this->robotRepository->findAll($apiFiltersDTO);
     }
 }

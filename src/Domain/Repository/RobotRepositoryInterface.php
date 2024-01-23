@@ -2,7 +2,9 @@
 
 namespace App\Domain\Repository;
 
+use App\Infrastructure\DTO\ApiFiltersDTO;
+
 interface RobotRepositoryInterface
 {
-    public function findAll(?int $page, ?int $itemsPerPage, ?array $filters, array $operations);
+    public function findAll(ApiFiltersDTO $apiFiltersDTO);
 }

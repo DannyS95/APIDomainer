@@ -2,13 +2,28 @@
 
 namespace App\Infrastructure\Repository;
 
+use App\Infrastructure\DTO\ApiFiltersDTO;
+use App\Domain\Entity\Robot;
+use Doctrine\Persistence\ManagerRegistry;
 use App\Domain\Repository\RobotRepositoryInterface;
 use App\Infrastructure\Repository\DoctrineRepository;
 
 final class RobotRepository extends DoctrineRepository implements RobotRepositoryInterface
 {
-    public function findAll(?int $page, ?int $itemsPerPage, ?array $filters, ?array $operations)
+    private const ALIAS = 'robot';
+    private const ENTITY = Robot::class;
+
+    public function __construct(ManagerRegistry $registry)
     {
-       $this->create(page: $page, itemsPerPage: $itemsPerPage, filters: $filters, operations: $operations);
+        parent::__construct(registry: $registry, entityClass: self::ENTITY, entityAlias: self::ALIAS);
+    }
+
+    public function findAll(ApiFiltersDTO $apiFiltersDTO): array
+    {
+        $self = $this;
+
+        $self->buildClauses($apiFiltersDTO);
+
+        return $self->qb()->getQuery()->getArrayResult();
     }
 }

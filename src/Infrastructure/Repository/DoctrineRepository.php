@@ -2,23 +2,46 @@
 
 namespace App\Infrastructure\Repository;
 
-use App\Entity\Robot;
+use App\Domain\Entity\Robot;
 use App\Infrastructure\DoctrineComparisonEnum;
+use Doctrine\ORM\Query\Expr\Comparison;
+use Doctrine\ORM\QueryBuilder;
+use App\Infrastructure\DTO\ApiFiltersDTO;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 
 abstract class DoctrineRepository
 {
-    private ServiceEntityRepositoryInterface $serviceRepo;
+    private ServiceEntityRepository $serviceRepo;
 
-    public function __construct(ManagerRegistry $registry)
+    private string $entityClass;
+
+    private string $entityAlias;
+
+    private QueryBuilder $qb;
+
+    public function __construct(ManagerRegistry $registry, string $entityClass, string $entityAlias)
     {
         $this->serviceRepo = new ServiceEntityRepository(registry: $registry, entityClass: Robot::class);
+        $this->entityClass = $entityClass;
+        $this->entityAlias = $entityAlias;
+        $this->qb = $this->serviceRepo->createQueryBuilder($this->entityAlias);
     }
 
-    public function create(?int $page, ?int $itemsPerPage, ?array $filters, ?array $operations)
+    public function buildClauses(ApiFiltersDTO $apiFiltersDto)
     {
-        dd(DoctrineComparisonEnum::from($operations['id']));
+        foreach ($apiFiltersDto->getFilters() as $filter => $value) {
+            $operator = DoctrineComparisonEnum::fromName($apiFiltersDto->getOperations()[$filter]);
+
+            $expr = new Comparison("{$this->entityAlias}.$filter", $operator, $value);
+            print("{$this->entityAlias}.$filter");
+
+            $this->qb->andWhere($expr);
+        }
+    }
+
+    public function qb()
+    {
+        return $this->qb;
     }
 }

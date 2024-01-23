@@ -14,4 +14,14 @@ enum DoctrineComparisonEnum: string
     case lte = Comparison::LTE;
     case contains = Comparison::CONTAINS;
     case in = Comparison::IN;
+
+    public static function fromName(string $value): string
+    {
+        foreach (self::cases() as $operation) {
+            if( $value === $operation->name ){
+                return $operation->value;
+            }
+        }
+        throw new \ValueError("$value is not a valid backing value for enum " . self::class );
+    }
 }
