@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
-class RobotCollectionAction extends AbstractAction
+final class RobotCollectionAction extends AbstractAction
 {
     public function __construct(private RobotService $robotService)
     {
@@ -19,8 +19,13 @@ class RobotCollectionAction extends AbstractAction
         parent::__construct(request: $request);
 
         $filters = $this->filters();
+
         $operations = $this->operations();
 
-        $models = $this->robotService->getRobots(filters: $filters, operations: $operations);
+        $page = $request->query->get('page');
+
+        $itemsPerPage = $request->query->get('itemsPerPage');
+
+        $models = $this->robotService->getRobots(page: $page, itemsPerPage: $itemsPerPage, filters: $filters, operations: $operations);
     }
 }

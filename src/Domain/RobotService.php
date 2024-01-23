@@ -2,7 +2,9 @@
 
 namespace App\Domain;
 
-class RobotService
+use App\Domain\Repository\RobotRepositoryInterface;
+
+final class RobotService
 {
     public function __construct(private RobotRepositoryInterface $robotRepository)
     {
@@ -15,8 +17,8 @@ class RobotService
      * @param array<string, string> $operations
      * @return void
      */
-    public function getRobots(array $filters, array $operations)
+    public function getRobots(?int $page, ?int $itemsPerPage, ?array $filters, ?array $operations)
     {
-        dd($filters);
+        $this->robotRepository->findAll(page: $page, itemsPerPage: $itemsPerPage, filters: $filters, operations: $operations);
     }
 }

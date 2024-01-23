@@ -26,6 +26,10 @@ abstract class AbstractAction
         $filters = [];
 
         \array_walk($parameters, function ($item, $key) use (&$filters) {
+            if (is_array($item) === false) {
+                return;
+            }
+
             $filters[$key] = \array_values($item)[0];
         });
 
@@ -44,6 +48,9 @@ abstract class AbstractAction
         $operations = [];
 
         \array_walk($parameters, function ($item, $key) use (&$operations) {
+            if (is_array($item) === false) {
+                return;
+            }
             $operations[$key] = \key($item);
         });
 

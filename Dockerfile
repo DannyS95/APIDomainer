@@ -1,5 +1,13 @@
 FROM php:8.3.2RC1-fpm-alpine3.18
 
+ARG USER_ID
+ARG GROUP_ID
+
+RUN addgroup --gid $GROUP_ID user
+RUN adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID user
+
+USER user
+
 WORKDIR /app
 
 RUN docker-php-ext-install bcmath && \

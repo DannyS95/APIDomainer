@@ -2,6 +2,9 @@ services:
   robots-api:
     build:
       context: .
+      args:
+        USER_ID: $(id -u)
+        GROUP_ID: $(id -g)
     container_name: robots-api
     image: robots-api
     networks:

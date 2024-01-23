@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\ApiResource;
+namespace App\Robot\Infrastructure\ApiResource;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
