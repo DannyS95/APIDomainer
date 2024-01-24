@@ -1,7 +1,5 @@
 FROM php:8.3.2RC1-fpm-alpine3.18
 
-USER user
-
 WORKDIR /app
 
 RUN docker-php-ext-install bcmath && \
