@@ -5,7 +5,7 @@ namespace App\Infrastructure\ApiResource\Filter;
 use Symfony\Component\PropertyInfo\Type;
 use ApiPlatform\Metadata\FilterInterface;
 
-class RobotOrderFilter implements FilterInterface
+class RobotDanceOffOrderFilter implements FilterInterface
 {
     # This function is only used to hook in documentation generators (supported by Swagger and Hydra)
     public function getDescription(string $resourceClass): array
@@ -16,20 +16,14 @@ class RobotOrderFilter implements FilterInterface
             'id' => [
                 'type' => Type::BUILTIN_TYPE_INT,
             ],
-            'name' => [
-                'type' => Type::BUILTIN_TYPE_STRING,
-            ],
-            'powermove' => [
-                'type' => Type::BUILTIN_TYPE_STRING,
-            ],
-            'experience' => [
+            'robotOne' => [
                 'type' => Type::BUILTIN_TYPE_INT,
             ],
-            'outOfOrder' => [
-                'type' => Type::BUILTIN_TYPE_BOOL,
+            'robotTwo' => [
+                'type' => Type::BUILTIN_TYPE_INT,
             ],
-            'avatar' => [
-                'type' => Type::BUILTIN_TYPE_STRING,
+            'winner' => [
+                'type' => Type::BUILTIN_TYPE_INT,
             ],
         ];
 

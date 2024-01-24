@@ -63,7 +63,7 @@ abstract class DoctrineRepository
 
     protected function fetchArray(): array
     {
-        return $this->qb->getQuery()->getArrayResult();
+        return $this->qb->getQuery()->getResult();
     }
 
     protected function persist(object $entity)

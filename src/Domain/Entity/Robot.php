@@ -6,10 +6,10 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Domain\Entity\RobotDanceOff;
 use Doctrine\Common\Collections\Collection;
 use App\Infrastructure\Repository\RobotRepository;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: RobotRepository::class)]
 #[ORM\Table(name: 'robots')]
-#[ORM\HasLifecycleCallbacks]
 class Robot
 {
     #[ORM\Id]
@@ -32,13 +32,13 @@ class Robot
     #[ORM\Column(length: 2000, nullable: true)]
     private ?string $avatar = null;
 
-    #[ORM\OneToMany(targetEntity: RobotDanceOff::class, mappedBy: 'robotOne')]
+    #[ORM\OneToMany(targetEntity: RobotDanceOff::class, mappedBy: 'robotOne', fetch: 'LAZY')]
     private Collection $asRobotOne;
 
-    #[ORM\OneToMany(targetEntity: RobotDanceOff::class, mappedBy: 'robotTwo')]
+    #[ORM\OneToMany(targetEntity: RobotDanceOff::class, mappedBy: 'robotTwo', fetch: 'LAZY')]
     private Collection $asRobotTwo;
 
-    #[ORM\OneToMany(targetEntity: RobotDanceOff::class, mappedBy: 'winner')]
+    #[ORM\OneToMany(targetEntity: RobotDanceOff::class, mappedBy: 'winner', fetch: 'LAZY')]
     private Collection $asWinner;
 
     public function getId(): ?int

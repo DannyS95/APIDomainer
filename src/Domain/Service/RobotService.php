@@ -28,14 +28,14 @@ final class RobotService
     }
 
     /**
-     * Find all Robot Dance Offs.
+     * Find all Robot Dance Offs agains't the filters.
      *
      * @param ApiFiltersDTO $filters
      * @return array|null
      */
-    public function getDanceOffs(ApiFiltersDTO $apiFiltersDTO)
+    public function getRobotDanceOffs(ApiFiltersDTO $apiFiltersDTO)
     {
-        return $this->robotRepository->findAll($apiFiltersDTO);
+        return $this->robotDanceOffRepository->findAll($apiFiltersDTO);
     }
 
     /**

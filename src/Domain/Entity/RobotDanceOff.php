@@ -5,6 +5,7 @@ namespace App\Domain\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Symfony\Component\Serializer\Attribute\Groups;
 use App\Infrastructure\Repository\RobotDanceOffRepository;
 
 #[ORM\Entity(repositoryClass: RobotDanceOffRepository::class)]

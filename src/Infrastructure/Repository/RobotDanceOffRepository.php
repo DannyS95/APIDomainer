@@ -18,6 +18,12 @@ class RobotDanceOffRepository extends DoctrineRepository implements RobotDanceOf
         parent::__construct(registry: $registry, entityClass: self::ENTITY, entityAlias: self::ALIAS);
     }
 
+    /**
+     *
+     *
+     * @param ApiFiltersDTO $apiFiltersDTO
+     * @return array<RobotDanceOff>
+     */
     public function findAll(ApiFiltersDTO $apiFiltersDTO): array
     {
        return $this->buildClauses(filters: $apiFiltersDTO->getFilters(), operations: $apiFiltersDTO->getOperations())

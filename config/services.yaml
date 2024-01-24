@@ -19,3 +19,5 @@ services:
             - '../src/Kernel.php'
     App\Infrastructure\Symfony\CustomItemNormalizer:
         arguments: [ '@api_platform.serializer.normalizer.item' ]
+    App\Infrastructure\Serializer\EntityNormalizer:
+        tags: ['serializer.normalizer']
