@@ -18,7 +18,7 @@
 * The project was configured by leveraging the [Symfony Framework](https://symfony.com/doc/current/index.html) and the [API Platform](https://api-platform.com/docs/distribution/).
 * Filtering relationships were left out of the capabilities configured in the project, but it is possible to filter and order a resource by any field available to that resource.
 * Simply run php bin/console list you will find all the commands there
-
+* I built this project for fun and self learning of the concepts mentioned in the project structure, as well as the opportunity to practise the use of frameworks. So it took unusually longer, for exploring possibility.
 
 <br>
 
