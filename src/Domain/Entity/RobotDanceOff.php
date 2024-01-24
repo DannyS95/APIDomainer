@@ -3,10 +3,11 @@
 namespace App\Domain\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Infrastructure\Repository\DanceOffsRepository;
+use App\Infrastructure\Repository\RobotDanceOffsRepository;
 
-#[ORM\Entity(repositoryClass: DanceOffsRepository::class)]
-class DanceOffs
+#[ORM\Entity(repositoryClass: RobotDanceOffsRepository::class)]
+#[ORM\Table(name: 'robot_dance_offs')]
+class RobotDanceOff
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

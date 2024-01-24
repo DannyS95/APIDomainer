@@ -29,30 +29,36 @@ abstract class DoctrineRepository
         $this->qb = $this->serviceRepo->createQueryBuilder($this->entityAlias);
     }
 
-    public function buildClauses(ApiFiltersDTO $apiFiltersDto)
+    public function buildClauses(?array $filters, ?array $operations)
     {
-        foreach ($apiFiltersDto->getFilters() as $filter => $value) {
-            $operator = DoctrineComparisonEnum::fromName($apiFiltersDto->getOperations()[$filter]);
+        foreach ($filters as $filter => $value) {
+            $operator = DoctrineComparisonEnum::fromName($operations[$filter]);
 
             $expr = new Comparison("{$this->entityAlias}.$filter", $operator, $value);
 
             $this->qb->andWhere($expr);
         }
+
+        return $this;
     }
 
-    public function buildPagination(ApiFiltersDTO $apiFiltersDto)
+    public function buildPagination(?int $page, ?int $itemsPerPage)
     {
-        if ($apiFiltersDto->getPage()) { # doctrine has a bug where no results come with id eq and page >0
-            $this->qb->setFirstResult($apiFiltersDto->getPage() - 1);
-            $this->qb->setMaxResults($apiFiltersDto->getItemsPerPage());
+        if ($page) {
+            $this->qb->setFirstResult($page - 1);
+            $this->qb->setMaxResults($itemsPerPage);
         }
+
+        return $this;
     }
 
-    public function buildSorts(ApiFiltersDTO $apiFiltersDto)
+    public function buildSorts(?array $sorts)
     {
         $criteria = new Criteria();
-        $criteria->orderBy($apiFiltersDto->getSorts());
+        $criteria->orderBy($sorts);
         $this->qb->addCriteria($criteria);
+
+        return $this;
     }
 
     public function fetchArray(): array

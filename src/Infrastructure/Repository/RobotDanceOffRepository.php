@@ -2,16 +2,16 @@
 
 namespace App\Infrastructure\Repository;
 
+use App\Domain\Entity\RobotDanceOff;
 use App\Infrastructure\DTO\ApiFiltersDTO;
-use App\Domain\Entity\Robot;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Domain\Repository\RobotRepositoryInterface;
 use App\Infrastructure\Repository\DoctrineRepository;
+use App\Domain\Repository\RobotDanceOffRepositoryInterface;
 
-final class RobotRepository extends DoctrineRepository implements RobotRepositoryInterface
+class RobotDanceOffRepository extends DoctrineRepository implements RobotDanceOffRepositoryInterface
 {
-    private const ALIAS = 'robot';
-    private const ENTITY = Robot::class;
+    private const ALIAS = 'robotDanceOff';
+    private const ENTITY = RobotDanceOff::class;
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -21,8 +21,8 @@ final class RobotRepository extends DoctrineRepository implements RobotRepositor
     public function findAll(ApiFiltersDTO $apiFiltersDTO): array
     {
        return $this->buildClauses(filters: $apiFiltersDTO->getFilters(), operations: $apiFiltersDTO->getOperations())
-        ->buildSorts($apiFiltersDTO->getSorts())
-        ->buildPagination($apiFiltersDTO->getPage(), $apiFiltersDTO->getItemsPerPage())
-        ->fetchArray();
+            ->buildSorts($apiFiltersDTO->getSorts())
+            ->buildPagination($apiFiltersDTO->getPage(), $apiFiltersDTO->getItemsPerPage())
+            ->fetchArray();
     }
 }
