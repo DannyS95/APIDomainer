@@ -12,7 +12,7 @@ enum DoctrineComparisonEnum: string
     case gte = Comparison::GTE;
     case lt = Comparison::LT;
     case lte = Comparison::LTE;
-    case contains = Comparison::CONTAINS;
+    case lk = Comparison::CONTAINS;
     case in = Comparison::IN;
 
     public static function fromName(string $value): string

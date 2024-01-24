@@ -15,10 +15,10 @@ final class RobotService
      * Find all Robot Resources agains't given API Filters.
      *
      * @param ApiFiltersDTO $filters
-     * @return void
+     * @return array|null
      */
     public function getRobots(ApiFiltersDTO $apiFiltersDTO)
     {
-        $robots = $this->robotRepository->findAll($apiFiltersDTO);
+        return $this->robotRepository->findAll($apiFiltersDTO);
     }
 }

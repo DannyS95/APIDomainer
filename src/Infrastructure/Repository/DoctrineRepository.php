@@ -3,11 +3,12 @@
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\Robot;
-use App\Infrastructure\DoctrineComparisonEnum;
-use Doctrine\ORM\Query\Expr\Comparison;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query\Expr\Comparison;
 use App\Infrastructure\DTO\ApiFiltersDTO;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Infrastructure\DoctrineComparisonEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 abstract class DoctrineRepository
@@ -34,14 +35,28 @@ abstract class DoctrineRepository
             $operator = DoctrineComparisonEnum::fromName($apiFiltersDto->getOperations()[$filter]);
 
             $expr = new Comparison("{$this->entityAlias}.$filter", $operator, $value);
-            print("{$this->entityAlias}.$filter");
 
             $this->qb->andWhere($expr);
         }
     }
 
-    public function qb()
+    public function buildPagination(ApiFiltersDTO $apiFiltersDto)
     {
-        return $this->qb;
+        if ($apiFiltersDto->getPage()) { # doctrine has a bug where no results come with id eq and page >0
+            $this->qb->setFirstResult($apiFiltersDto->getPage() - 1);
+            $this->qb->setMaxResults($apiFiltersDto->getItemsPerPage());
+        }
+    }
+
+    public function buildSorts(ApiFiltersDTO $apiFiltersDto)
+    {
+        $criteria = new Criteria();
+        $criteria->orderBy($apiFiltersDto->getSorts());
+        $this->qb->addCriteria($criteria);
+    }
+
+    public function fetchArray(): array
+    {
+        return $this->qb->getQuery()->getArrayResult();
     }
 }

@@ -3,9 +3,12 @@ api_platform:
     version: 3.2
     
     formats:
-        jsonld: ['application/ld+json']
+        
+        json: [ 'application/json' ]
+     
+    
     docs_formats:
-        jsonld: ['application/ld+json']
+        jsonld: ['application/json']
         jsonopenapi: ['application/vnd.openapi+json']
         html: ['text/html']
     event_listeners_backward_compatibility_layer: false

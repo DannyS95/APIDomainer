@@ -24,6 +24,10 @@ final class RobotRepository extends DoctrineRepository implements RobotRepositor
 
         $self->buildClauses($apiFiltersDTO);
 
-        return $self->qb()->getQuery()->getArrayResult();
+        $self->buildSorts($apiFiltersDTO);
+
+        $self->buildPagination($apiFiltersDTO);
+
+        return $self->fetchArray();
     }
 }
