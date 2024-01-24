@@ -3,6 +3,8 @@
 namespace App\Domain\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Domain\Entity\RobotDanceOff;
+use Doctrine\Common\Collections\Collection;
 use App\Infrastructure\Repository\RobotRepository;
 
 #[ORM\Entity(repositoryClass: RobotRepository::class)]
@@ -29,6 +31,15 @@ class Robot
 
     #[ORM\Column(length: 2000, nullable: true)]
     private ?string $avatar = null;
+
+    #[ORM\OneToMany(targetEntity: RobotDanceOff::class, mappedBy: 'robotOne')]
+    private Collection $asRobotOne;
+
+    #[ORM\OneToMany(targetEntity: RobotDanceOff::class, mappedBy: 'robotTwo')]
+    private Collection $asRobotTwo;
+
+    #[ORM\OneToMany(targetEntity: RobotDanceOff::class, mappedBy: 'winner')]
+    private Collection $asWinner;
 
     public function getId(): ?int
     {
@@ -93,5 +104,29 @@ class Robot
         $this->avatar = $avatar;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|RobotDanceOff[]
+     */
+    public function getAsRobotOne(): Collection
+    {
+        return $this->asRobotOne;
+    }
+
+    /**
+     * @return Collection|RobotDanceOff[]
+     */
+    public function getAsRobotTwo(): Collection
+    {
+        return $this->asRobotTwo;
+    }
+
+    /**
+     * @return Collection|RobotDanceOff[]
+     */
+    public function getAsWinner(): Collection
+    {
+        return $this->asWinner;
     }
 }

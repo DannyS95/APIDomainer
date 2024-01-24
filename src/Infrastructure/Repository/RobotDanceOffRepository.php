@@ -25,4 +25,18 @@ class RobotDanceOffRepository extends DoctrineRepository implements RobotDanceOf
             ->buildPagination($apiFiltersDTO->getPage(), $apiFiltersDTO->getItemsPerPage())
             ->fetchArray();
     }
+
+    /**
+     *
+     * @param RobotDanceOff[] $robotDanceOff
+     * @return void
+     */
+    public function bulkSave(array $robotDanceOff): void
+    {
+        foreach ($robotDanceOff as $entity) {
+            $this->persist($entity);
+        }
+
+        $this->save();
+    }
 }

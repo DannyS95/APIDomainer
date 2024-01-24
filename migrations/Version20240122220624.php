@@ -52,12 +52,16 @@ final class Version20240122220624 extends AbstractMigration
         $this->addSql('CREATE INDEX idx_experience ON robots (experience);');
         $this->addSql('CREATE INDEX out_of_order ON robots (out_of_order);');
 
-        $this->addSql('CREATE TABLE robot_dance_offs (
+        $this->addSql('CREATE TABLE robot_dance_offs2 (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            robot_one INT NOT NULL NOT NULL,
-            robot_two INT NOT NULL NOT NULL,
-            winner INT NOT NULL NOT NULL)
-        ');
+            robot_one INT NOT NULL,
+            robot_two INT NOT NULL,
+            winner INT NOT NULL,
+            
+            FOREIGN KEY (robot_one) REFERENCES robots(id),
+            FOREIGN KEY (robot_two) REFERENCES robots(id),
+            FOREIGN KEY (winner) REFERENCES robots(id)
+        );');
 
         $this->addSql('CREATE INDEX robot_one ON robot_dance_offs (robot_one);');
         $this->addSql('CREATE INDEX robot_two ON robot_dance_offs (robot_two);');

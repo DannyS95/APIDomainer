@@ -21,28 +21,28 @@ abstract class DoctrineRepository
 
     private QueryBuilder $qb;
 
-    public function __construct(ManagerRegistry $registry, string $entityClass, string $entityAlias)
+    protected function __construct(ManagerRegistry $registry, string $entityClass, string $entityAlias)
     {
-        $this->serviceRepo = new ServiceEntityRepository(registry: $registry, entityClass: Robot::class);
+        $this->serviceRepo = new ServiceEntityRepository(registry: $registry, entityClass: $entityClass);
         $this->entityClass = $entityClass;
         $this->entityAlias = $entityAlias;
         $this->qb = $this->serviceRepo->createQueryBuilder($this->entityAlias);
     }
 
-    public function buildClauses(?array $filters, ?array $operations)
+    protected function buildClauses(?array $filters, ?array $operations)
     {
         foreach ($filters as $filter => $value) {
             $operator = DoctrineComparisonEnum::fromName($operations[$filter]);
 
-            $expr = new Comparison("{$this->entityAlias}.$filter", $operator, $value);
+            $expr = new Comparison("{$this->entityAlias}.$filter", $operator, ":{$filter}");
 
-            $this->qb->andWhere($expr);
+            $this->qb->andWhere($expr)->setParameter($filter, $value);
         }
 
         return $this;
     }
 
-    public function buildPagination(?int $page, ?int $itemsPerPage)
+    protected function buildPagination(?int $page, ?int $itemsPerPage)
     {
         if ($page) {
             $this->qb->setFirstResult($page - 1);
@@ -52,7 +52,7 @@ abstract class DoctrineRepository
         return $this;
     }
 
-    public function buildSorts(?array $sorts)
+    protected function buildSorts(?array $sorts)
     {
         $criteria = new Criteria();
         $criteria->orderBy($sorts);
@@ -61,8 +61,24 @@ abstract class DoctrineRepository
         return $this;
     }
 
-    public function fetchArray(): array
+    protected function fetchArray(): array
     {
         return $this->qb->getQuery()->getArrayResult();
+    }
+
+    protected function persist(object $entity)
+    {
+        $this->qb->getEntityManager()->persist($entity);
+    }
+
+    protected function save()
+    {
+        $this->qb->getEntityManager()->flush();
+        $this->qb = $this->serviceRepo->createQueryBuilder($this->entityAlias);
+    }
+
+    protected function serviceRepo(): ?object
+    {
+        return $this->serviceRepo;
     }
 }

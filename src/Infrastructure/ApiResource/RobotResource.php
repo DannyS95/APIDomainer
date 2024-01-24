@@ -13,7 +13,6 @@ use App\Infrastructure\ApiResource\Filter\RobotSearchFilter;
 
 #[ApiResource(
     routePrefix: '/robots',
-    paginationClientEnabled: true,
     paginationClientItemsPerPage: true,
     paginationItemsPerPage: 10,
     operations: [

@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Handler;
 
-use App\Domain\RobotService;
+use App\Domain\Service\RobotService;
 use App\Infrastructure\Request\RobotDanceOffRequest;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 

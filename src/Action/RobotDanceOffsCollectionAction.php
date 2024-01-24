@@ -11,7 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
-final class RobotCollectionAction extends AbstractAction
+final class RobotDanceOffsCollectionAction extends AbstractAction
 {
     public function __construct(private RobotService $robotService)
     {
@@ -33,7 +33,7 @@ final class RobotCollectionAction extends AbstractAction
 
         $apiFiltersDTO = new ApiFiltersDTO(sorts: $sorts, filters: $filters, operations: $operations, page: $page, itemsPerPage: $itemsPerPage);
 
-        $models = $this->robotService->getRobots($apiFiltersDTO);
+        $models = $this->robotService->getRobotDanceOffs($apiFiltersDTO);
 
         return new ArrayCollection($models);
     }

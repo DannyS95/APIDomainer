@@ -25,4 +25,9 @@ final class RobotRepository extends DoctrineRepository implements RobotRepositor
         ->buildPagination($apiFiltersDTO->getPage(), $apiFiltersDTO->getItemsPerPage())
         ->fetchArray();
     }
+
+    public function findOneBy(int $id): ?Robot
+    {
+        return $this->serviceRepo()->findOneBy(['id' => $id]);
+    }
 }
