@@ -7,11 +7,11 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Action\RobotCollectionAction;
 use ApiPlatform\Metadata\GetCollection;
 use App\Action\RobotDanceOffsCollectionAction;
+use App\Infrastructure\Response\RobotResponse;
 use App\Infrastructure\Request\RobotDanceOffRequest;
-use App\Infrastructure\Responder\DTO\RobotResponseDTO;
+use App\Infrastructure\Response\RobotDanceOffResponse;
 use App\Infrastructure\ApiResource\Filter\RobotOrderFilter;
 use App\Infrastructure\ApiResource\Filter\RobotSearchFilter;
-use App\Infrastructure\Responder\DTO\RobotDanceOffResponseDTO;
 use App\Infrastructure\ApiResource\Filter\RobotDanceOffOrderFilter;
 use App\Infrastructure\ApiResource\Filter\RobotDanceOffSearchFilter;
 
@@ -26,8 +26,8 @@ use App\Infrastructure\ApiResource\Filter\RobotDanceOffSearchFilter;
             controller: RobotCollectionAction::class,
             read: false,
             filters: [ RobotSearchFilter::class, RobotOrderFilter::class ],
-            output: RobotResponseDTO::class,
-        ),
+            output: RobotResponse::class,
+        ),  
         new Post(
             uriTemplate: '/dance-off',
             name: 'Dance-offs',
@@ -42,7 +42,7 @@ use App\Infrastructure\ApiResource\Filter\RobotDanceOffSearchFilter;
             controller: RobotDanceOffsCollectionAction::class,
             read: false,
             filters: [ RobotDanceOffSearchFilter::class, RobotDanceOffOrderFilter::class ],
-            output: RobotDanceOffResponseDTO::class,
+            output: RobotDanceOffResponse::class,
         ),
     ]
 )]

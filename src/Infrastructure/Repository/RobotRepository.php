@@ -2,8 +2,8 @@
 
 namespace App\Infrastructure\Repository;
 
-use App\Infrastructure\DTO\ApiFiltersDTO;
 use App\Domain\Entity\Robot;
+use App\Application\DTO\ApiFiltersDTO;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Domain\Repository\RobotRepositoryInterface;
 use App\Infrastructure\Repository\DoctrineRepository;

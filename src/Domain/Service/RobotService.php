@@ -5,7 +5,7 @@ namespace App\Domain\Service;
 use RobotServiceException;
 use App\Domain\Entity\Robot;
 use App\Domain\Entity\RobotDanceOff;
-use App\Infrastructure\DTO\ApiFiltersDTO;
+use App\Application\DTO\ApiFiltersDTO;
 use App\Domain\Repository\RobotRepositoryInterface;
 use App\Infrastructure\Request\RobotDanceOffRequest;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;

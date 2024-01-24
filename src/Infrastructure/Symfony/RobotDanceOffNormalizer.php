@@ -8,7 +8,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class EntityNormalizer implements NormalizerInterface, NormalizerAwareInterface
+class RobotDanceOffNormalizer implements NormalizerInterface, NormalizerAwareInterface
 {
     use NormalizerAwareTrait;
 
@@ -17,7 +17,7 @@ class EntityNormalizer implements NormalizerInterface, NormalizerAwareInterface
     ) {
     }
 
-    public function normalize($topic, string $format = null, array $context = []): array
+    public function normalize($topic, ?string $format = null, array $context = []): array
     {
         return [
             'id' => $topic->getId(), 
@@ -27,7 +27,7 @@ class EntityNormalizer implements NormalizerInterface, NormalizerAwareInterface
         ];
     }
 
-    public function supportsNormalization($data, string $format = null, array $context = []): bool
+    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof RobotDanceOff;
     }

@@ -3,7 +3,7 @@
 namespace App\Domain\Repository;
 
 use App\Domain\Entity\Robot;
-use App\Infrastructure\DTO\ApiFiltersDTO;
+use App\Application\DTO\ApiFiltersDTO;
 
 interface RobotRepositoryInterface
 {
