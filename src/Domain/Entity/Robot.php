@@ -6,7 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Domain\Entity\RobotDanceOff;
 use Doctrine\Common\Collections\Collection;
 use App\Infrastructure\Repository\RobotRepository;
-use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: RobotRepository::class)]
 #[ORM\Table(name: 'robots')]
