@@ -59,9 +59,9 @@ final class Version20240122220624 extends AbstractMigration
             winner INT NOT NULL NOT NULL)
         ');
 
-        $this->addSql('CREATE INDEX robot_one ON robots (robot_one);');
-        $this->addSql('CREATE INDEX robot_two ON robots (robot_two);');
-        $this->addSql('CREATE INDEX winner ON robots (winner);');
+        $this->addSql('CREATE INDEX robot_one ON robot_dance_offs (robot_one);');
+        $this->addSql('CREATE INDEX robot_two ON robot_dance_offs (robot_two);');
+        $this->addSql('CREATE INDEX winner ON robot_dance_offs (winner);');
     }
 
     public function down(Schema $schema): void
