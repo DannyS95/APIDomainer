@@ -5,21 +5,8 @@ DOCKER_EXEC := $(DOCKER_COMPOSE) exec
 CONTAINER_NAME := robots-api
 
 # Makefile target to enter the Docker container and run 'composer install'
-composer-install:
-	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'composer install'
-
-# Additional Makefile targets for common Composer commands
-composer-update:
-	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'composer update'
-
-composer-require:
-	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'composer require $(package)'
-
-robots-ls:
-	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'ls'
-
-robots-cp:
-	docker cp robots-api:app .
+migrate:
+	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/console doctrine:migrations:migrate'
 
 robots-sh:
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh
