@@ -34,7 +34,15 @@ abstract class DoctrineRepository
         foreach ($filters as $filter => $value) {
             $operator = DoctrineComparisonEnum::fromName($operations[$filter]);
 
-            $expr = new Comparison("{$this->entityAlias}.$filter", $operator, ":{$filter}");
+            if ($operations[$filter] === DoctrineComparisonEnum::lk->name) {
+                $this->qb->andWhere($this->qb->expr()->andX(
+                    $this->qb->expr()->like("{$this->entityAlias}.$filter", ":{$filter}")
+                ))->setParameter($filter, "%{$value}%");
+
+                continue;
+            }
+
+            $expr = new Comparison("{$this->entityAlias}.$filter", $operator, ":{%$filter}");
 
             $this->qb->andWhere($expr)->setParameter($filter, $value);
         }

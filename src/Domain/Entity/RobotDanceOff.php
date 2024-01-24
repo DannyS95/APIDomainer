@@ -27,7 +27,7 @@ class RobotDanceOff
 
     #[ManyToOne(targetEntity: Robot::class, inversedBy: 'asWinner', fetch: 'LAZY')]
     #[JoinColumn(name: 'winner', referencedColumnName: 'id')]
-    private Robot $winner;
+    private ?Robot $winner;
 
     public function getId(): int
     {
@@ -51,19 +51,19 @@ class RobotDanceOff
         return $this->robotTwo;
     }
 
-    public function setRobotTwo(?Robot $robotTwo): static
+    public function setRobotTwo(Robot $robotTwo): static
     {
         $this->robotTwo = $robotTwo;
 
         return $this;
     }
 
-    public function getWinner(): Robot
+    public function getWinner(): ?Robot
     {
         return $this->winner;
     }
 
-    public function setWinner(Robot $winner): static
+    public function setWinner(?Robot $winner): static
     {
         $this->winner = $winner;
 

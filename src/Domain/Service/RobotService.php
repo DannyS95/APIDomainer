@@ -76,11 +76,20 @@ final class RobotService
             $entity->setRobotOne($this->getRobot($robot));
             $entity->setRobotTwo($this->getRobot($robotDanceOffRequest->teamB[$key]));
             $entity->setWinner(
-                $entity->getRobotOne()->getExperience() > $entity->getRobotTwo()->getExperience() ? $entity->getRobotOne() : $entity->getRobotTwo()
+                $this->getDanceOffWinner($entity)
             );
             \array_push($entities, $entity);
         }
 
         $this->robotDanceOffRepository->bulkSave($entities);
+    }
+
+    private function getDanceOffWinner(RobotDanceOff $entity): ?Robot
+    {
+        if (\bccomp($entity->getRobotOne()->getExperience(), $entity->getRobotTwo()->getExperience()) === 0 ) {
+            return null;
+        }
+
+        return bccomp($entity->getRobotOne()->getExperience(), $entity->getRobotTwo()->getExperience()) ? $entity->getRobotOne() : $entity->getRobotTwo();
     }
 }

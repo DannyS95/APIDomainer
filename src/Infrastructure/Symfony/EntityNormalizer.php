@@ -3,7 +3,6 @@
 namespace App\Infrastructure\Serializer;
 
 use App\Domain\Entity\RobotDanceOff;
-use App\Entity\Topic;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
@@ -24,7 +23,7 @@ class EntityNormalizer implements NormalizerInterface, NormalizerAwareInterface
             'id' => $topic->getId(), 
             'robotOne' => $topic->getRobotOne()->getId(),
             'robotTwo' => $topic->getRobotTwo()->getId(),
-            'winner' => $topic->getWinner()->getId(),
+            'winner' => $topic->getWinner()?->getId(),
         ];
     }
 

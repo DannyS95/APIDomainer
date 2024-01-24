@@ -56,7 +56,7 @@ final class Version20240122220624 extends AbstractMigration
             id INT AUTO_INCREMENT PRIMARY KEY,
             robot_one INT NOT NULL,
             robot_two INT NOT NULL,
-            winner INT NOT NULL,
+            winner INT NULL,
             
             FOREIGN KEY (robot_one) REFERENCES robots(id),
             FOREIGN KEY (robot_two) REFERENCES robots(id),

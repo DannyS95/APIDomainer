@@ -2,9 +2,6 @@ services:
   robots-api:
     build:
       context: .
-      args:
-        USER_ID: $(id -u)
-        GROUP_ID: $(id -g)
     container_name: robots-api
     image: robots-api
     networks:
@@ -13,7 +10,6 @@ services:
       - mysql
     volumes:
       - app:/app/
-    tty: true
 
   mysql:
     image: mysql:8.3
@@ -27,7 +23,6 @@ services:
       - '3306:3306'
     networks:
       - app
-    tty: true
 
   httpd:
     image: httpd:2.4
@@ -41,7 +36,6 @@ services:
       - app
     depends_on:
       - robots-api
-    tty: true
 
 volumes:
   app:
