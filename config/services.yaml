@@ -15,11 +15,6 @@ services:
         exclude:
             - '../src/Kernel.php'
 
-    # 🏷️ Custom Normalizers Registration
-    App\Infrastructure\Symfony\CustomItemNormalizer:
-        arguments: [ '@api_platform.serializer.normalizer.item' ]
-        tags: ['serializer.normalizer']
-
     App\Infrastructure\Serializer\RobotNormalizer:
         tags: ['serializer.normalizer']
 

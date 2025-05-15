@@ -2,28 +2,32 @@
 
 namespace App\Action;
 
-use App\Application\DTO\ApiFiltersDTO;
 use App\Domain\Service\RobotService;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Application\DTO\ApiFiltersDTO;
 use Symfony\Component\HttpFoundation\Request;
+use App\Application\Request\RequestDataMapper;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
-final class RobotCollectionAction extends AbstractAction
+final class RobotCollectionAction
 {
     public function __construct(
-        private RobotService $robotService
+        private RobotService $robotService,
+        private RequestDataMapper $requestDataMapper
     ) {
     }
 
     public function __invoke(Request $request): ArrayCollection
     {
-        parent::__construct($request);
+        $filters = $this->requestDataMapper->getFilters($request);
+        $operations = $this->requestDataMapper->getOperations($request);
+        $sorts = $this->requestDataMapper->getSorts($request);
 
         $apiFiltersDTO = new ApiFiltersDTO(
-            filters: $this->filters(),
-            operations: $this->operations(),
-            sorts: $this->sorts(),
+            filters: $filters,
+            operations: $operations,
+            sorts: $sorts,
             page: $request->query->getInt('page', 1),
             itemsPerPage: $request->query->getInt('itemsPerPage', 10)
         );

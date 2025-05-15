@@ -2,8 +2,7 @@
 
 namespace App\Domain\Repository;
 
-use App\Domain\Entity\RobotDanceOff;
-use App\Infrastructure\DTO\ApiFiltersDTO;
+use App\Application\DTO\ApiFiltersDTO;
 
 interface RobotDanceOffRepositoryInterface
 {

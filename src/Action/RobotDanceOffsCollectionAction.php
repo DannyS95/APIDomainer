@@ -2,31 +2,36 @@
 
 namespace App\Action;
 
-use App\Action\AbstractAction;
-use App\Domain\Service\RobotService;
 use App\Application\DTO\ApiFiltersDTO;
+use App\Application\Request\RequestDataMapper;
+use App\Domain\Service\RobotService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
-final class RobotDanceOffsCollectionAction extends AbstractAction
+final class RobotDanceOffsCollectionAction
 {
-    public function __construct(private RobotService $robotService)
-    {
+    public function __construct(
+        private RobotService $robotService,
+        private RequestDataMapper $requestDataMapper
+    ) {
     }
 
     public function __invoke(Request $request): Collection
     {
-        parent::__construct(request: $request);
+        $filters = $this->requestDataMapper->getFilters();
+        $operations = $this->requestDataMapper->getOperations();
+        $sorts = $this->requestDataMapper->getSorts();
+        $pagination = $this->requestDataMapper->getPagination();
 
         $apiFiltersDTO = new ApiFiltersDTO(
-            filters: $this->filters(),
-            operations: $this->operations(),
-            sorts: $this->sorts(),
-            page: $request->query->getInt('page', 1),
-            itemsPerPage: $request->query->getInt('itemsPerPage', 10)
+            filters: $filters,
+            operations: $operations,
+            sorts: $sorts,
+            page: $pagination['page'],
+            itemsPerPage: $pagination['itemsPerPage']
         );
 
         $models = $this->robotService->getRobotDanceOffs($apiFiltersDTO);

@@ -3,7 +3,7 @@
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\RobotDanceOff;
-use App\Infrastructure\DTO\ApiFiltersDTO;
+use App\Application\DTO\ApiFiltersDTO;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Infrastructure\Repository\DoctrineRepository;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
