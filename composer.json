@@ -1,7 +1,7 @@
 {
-    "name": "robots/api",
+    "name": "your-vendor/apidomainer",
     "type": "api",
-    "description": "an api for robot danceoffs",
+    "description": "A Domain-Driven API Platform Framework with ADR structure.",
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
