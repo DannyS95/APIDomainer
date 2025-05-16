@@ -32,16 +32,6 @@ The **Domain Layer** is responsible for:
 
 The **Infrastructure Layer** handles:
 - Direct database communication with Doctrine.
-- Query building with fluent methods:
-    - `createQueryBuilder()` → Instantiates the query builder.
-    - `buildClauses()` → Applies filters and conditions.
-    - `buildSorts()` → Applies sorting.
-    - `buildPagination()` → Limits and offsets the query.
-    - `fetchArray()` → Executes and fetches results.
-- Persistence methods:
-    - `persist()` → Marks an entity for persistence.
-    - `save()` → Flushes changes to the database.
-    - `remove()` → Deletes an entity from the database.
 - **Normalizers:**  
     - Custom normalizers are used to transform entities into the appropriate API response format.  
     - These are injected and mapped in `services.yaml` for API Platform serialization.
