@@ -7,18 +7,18 @@ class RobotDanceOffResponse
     private int $id;
     private array $teamOne;
     private array $teamTwo;
-    private ?int $winnerId;
+    private ?array $winner;
 
     public function __construct(
         int $id,
         array $teamOne,
         array $teamTwo,
-        ?int $winnerId
+        ?array $winner
     ) {
         $this->id = $id;
         $this->teamOne = $teamOne;
         $this->teamTwo = $teamTwo;
-        $this->winnerId = $winnerId;
+        $this->winner = $winner;
     }
 
     public function getId(): int
@@ -27,7 +27,7 @@ class RobotDanceOffResponse
     }
 
     /**
-     * @return array<int> List of IDs representing Team One
+     * @return array<array> List of Robot data for Team One
      */
     public function getTeamOne(): array
     {
@@ -35,15 +35,18 @@ class RobotDanceOffResponse
     }
 
     /**
-     * @return array<int> List of IDs representing Team Two
+     * @return array<array> List of Robot data for Team Two
      */
     public function getTeamTwo(): array
     {
         return $this->teamTwo;
     }
 
-    public function getWinnerId(): ?int
+    /**
+     * @return array|null Full data of the winning team, if any
+     */
+    public function getWinner(): ?array
     {
-        return $this->winnerId;
+        return $this->winner;
     }
 }

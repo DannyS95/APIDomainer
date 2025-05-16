@@ -16,15 +16,15 @@ class RobotDanceOffSearchFilter implements FilterInterface
                 'operations' => ['eq', 'gt', 'gte', 'lt', 'lte'],
                 'type' => Type::BUILTIN_TYPE_INT,
             ],
-            'winner' => [
+            'createdAt' => [
                 'operations' => ['eq', 'gt', 'gte', 'lt', 'lte'],
-                'type' => Type::BUILTIN_TYPE_INT,
+                'type' => Type::BUILTIN_TYPE_STRING,
             ],
         ];
 
         foreach ($properties as $property => $config) {
             foreach ($config['operations'] as $operation) {
-                $description["{$property}[{$operation}]"] = [
+                $description["{$property}[$operation]"] = [
                     'type' => $config['type'],
                     'required' => $config['required'] ?? false,
                     'property' => $property,

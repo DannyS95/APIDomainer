@@ -25,11 +25,11 @@ final class RobotNormalizer implements NormalizerInterface, NormalizerAwareInter
             return [];
         }
 
-        // Map the dance-off participations
-        $danceOffs = $object->getDanceOffParticipations()->map(function ($participation) {
+        // Map the team participations
+        $teams = $object->getTeams()->map(function ($team) {
             return [
-                'dance_off_id' => $participation->getDanceOff()->getId(),
-                'team' => $participation->getTeam()
+                'team_id' => $team->getId(),
+                'team_name' => $team->getName()
             ];
         })->toArray();
 
@@ -40,7 +40,7 @@ final class RobotNormalizer implements NormalizerInterface, NormalizerAwareInter
             'experience' => $object->getExperience(),
             'out_of_order' => $object->isOutOfOrder(),
             'avatar' => $object->getAvatar(),
-            'participations' => $danceOffs,
+            'teams' => $teams,
         ];
     }
 

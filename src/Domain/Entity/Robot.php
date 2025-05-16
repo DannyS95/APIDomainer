@@ -4,7 +4,6 @@ namespace App\Domain\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
-use App\Domain\Entity\RobotDanceOffParticipant;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Infrastructure\Repository\RobotRepository;
 
@@ -32,15 +31,12 @@ class Robot
     #[ORM\Column(length: 2000, nullable: true)]
     private ?string $avatar = null;
 
-    /**
-     * @var Collection<int, RobotDanceOffParticipant>
-     */
-    #[ORM\OneToMany(mappedBy: 'robot', targetEntity: RobotDanceOffParticipant::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $danceOffParticipations;
+    #[ORM\ManyToMany(mappedBy: 'robots', targetEntity: Team::class)]
+    private Collection $teams;
 
     public function __construct()
     {
-        $this->danceOffParticipations = new ArrayCollection();
+        $this->teams = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -103,33 +99,24 @@ class Robot
         return $this;
     }
 
-    /**
-     * @return Collection|RobotDanceOffParticipant[]
-     */
-    public function getDanceOffParticipations(): Collection
+    public function getTeams(): Collection
     {
-        return $this->danceOffParticipations;
+        return $this->teams;
     }
 
-    public function addDanceOffParticipation(RobotDanceOffParticipant $participation): self
+    public function addTeam(Team $team): self
     {
-        if (!$this->danceOffParticipations->contains($participation)) {
-            $this->danceOffParticipations->add($participation);
-            $participation->setRobot($this);
+        if (!$this->teams->contains($team)) {
+            $this->teams->add($team);
         }
-
         return $this;
     }
 
-    public function removeDanceOffParticipation(RobotDanceOffParticipant $participation): self
+    public function removeTeam(Team $team): self
     {
-        if ($this->danceOffParticipations->contains($participation)) {
-            $this->danceOffParticipations->removeElement($participation);
-            if ($participation->getRobot() === $this) {
-                $participation->setRobot(null);
-            }
+        if ($this->teams->contains($team)) {
+            $this->teams->removeElement($team);
         }
-
         return $this;
     }
 }

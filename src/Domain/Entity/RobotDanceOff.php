@@ -3,8 +3,6 @@
 namespace App\Domain\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'robot_dance_offs')]
@@ -15,19 +13,23 @@ class RobotDanceOff
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToMany(mappedBy: 'danceOff', targetEntity: RobotDanceOffParticipant::class)]
-    private Collection $participants;
+    #[ORM\ManyToOne(targetEntity: Team::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'team_one_id', referencedColumnName: 'id', nullable: false)]
+    private ?Team $teamOne = null;
 
-    #[ORM\ManyToOne(targetEntity: Robot::class)]
+    #[ORM\ManyToOne(targetEntity: Team::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'team_two_id', referencedColumnName: 'id', nullable: false)]
+    private ?Team $teamTwo = null;
+
+    #[ORM\ManyToOne(targetEntity: Team::class)]
     #[ORM\JoinColumn(name: 'winner_id', referencedColumnName: 'id', nullable: true)]
-    private ?Robot $winner = null;
+    private ?Team $winner = null;
 
     #[ORM\Column(type: 'datetime')]
     private \DateTime $createdAt;
 
     public function __construct()
     {
-        $this->participants = new ArrayCollection();
         $this->createdAt = new \DateTime();
     }
 
@@ -36,17 +38,34 @@ class RobotDanceOff
         return $this->id;
     }
 
-    public function getParticipants(): Collection
+    public function getTeamOne(): ?Team
     {
-        return $this->participants;
+        return $this->teamOne;
     }
 
-    public function getWinner(): ?Robot
+    public function setTeamOne(Team $teamOne): self
+    {
+        $this->teamOne = $teamOne;
+        return $this;
+    }
+
+    public function getTeamTwo(): ?Team
+    {
+        return $this->teamTwo;
+    }
+
+    public function setTeamTwo(Team $teamTwo): self
+    {
+        $this->teamTwo = $teamTwo;
+        return $this;
+    }
+
+    public function getWinner(): ?Team
     {
         return $this->winner;
     }
 
-    public function setWinner(?Robot $winner): self
+    public function setWinner(?Team $winner): self
     {
         $this->winner = $winner;
         return $this;
@@ -55,15 +74,5 @@ class RobotDanceOff
     public function getCreatedAt(): \DateTime
     {
         return $this->createdAt;
-    }
-
-    public function getTeamOne(): Collection
-    {
-        return $this->participants->filter(fn($p) => $p->getTeam() === 'teamOne');
-    }
-
-    public function getTeamTwo(): Collection
-    {
-        return $this->participants->filter(fn($p) => $p->getTeam() === 'teamTwo');
     }
 }

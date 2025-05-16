@@ -15,9 +15,6 @@ class RobotDanceOffOrderFilter implements FilterInterface
             'id' => [
                 'type' => Type::BUILTIN_TYPE_INT,
             ],
-            'winner' => [
-                'type' => Type::BUILTIN_TYPE_INT,
-            ],
             'createdAt' => [
                 'type' => Type::BUILTIN_TYPE_STRING,
             ]
@@ -32,8 +29,8 @@ class RobotDanceOffOrderFilter implements FilterInterface
                     'allowReserved' => $config['required'] ?? false,
                     'allowEmptyValue' => $config['required'] ?? true,
                 ],
-                'schema' => [ 
-                    'type' => 'string', 
+                'schema' => [
+                    'type' => 'string',
                     'enum' => ['asc', 'desc'],
                     'default' => 'asc',
                 ],

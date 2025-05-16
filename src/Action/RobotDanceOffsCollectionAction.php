@@ -19,7 +19,7 @@ final class RobotDanceOffsCollectionAction
     ) {
     }
 
-    public function __invoke(Request $request): Collection
+    public function __invoke(): Collection
     {
         $filters = $this->requestDataMapper->getFilters();
         $operations = $this->requestDataMapper->getOperations();

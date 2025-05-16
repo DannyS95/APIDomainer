@@ -13,12 +13,11 @@ final class RobotDanceOffQueryBuilder
     public function __construct(private EntityManagerInterface $entityManager)
     {
         $this->qb = $entityManager->createQueryBuilder()
-            ->select('rdo', 'p', 'r')
+            ->select('rdo', 't1', 't2', 'w')
             ->from(RobotDanceOff::class, 'rdo')
-            ->leftJoin('rdo.participants', 'p')
-            ->leftJoin('p.robot', 'r')
-            ->addSelect('p')
-            ->addSelect('r');
+            ->leftJoin('rdo.teamOne', 't1')
+            ->leftJoin('rdo.teamTwo', 't2')
+            ->leftJoin('rdo.winner', 'w');
     }
 
     public function whereClauses(array $filters, array $operations): self
@@ -50,5 +49,10 @@ final class RobotDanceOffQueryBuilder
     public function fetchArray(): array
     {
         return $this->qb->getQuery()->getResult();
+    }
+
+    public function createQueryBuilder(): QueryBuilder
+    {
+        return $this->qb;
     }
 }
