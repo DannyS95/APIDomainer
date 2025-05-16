@@ -5,26 +5,20 @@ namespace App\Infrastructure\Response;
 class RobotDanceOffResponse
 {
     private int $id;
-    private string $name;
-    private string $powermove;
-    private int $experience;
-    private bool $outOfOrder;
-    private string $avatar;
+    private array $teamOne;
+    private array $teamTwo;
+    private ?int $winnerId;
 
     public function __construct(
         int $id,
-        string $name,
-        string $powermove,
-        int $experience,
-        bool $outOfOrder,
-        string $avatar
+        array $teamOne,
+        array $teamTwo,
+        ?int $winnerId
     ) {
         $this->id = $id;
-        $this->name = $name;
-        $this->powermove = $powermove;
-        $this->experience = $experience;
-        $this->outOfOrder = $outOfOrder;
-        $this->avatar = $avatar;
+        $this->teamOne = $teamOne;
+        $this->teamTwo = $teamTwo;
+        $this->winnerId = $winnerId;
     }
 
     public function getId(): int
@@ -32,28 +26,24 @@ class RobotDanceOffResponse
         return $this->id;
     }
 
-    public function getName(): string
+    /**
+     * @return array<int> List of IDs representing Team One
+     */
+    public function getTeamOne(): array
     {
-        return $this->name;
+        return $this->teamOne;
     }
 
-    public function getPowermove(): string
+    /**
+     * @return array<int> List of IDs representing Team Two
+     */
+    public function getTeamTwo(): array
     {
-        return $this->powermove;
+        return $this->teamTwo;
     }
 
-    public function getExperience(): int
+    public function getWinnerId(): ?int
     {
-        return $this->experience;
-    }
-
-    public function isOutOfOrder(): bool
-    {
-        return $this->outOfOrder;
-    }
-
-    public function getAvatar(): string
-    {
-        return $this->avatar;
+        return $this->winnerId;
     }
 }

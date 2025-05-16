@@ -3,59 +3,42 @@
 namespace App\Domain\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\JoinColumn;
-use Symfony\Component\Serializer\Attribute\Groups;
-use App\Infrastructure\Repository\RobotDanceOffRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
-#[ORM\Entity(repositoryClass: RobotDanceOffRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: 'robot_dance_offs')]
 class RobotDanceOff
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id;
+    private ?int $id = null;
 
-    #[ManyToOne(targetEntity: Robot::class, inversedBy: 'asRobotOne', fetch: 'LAZY')]
-    #[JoinColumn(name: 'robot_one', referencedColumnName: 'id')]
-    private Robot $robotOne;
+    #[ORM\OneToMany(mappedBy: 'danceOff', targetEntity: RobotDanceOffParticipant::class)]
+    private Collection $participants;
 
-    #[ManyToOne(targetEntity: Robot::class, inversedBy: 'asRobotTwo', fetch: 'LAZY')]
-    #[JoinColumn(name: 'robot_two', referencedColumnName: 'id')]
-    private Robot $robotTwo;
+    #[ORM\ManyToOne(targetEntity: Robot::class)]
+    #[ORM\JoinColumn(name: 'winner_id', referencedColumnName: 'id', nullable: true)]
+    private ?Robot $winner = null;
 
-    #[ManyToOne(targetEntity: Robot::class, inversedBy: 'asWinner', fetch: 'LAZY')]
-    #[JoinColumn(name: 'winner', referencedColumnName: 'id')]
-    private ?Robot $winner;
+    #[ORM\Column(type: 'datetime')]
+    private \DateTime $createdAt;
 
-    public function getId(): int
+    public function __construct()
+    {
+        $this->participants = new ArrayCollection();
+        $this->createdAt = new \DateTime();
+    }
+
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getRobotOne(): Robot
+    public function getParticipants(): Collection
     {
-        return $this->robotOne;
-    }
-
-    public function setRobotOne(Robot $robotOne): static
-    {
-        $this->robotOne = $robotOne;
-
-        return $this;
-    }
-
-    public function getRobotTwo(): Robot
-    {
-        return $this->robotTwo;
-    }
-
-    public function setRobotTwo(Robot $robotTwo): static
-    {
-        $this->robotTwo = $robotTwo;
-
-        return $this;
+        return $this->participants;
     }
 
     public function getWinner(): ?Robot
@@ -63,10 +46,24 @@ class RobotDanceOff
         return $this->winner;
     }
 
-    public function setWinner(?Robot $winner): static
+    public function setWinner(?Robot $winner): self
     {
         $this->winner = $winner;
-
         return $this;
+    }
+
+    public function getCreatedAt(): \DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function getTeamOne(): Collection
+    {
+        return $this->participants->filter(fn($p) => $p->getTeam() === 'teamOne');
+    }
+
+    public function getTeamTwo(): Collection
+    {
+        return $this->participants->filter(fn($p) => $p->getTeam() === 'teamTwo');
     }
 }

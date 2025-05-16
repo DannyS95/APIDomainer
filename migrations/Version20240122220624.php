@@ -7,34 +7,22 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-/**
- * Auto-generated Migration: Please modify to your needs!
- */
 final class Version20240122220624 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
+        // -- ROBOTS TABLE --
         $this->addSql('CREATE TABLE robots (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(100) NOT NULL,
-                powermove VARCHAR(50) NOT NULL,
-                experience INT NOT NULL,
-                out_of_order BOOLEAN NOT NULL,
-                avatar VARCHAR(2000) NOT NULL
-            )
-        ');
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            powermove VARCHAR(50) NOT NULL,
+            experience INT NOT NULL,
+            out_of_order BOOLEAN NOT NULL,
+            avatar VARCHAR(2000) NOT NULL
+        )');
 
         $this->addSql("INSERT INTO robots (name, powermove, experience, out_of_order, avatar)
             VALUES
-                ('Groovy Jane', 'Windmill Spin', 8, false, 'https://robohash.org/groovy-jane.png'),
-                ('Breakbeat Billy', 'Backflip Kick', 7, true, 'https://robohash.org/breakbeat-billy.png'),
-                ('Electric Eddie', 'Moonwalk', 10, false, 'https://robohash.org/electric-eddie.png'),
-                ('Twistin\' Tina', 'Headspin', 6, true, 'https://robohash.org/twistin-tina.png'),
-                ('Dynamic Dave', 'Flare Kick', 9, false, 'https://robohash.org/dynamic-dave.png'),
-                ('Spinsational Sam', '360 Spin', 8, true, 'https://robohash.org/spinsational-sam.png'),
-                ('Whirlwind Wendy', 'Corkscrew Twist', 7, false, 'https://robohash.org/whirlwind-wendy.png'),
-                ('B-Boy Bobby', 'Freeze Frame', 5, true, 'https://robohash.org/b-boy-bobby.png'),
-                ('Dizzy Daisy', 'Spiral Spin', 6, false, 'https://robohash.org/dizzy-daisy.png'),
                 ('SpinMaster Steve', 'Tornado Twist', 7, true, 'https://robohash.org/spinmaster-steve.png'),
                 ('Whirling Wilma', 'Helicopter Hop', 9, false, 'https://robohash.org/whirling-wilma.png'),
                 ('Funky Fred', 'Funky Flare', 8, true, 'https://robohash.org/funky-fred.png'),
@@ -50,27 +38,36 @@ final class Version20240122220624 extends AbstractMigration
         $this->addSql('CREATE INDEX idx_name ON robots (name);');
         $this->addSql('CREATE INDEX idx_powermove ON robots (powermove);');
         $this->addSql('CREATE INDEX idx_experience ON robots (experience);');
-        $this->addSql('CREATE INDEX out_of_order ON robots (out_of_order);');
+        $this->addSql('CREATE INDEX idx_out_of_order ON robots (out_of_order);');
 
+        // -- DANCE-OFFS TABLE --
         $this->addSql('CREATE TABLE robot_dance_offs (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            robot_one INT NOT NULL,
-            robot_two INT NOT NULL,
-            winner INT NULL,
-            
-            FOREIGN KEY (robot_one) REFERENCES robots(id),
-            FOREIGN KEY (robot_two) REFERENCES robots(id),
-            FOREIGN KEY (winner) REFERENCES robots(id)
-        );');
+            winner_id INT DEFAULT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (winner_id) REFERENCES robots(id) ON DELETE SET NULL
+        )');
 
-        $this->addSql('CREATE INDEX robot_one ON robot_dance_offs (robot_one);');
-        $this->addSql('CREATE INDEX robot_two ON robot_dance_offs (robot_two);');
-        $this->addSql('CREATE INDEX winner ON robot_dance_offs (winner);');
+        $this->addSql('CREATE INDEX idx_winner ON robot_dance_offs (winner_id);');
+
+        // -- PARTICIPANTS PIVOT TABLE --
+        $this->addSql('CREATE TABLE robot_dance_off_participants (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            dance_off_id INT NOT NULL,
+            robot_id INT NOT NULL,
+            team VARCHAR(10) NOT NULL CHECK (team IN (\'teamOne\', \'teamTwo\')),
+            FOREIGN KEY (dance_off_id) REFERENCES robot_dance_offs(id) ON DELETE CASCADE,
+            FOREIGN KEY (robot_id) REFERENCES robots(id) ON DELETE CASCADE
+        )');
+
+        $this->addSql('CREATE INDEX idx_dance_off_id ON robot_dance_off_participants (dance_off_id);');
+        $this->addSql('CREATE INDEX idx_robot_id ON robot_dance_off_participants (robot_id);');
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('DROP IF EXISTS robots');
-        $this->addSql('DROP IF EXISTS dace_offs');
+        $this->addSql('DROP TABLE IF EXISTS robot_dance_off_participants');
+        $this->addSql('DROP TABLE IF EXISTS robot_dance_offs');
+        $this->addSql('DROP TABLE IF EXISTS robots');
     }
 }

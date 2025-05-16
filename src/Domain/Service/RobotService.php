@@ -5,41 +5,70 @@ namespace App\Domain\Service;
 use RobotServiceException;
 use App\Domain\Entity\Robot;
 use App\Domain\Entity\RobotDanceOff;
+use App\Domain\Entity\RobotDanceOffParticipant;
 use App\Application\DTO\ApiFiltersDTO;
 use App\Domain\Repository\RobotRepositoryInterface;
-use App\Infrastructure\Request\RobotDanceOffRequest;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
+use App\Infrastructure\Request\RobotDanceOffRequest;
 
 final class RobotService
 {
-    public function __construct(private RobotDanceOffRepositoryInterface $robotDanceOffRepository, private RobotRepositoryInterface $robotRepository)
-    {
+    public function __construct(
+        private RobotRepositoryInterface $robotRepository,
+        private RobotDanceOffRepositoryInterface $robotDanceOffRepository,
+    ) {
     }
 
     /**
-     * Find all Robot Resources agains't given API Filters.
+     * Find all Robot Resources against given API Filters.
      *
-     * @param ApiFiltersDTO $filters
+     * @param ApiFiltersDTO $apiFiltersDTO
      * @return array|null
      */
-    public function getRobots(ApiFiltersDTO $apiFiltersDTO)
+    public function getRobots(ApiFiltersDTO $apiFiltersDTO): array
     {
         return $this->robotRepository->findAll($apiFiltersDTO);
     }
 
     /**
-     * Find all Robot Dance Offs agains't the filters.
-     *
-     * @param ApiFiltersDTO $filters
-     * @return array|null
+     * Get all Robot Dance Offs based on the filters.
      */
-    public function getRobotDanceOffs(ApiFiltersDTO $apiFiltersDTO)
+    public function getRobotDanceOffs(ApiFiltersDTO $apiFiltersDTO): array
     {
-        return $this->robotDanceOffRepository->findAll($apiFiltersDTO);
+        $danceOffs = $this->robotDanceOffRepository->findAll($apiFiltersDTO);
+
+        return array_map(function (RobotDanceOff $danceOff) {
+            return [
+                'id' => $danceOff->getId(),
+                'createdAt' => $danceOff->getCreatedAt()->format('Y-m-d H:i:s'),
+                'teamOne' => $this->formatTeam($danceOff->getTeamOne()),
+                'teamTwo' => $this->formatTeam($danceOff->getTeamTwo()),
+                'winner' => $danceOff->getWinner()?->getId()
+            ];
+        }, $danceOffs);
     }
 
     /**
-     * Find a robot.
+     * Format the team for JSON response.
+     */
+    private function formatTeam($team): array
+    {
+        return array_map(function ($participant) {
+            $robot = $participant->getRobot();
+            return [
+                'id' => $robot->getId(),
+                'name' => $robot->getName(),
+                'powermove' => $robot->getPowermove(),
+                'experience' => $robot->getExperience(),
+                'outOfOrder' => $robot->isOutOfOrder(),
+                'avatar' => $robot->getAvatar()
+            ];
+        }, $team->toArray());
+    }
+
+
+    /**
+     * Find a robot by ID.
      *
      * @param int $id
      * @return Robot|\Exception
@@ -49,47 +78,84 @@ final class RobotService
         $entity = $this->robotRepository->findOneBy($id);
 
         if ($entity === null) {
-            throw new RobotServiceException("There are no robots with id: of $id", 404);
+            throw new RobotServiceException("There are no robots with id: $id", 404);
         }
 
         return $entity;
     }
 
     /**
-     * Set a dance off between two teams of robots by the best match by experience for each time.
+     * Set a dance off between two teams of robots.
      *
-     * @param RobotDanceOffRequest $filters
+     * @param RobotDanceOffRequest $robotDanceOffRequest
      * @return void
      */
     public function setRobotDanceOff(RobotDanceOffRequest $robotDanceOffRequest): void
     {
-        $robotDanceOffRequest->teamA = array_reverse($robotDanceOffRequest->teamA);
-        $robotDanceOffRequest->teamB = array_reverse($robotDanceOffRequest->teamB);
+        $this->validateTeams($robotDanceOffRequest);
 
-        $entities = [];
+        $teamOne = array_map(fn($id) => $this->getRobot($id), $robotDanceOffRequest->teamA);
+        $teamTwo = array_map(fn($id) => $this->getRobot($id), $robotDanceOffRequest->teamB);
 
-        foreach ($robotDanceOffRequest->teamA as $key => $robot) {
-            if (\in_array($robot, $robotDanceOffRequest->teamB, true)) {
-                throw new RobotServiceException("Robot $robot was selected for both teams. Please choose another.", 403);
-            }
-            $entity = new RobotDanceOff();
-            $entity->setRobotOne($this->getRobot($robot));
-            $entity->setRobotTwo($this->getRobot($robotDanceOffRequest->teamB[$key]));
-            $entity->setWinner(
-                $this->getDanceOffWinner($entity)
-            );
-            \array_push($entities, $entity);
-        }
+        $danceOff = new RobotDanceOff();
+        $this->robotDanceOffRepository->bulkSave([$danceOff]);
 
-        $this->robotDanceOffRepository->bulkSave($entities);
+        $participants = array_merge(
+            $this->createParticipants($teamOne, $danceOff, 'teamOne'),
+            $this->createParticipants($teamTwo, $danceOff, 'teamTwo')
+        );
+
+        $this->robotDanceOffRepository->bulkSave($participants);
+
+        $winner = $this->calculateWinningTeam($teamOne, $teamTwo);
+    $danceOff->setWinner($winner);
+
+    $this->robotDanceOffRepository->bulkSave([$danceOff]);
     }
 
-    private function getDanceOffWinner(RobotDanceOff $entity): ?Robot
+    /**
+     * Validate that no robot exists in both teams.
+     */
+    private function validateTeams(RobotDanceOffRequest $robotDanceOffRequest): void
     {
-        if (\bccomp($entity->getRobotOne()->getExperience(), $entity->getRobotTwo()->getExperience()) === 0 ) {
-            return null;
+    foreach ($robotDanceOffRequest->teamA as $robotId) {
+        if (\in_array($robotId, $robotDanceOffRequest->teamB, true)) {
+            throw new RobotServiceException("Robot $robotId was selected for both teams. Please choose another.", 403);
+        }
+    }
+    }
+
+    /**
+     * Create participants for a specific team.
+     */
+    private function createParticipants(array $team, RobotDanceOff $danceOff, string $teamName): array
+    {
+        return array_map(function (Robot $robot) use ($danceOff, $teamName) {
+            $participant = new RobotDanceOffParticipant();
+            $participant->setDanceOff($danceOff);
+            $participant->setRobot($robot);
+            $participant->setTeam($teamName);
+            return $participant;
+        }, $team);
+    }
+
+    /**
+     * Determines the winning team based on the experience sum.
+     *
+     * @param array<Robot> $teamOne
+     * @param array<Robot> $teamTwo
+     * @return Robot|null
+     */
+    private function calculateWinningTeam(array $teamOne, array $teamTwo): ?Robot
+    {
+        $teamOneExperience = array_sum(array_map(fn(Robot $r) => $r->getExperience(), $teamOne));
+        $teamTwoExperience = array_sum(array_map(fn(Robot $r) => $r->getExperience(), $teamTwo));
+
+        if ($teamOneExperience === $teamTwoExperience) {
+            return null; // It's a tie, no winner
         }
 
-        return bccomp($entity->getRobotOne()->getExperience(), $entity->getRobotTwo()->getExperience()) ? $entity->getRobotOne() : $entity->getRobotTwo();
+        return $teamOneExperience > $teamTwoExperience ? $teamOne[0] : $teamTwo[0];
     }
+
 }

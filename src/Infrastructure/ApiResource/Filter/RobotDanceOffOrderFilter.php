@@ -7,7 +7,6 @@ use ApiPlatform\Metadata\FilterInterface;
 
 class RobotDanceOffOrderFilter implements FilterInterface
 {
-    # This function is only used to hook in documentation generators (supported by Swagger and Hydra)
     public function getDescription(string $resourceClass): array
     {
         $description = [];
@@ -16,15 +15,12 @@ class RobotDanceOffOrderFilter implements FilterInterface
             'id' => [
                 'type' => Type::BUILTIN_TYPE_INT,
             ],
-            'robotOne' => [
-                'type' => Type::BUILTIN_TYPE_INT,
-            ],
-            'robotTwo' => [
-                'type' => Type::BUILTIN_TYPE_INT,
-            ],
             'winner' => [
                 'type' => Type::BUILTIN_TYPE_INT,
             ],
+            'createdAt' => [
+                'type' => Type::BUILTIN_TYPE_STRING,
+            ]
         ];
 
         foreach ($properties as $property => $config) {

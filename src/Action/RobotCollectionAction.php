@@ -20,9 +20,9 @@ final class RobotCollectionAction
 
     public function __invoke(Request $request): ArrayCollection
     {
-        $filters = $this->requestDataMapper->getFilters($request);
-        $operations = $this->requestDataMapper->getOperations($request);
-        $sorts = $this->requestDataMapper->getSorts($request);
+        $filters = $this->requestDataMapper->getFilters();
+        $operations = $this->requestDataMapper->getOperations();
+        $sorts = $this->requestDataMapper->getSorts();
 
         $apiFiltersDTO = new ApiFiltersDTO(
             filters: $filters,
@@ -31,7 +31,7 @@ final class RobotCollectionAction
             page: $request->query->getInt('page', 1),
             itemsPerPage: $request->query->getInt('itemsPerPage', 10)
         );
-
+    
         $models = $this->robotService->getRobots($apiFiltersDTO);
 
         return new ArrayCollection($models);

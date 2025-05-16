@@ -3,8 +3,9 @@
 namespace App\Domain\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Domain\Entity\RobotDanceOff;
 use Doctrine\Common\Collections\Collection;
+use App\Domain\Entity\RobotDanceOffParticipant;
+use Doctrine\Common\Collections\ArrayCollection;
 use App\Infrastructure\Repository\RobotRepository;
 
 #[ORM\Entity(repositoryClass: RobotRepository::class)]
@@ -31,14 +32,16 @@ class Robot
     #[ORM\Column(length: 2000, nullable: true)]
     private ?string $avatar = null;
 
-    #[ORM\OneToMany(targetEntity: RobotDanceOff::class, mappedBy: 'robotOne', fetch: 'LAZY')]
-    private Collection $asRobotOne;
+    /**
+     * @var Collection<int, RobotDanceOffParticipant>
+     */
+    #[ORM\OneToMany(mappedBy: 'robot', targetEntity: RobotDanceOffParticipant::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $danceOffParticipations;
 
-    #[ORM\OneToMany(targetEntity: RobotDanceOff::class, mappedBy: 'robotTwo', fetch: 'LAZY')]
-    private Collection $asRobotTwo;
-
-    #[ORM\OneToMany(targetEntity: RobotDanceOff::class, mappedBy: 'winner', fetch: 'LAZY')]
-    private Collection $asWinner;
+    public function __construct()
+    {
+        $this->danceOffParticipations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -53,7 +56,6 @@ class Robot
     public function setName(?string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -65,7 +67,6 @@ class Robot
     public function setPowermove(?string $powermove): self
     {
         $this->powermove = $powermove;
-
         return $this;
     }
 
@@ -77,7 +78,6 @@ class Robot
     public function setExperience(?int $experience): self
     {
         $this->experience = $experience;
-
         return $this;
     }
 
@@ -89,7 +89,6 @@ class Robot
     public function setOutOfOrder(?bool $outOfOrder): self
     {
         $this->outOfOrder = $outOfOrder;
-
         return $this;
     }
 
@@ -101,31 +100,36 @@ class Robot
     public function setAvatar(?string $avatar): self
     {
         $this->avatar = $avatar;
-
         return $this;
     }
 
     /**
-     * @return Collection|RobotDanceOff[]
+     * @return Collection|RobotDanceOffParticipant[]
      */
-    public function getAsRobotOne(): Collection
+    public function getDanceOffParticipations(): Collection
     {
-        return $this->asRobotOne;
+        return $this->danceOffParticipations;
     }
 
-    /**
-     * @return Collection|RobotDanceOff[]
-     */
-    public function getAsRobotTwo(): Collection
+    public function addDanceOffParticipation(RobotDanceOffParticipant $participation): self
     {
-        return $this->asRobotTwo;
+        if (!$this->danceOffParticipations->contains($participation)) {
+            $this->danceOffParticipations->add($participation);
+            $participation->setRobot($this);
+        }
+
+        return $this;
     }
 
-    /**
-     * @return Collection|RobotDanceOff[]
-     */
-    public function getAsWinner(): Collection
+    public function removeDanceOffParticipation(RobotDanceOffParticipant $participation): self
     {
-        return $this->asWinner;
+        if ($this->danceOffParticipations->contains($participation)) {
+            $this->danceOffParticipations->removeElement($participation);
+            if ($participation->getRobot() === $this) {
+                $participation->setRobot(null);
+            }
+        }
+
+        return $this;
     }
 }

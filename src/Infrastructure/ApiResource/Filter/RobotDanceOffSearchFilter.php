@@ -7,26 +7,17 @@ use ApiPlatform\Metadata\FilterInterface;
 
 class RobotDanceOffSearchFilter implements FilterInterface
 {
-    # This function is only used to hook in documentation generators (supported by Swagger and Hydra)
     public function getDescription(string $resourceClass): array
     {
         $description = [];
 
         $properties = [
             'id' => [
-                'operations' => ['eq', 'gt', 'gte', 'st', 'lte'],
-                'type' => Type::BUILTIN_TYPE_INT,
-            ],
-            'robotOne' => [
-                'operations' => ['eq', 'gt', 'gte', 'st', 'lte'],
-                'type' => Type::BUILTIN_TYPE_INT,
-            ],
-            'robotTwo' => [
-                'operations' => ['eq', 'gt', 'gte', 'st', 'lte'],
+                'operations' => ['eq', 'gt', 'gte', 'lt', 'lte'],
                 'type' => Type::BUILTIN_TYPE_INT,
             ],
             'winner' => [
-                'operations' => ['eq', 'gt', 'gte', 'st', 'lte'],
+                'operations' => ['eq', 'gt', 'gte', 'lt', 'lte'],
                 'type' => Type::BUILTIN_TYPE_INT,
             ],
         ];

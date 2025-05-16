@@ -25,6 +25,14 @@ final class RobotNormalizer implements NormalizerInterface, NormalizerAwareInter
             return [];
         }
 
+        // Map the dance-off participations
+        $danceOffs = $object->getDanceOffParticipations()->map(function ($participation) {
+            return [
+                'dance_off_id' => $participation->getDanceOff()->getId(),
+                'team' => $participation->getTeam()
+            ];
+        })->toArray();
+
         return [
             'id' => $object->getId(),
             'name' => $object->getName(),
@@ -32,10 +40,7 @@ final class RobotNormalizer implements NormalizerInterface, NormalizerAwareInter
             'experience' => $object->getExperience(),
             'out_of_order' => $object->isOutOfOrder(),
             'avatar' => $object->getAvatar(),
-            // Optional: Relation IDs only
-            'as_robot_one_ids' => $object->getAsRobotOne()->map(fn($r) => $r->getId())->toArray(),
-            'as_robot_two_ids' => $object->getAsRobotTwo()->map(fn($r) => $r->getId())->toArray(),
-            'as_winner_ids' => $object->getAsWinner()->map(fn($r) => $r->getId())->toArray(),
+            'participations' => $danceOffs,
         ];
     }
 

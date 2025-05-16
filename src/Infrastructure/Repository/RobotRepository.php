@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Domain\Repository;
+namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\Robot;
 use App\Application\DTO\ApiFiltersDTO;
-use App\Infrastructure\Repository\DoctrineRepositoryInterface;
+use App\Domain\Repository\RobotRepositoryInterface;
 
 final class RobotRepository implements RobotRepositoryInterface
 {
-    private const ENTITY = Robot::class;
-    private const ALIAS = 'robot';
-
     public function __construct(
+        private RobotQueryBuilder $robotQueryBuilder,
         private DoctrineRepositoryInterface $doctrineRepository
     ) {}
 
@@ -20,17 +18,15 @@ final class RobotRepository implements RobotRepositoryInterface
      */
     public function findAll(ApiFiltersDTO $apiFiltersDTO): array
     {
-        // 🏷️ Build the query with fluent methods
-        return $this->doctrineRepository
-            ->createQueryBuilder(self::ENTITY, self::ALIAS)
-            ->buildClauses(
-                filters: $apiFiltersDTO->getFilters(),
-                operations: $apiFiltersDTO->getOperations()
+        return $this->robotQueryBuilder
+            ->whereClauses(
+                $apiFiltersDTO->getFilters(),
+                $apiFiltersDTO->getOperations()
             )
-            ->buildSorts($apiFiltersDTO->getSorts())
-            ->buildPagination(
-                page: $apiFiltersDTO->getPage(),
-                itemsPerPage: $apiFiltersDTO->getItemsPerPage()
+            ->addSorts($apiFiltersDTO->getSorts())
+            ->paginate(
+                $apiFiltersDTO->getPage(),
+                $apiFiltersDTO->getItemsPerPage()
             )
             ->fetchArray();
     }
@@ -45,13 +41,13 @@ final class RobotRepository implements RobotRepositoryInterface
     }
 
     /**
-     * Find a Robot by its ID.
+     * Find a Robot by ID.
      */
     public function findOneBy(int $id): ?Robot
     {
-        return $this->doctrineRepository
-            ->serviceRepo()
-            ->findOneBy(['id' => $id]);
+        return $this->robotQueryBuilder
+            ->whereId($id)
+            ->fetchOne();
     }
 
     /**
@@ -59,7 +55,7 @@ final class RobotRepository implements RobotRepositoryInterface
      */
     public function remove(Robot $robot): void
     {
-        $this->doctrineRepository->serviceRepo()->remove($robot);
+        $this->doctrineRepository->remove($robot);
         $this->doctrineRepository->save();
     }
 }
