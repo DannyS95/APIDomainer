@@ -7,7 +7,7 @@ use App\Application\DTO\ApiFiltersDTO;
 
 interface RobotRepositoryInterface
 {
-    public function findAll(ApiFiltersDTO $apiFiltersDTO);
+    public function findAll(ApiFiltersDTO $apiFiltersDTO): array;
 
     public function findOneBy(int $id): ?Robot;
 }
