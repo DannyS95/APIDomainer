@@ -87,3 +87,6 @@ To start the application, simply run:
 ```bash
 docker compose up -d
 make install
+
+🌐 http://localhost:8080/api
+
