@@ -5,16 +5,20 @@ namespace App\Infrastructure\Repository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use App\Domain\Entity\Robot;
+use App\Infrastructure\DoctrineComparisonEnum;
 
 final class RobotQueryBuilder
 {
+    private const ENTITY = Robot::class;
+    private const ALIAS = 'r';
+
     private QueryBuilder $qb;
 
     public function __construct(private EntityManagerInterface $entityManager)
     {
         $this->qb = $entityManager->createQueryBuilder()
-            ->select('r')
-            ->from(Robot::class, 'r');
+            ->select(self::ALIAS)
+            ->from(self::ENTITY, self::ALIAS);
     }
 
     /**
@@ -22,7 +26,7 @@ final class RobotQueryBuilder
      */
     public function whereId(int $id): self
     {
-        $this->qb->andWhere('r.id = :id')
+        $this->qb->andWhere(self::ALIAS . '.id = :id')
                  ->setParameter('id', $id);
 
         return $this;
@@ -34,8 +38,13 @@ final class RobotQueryBuilder
     public function whereClauses(array $filters, array $operations): self
     {
         foreach ($filters as $filter => $value) {
-            $operation = $operations[$filter] ?? '=';
-            $this->qb->andWhere("r.$filter $operation :$filter")
+            $operation = $operations[$filter] ?? DoctrineComparisonEnum::eq->value;
+
+            if (!DoctrineComparisonEnum::tryFrom($operation)) {
+                throw new \InvalidArgumentException("Invalid operation: $operation");
+            }
+
+            $this->qb->andWhere(self::ALIAS . ".$filter $operation :$filter")
                      ->setParameter($filter, $value);
         }
         return $this;
@@ -47,7 +56,7 @@ final class RobotQueryBuilder
     public function addSorts(array $sorts): self
     {
         foreach ($sorts as $field => $order) {
-            $this->qb->addOrderBy("r.$field", $order);
+            $this->qb->addOrderBy(self::ALIAS . ".$field", $order);
         }
         return $this;
     }
