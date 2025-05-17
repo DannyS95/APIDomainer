@@ -63,7 +63,24 @@ The **Action Layer** is the controller endpoint for API requests:
 
 ---
 
-### **🏷️ Flow Example**
+# 🤖 **Robot Flow Explanation**
+
+---
+
+## 🚀 **Overview**
+The **Robot Flow** is part of the **Robot API** responsible for managing:
+- The creation of **Robot DanceOffs**.
+- Building **Teams** dynamically based on provided Robot IDs.
+- Performing **DanceOffs** between two teams.
+- Selecting a **winner** if the logic requires it.
+
+The flow is built around **DDD (Domain-Driven Design)** and follows **ADR (Action-Domain-Responder)** principles for clean separation of logic.
+
+---
+
+## 🔄 **Flow Breakdown**
+### **1️⃣ Create a DanceOff**
+**Endpoint:**  
 
 
 ---
