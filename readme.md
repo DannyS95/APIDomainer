@@ -78,9 +78,66 @@ The flow is built around **DDD (Domain-Driven Design)** and follows **ADR (Actio
 
 ---
 
-## 🔄 **Flow Breakdown**
-### **1️⃣ Create a DanceOff**
-**Endpoint:**  
+# 🤖 **DanceOff Workflow Explanation**
+
+---
+
+## 🚀 **Overview**
+The **DanceOff Workflow** is the central logic for orchestrating competitive matchups between two robot teams within the **Robot API**.  
+It leverages **Domain-Driven Design (DDD)** principles and follows **ADR (Action-Domain-Responder)** architecture to keep business logic isolated and maintainable.
+
+---
+
+# 🤖 **Team Formation and Winner Selection Workflow for Robot Battles API**
+
+---
+
+## 🚀 **Overview**
+The **Team Formation and Winner Selection Workflow** is part of the `DanceOff` creation logic.  
+It follows DDD principles to:
+1. Create **Team Alpha** and **Team Beta** based on provided Robot IDs.
+2. Register the teams into a `DanceOff`.
+3. Manage the **winner selection** logic when a DanceOff is concluded.
+
+---
+
+## 🔄 **Workflow Breakdown**
+### **1️⃣ Team Formation**
+When a `POST` request is made to:
+
+## 🔄 **Team Formation Workflow**
+
+---
+
+### **Steps:**
+1. The request payload contains two arrays of `Robot IDs`:
+   - **teamA:** Represents the IDs for **Team Alpha**.
+   - **teamB:** Represents the IDs for **Team Omega**.
+
+2. The request is handled by the `RobotDanceOffHandler`, which triggers the `RobotService`.
+
+3. Inside `RobotService`, the `DanceOffFactory` is called to:
+   - Create two new instances of `Team`.
+   - Name them **Team Alpha** and **Team Omega**.
+   - Fetch each `Robot` from the database using its ID.
+   - Populate each `Team` with the fetched `Robot` entities.
+
+4. If any of the Robot IDs are not found in the database:
+   - An exception is thrown.
+   - The DanceOff creation is aborted.
+
+5. If all IDs are valid:
+   - Both `Team Alpha` and `Team Omega` are constructed and ready for the `DanceOff`.
+
+---
+
+### **Example Payload:**  
+```json
+{
+  "teamA": [1, 2, 3, 4, 5],
+  "teamB": [6, 7, 8, 9, 10]
+}
+```
 
 
 ---
