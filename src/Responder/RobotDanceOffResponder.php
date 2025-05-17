@@ -1,20 +1,39 @@
 <?php
 
-namespace App\Application\Transformer;
+namespace App\Responder;
 
-use App\Domain\Entity\RobotDanceOff;
 use App\Domain\Entity\Team;
+use App\Domain\Entity\RobotDanceOff;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use App\Infrastructure\Response\RobotDanceOffResponse;
 
-final class RobotDanceOffTransformer
+final class RobotDanceOffResponder
 {
-    public function transform(RobotDanceOff $danceOff): RobotDanceOffResponse
+    /**
+     * Transform and respond with a collection of JSON payloads.
+     *
+     * @param RobotDanceOff[] $danceOffs
+     * @return Collection
+     */
+    public function respond(array $danceOffs): Collection
     {
-        // Map the two teams into the response format
+        $mappedResponses = array_map([$this, 'assemble'], $danceOffs);
+
+        return new ArrayCollection($mappedResponses);
+    }
+
+    /**
+     * Transform a single RobotDanceOff into a RobotDanceOffResponse.
+     *
+     * @param RobotDanceOff $danceOff
+     * @return RobotDanceOffResponse
+     */
+    private function assemble(RobotDanceOff $danceOff): RobotDanceOffResponse
+    {
         $teamOneDetails = $this->mapTeamDetails($danceOff->getTeamOne());
         $teamTwoDetails = $this->mapTeamDetails($danceOff->getTeamTwo());
 
-        // Map the winning team details if it exists
         $winningTeamDetails = $danceOff->getWinningTeam()
             ? $this->mapTeamDetails($danceOff->getWinningTeam())
             : null;

@@ -4,11 +4,9 @@ namespace App\Action;
 
 use App\Application\DTO\ApiFiltersDTO;
 use App\Application\Request\RequestDataMapper;
-use App\Application\Transformer\RobotDanceOffTransformer;
 use App\Domain\Service\RobotService;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Responder\RobotDanceOffResponder;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
@@ -17,7 +15,7 @@ final class RobotDanceOffsCollectionAction
     public function __construct(
         private RobotService $robotService,
         private RequestDataMapper $requestDataMapper,
-        private RobotDanceOffTransformer $robotDanceOffTransformer
+        private RobotDanceOffResponder $robotDanceOffResponder
     ) {
     }
 
@@ -38,8 +36,6 @@ final class RobotDanceOffsCollectionAction
 
         $models = $this->robotService->getRobotDanceOffs($apiFiltersDTO);
 
-        $transformed = array_map([$this->robotDanceOffTransformer, 'transform'], $models);
-
-        return new ArrayCollection($transformed);
+        return $this->robotDanceOffResponder->respond($models);
     }
 }
