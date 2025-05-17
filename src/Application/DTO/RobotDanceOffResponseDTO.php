@@ -7,18 +7,18 @@ class RobotDanceOffResponseDTO
     private int $id;
     private array $teamOne;
     private array $teamTwo;
-    private ?int $winner;
+    private ?int $winningTeam;
 
     public function __construct(
         int $id,
         array $teamOne,
         array $teamTwo,
-        ?int $winner = null
+        ?int $winningTeam = null
     ) {
         $this->id = $id;
         $this->teamOne = $teamOne;
         $this->teamTwo = $teamTwo;
-        $this->winner = $winner;
+        $this->winningTeam = $winningTeam;
     }
 
     public function getId(): int
@@ -36,8 +36,8 @@ class RobotDanceOffResponseDTO
         return $this->teamTwo;
     }
 
-    public function getWinner(): ?int
+    public function getWinningTeam(): ?int
     {
-        return $this->winner;
+        return $this->winningTeam;
     }
 }

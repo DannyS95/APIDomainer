@@ -4,6 +4,7 @@ namespace App\Action;
 
 use App\Application\DTO\ApiFiltersDTO;
 use App\Application\Request\RequestDataMapper;
+use App\Application\Transformer\RobotDanceOffTransformer;
 use App\Domain\Service\RobotService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,7 +16,8 @@ final class RobotDanceOffsCollectionAction
 {
     public function __construct(
         private RobotService $robotService,
-        private RequestDataMapper $requestDataMapper
+        private RequestDataMapper $requestDataMapper,
+        private RobotDanceOffTransformer $robotDanceOffTransformer
     ) {
     }
 
@@ -36,6 +38,8 @@ final class RobotDanceOffsCollectionAction
 
         $models = $this->robotService->getRobotDanceOffs($apiFiltersDTO);
 
-        return new ArrayCollection($models);
+        $transformed = array_map([$this->robotDanceOffTransformer, 'transform'], $models);
+
+        return new ArrayCollection($transformed);
     }
 }

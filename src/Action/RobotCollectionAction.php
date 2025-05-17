@@ -14,7 +14,7 @@ final class RobotCollectionAction
 {
     public function __construct(
         private RobotService $robotService,
-        private RequestDataMapper $requestDataMapper
+        private RequestDataMapper $requestDataMapper,
     ) {
     }
 

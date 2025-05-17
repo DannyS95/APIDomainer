@@ -2,6 +2,7 @@
 
 namespace App\Domain\Service;
 
+use App\Application\Transformer\RobotDanceOffTransformer;
 use RobotServiceException;
 use App\Domain\Entity\Robot;
 use App\Domain\Entity\RobotDanceOff;
@@ -18,7 +19,8 @@ final class RobotService
     public function __construct(
         private RobotRepositoryInterface $robotRepository,
         private RobotDanceOffRepositoryInterface $robotDanceOffRepository,
-        private TeamRepositoryInterface $teamRepository
+        private TeamRepositoryInterface $teamRepository,
+        private RobotValidatorService $robotValidatorService
     ) {}
 
     /**
@@ -37,52 +39,23 @@ final class RobotService
      */
     public function getRobotDanceOffs(ApiFiltersDTO $apiFiltersDTO): array
     {
-        $danceOffs = $this->robotDanceOffRepository->findAll($apiFiltersDTO);
-
-        return array_map(function (RobotDanceOff $danceOff) {
-            return new RobotDanceOffResponse(
-                $danceOff->getId(),
-                $this->mapTeamDetails($danceOff->getTeamOne()),
-                $this->mapTeamDetails($danceOff->getTeamTwo()),
-                $danceOff->getWinner() ? $this->mapTeamDetails($danceOff->getWinner()) : null
-            );
-        }, $danceOffs);
-    }
-
-    /**
-     * Map team details to a structured array.
-     */
-    private function mapTeamDetails(Team $team): array
-    {
-        return [
-            'id' => $team->getId(),
-            'name' => $team->getName(),
-            'robots' => $team->getRobots()->map(fn($robot) => [
-                'id' => $robot->getId(),
-                'name' => $robot->getName(),
-                'powermove' => $robot->getPowermove(),
-                'experience' => $robot->getExperience(),
-                'outOfOrder' => $robot->isOutOfOrder(),
-                'avatar' => $robot->getAvatar()
-            ])->toArray()
-        ];
+        return $this->robotDanceOffRepository->findAll($apiFiltersDTO);
     }
 
     /**
      * Find a robot by ID.
      *
-     * @param int $id
-     * @return Robot
+     * @param int $id The ID of the robot to find.
+     * 
+     * @return Robot The found Robot entity.
+     * 
+     * @throws RobotServiceException If the robot with the given ID does not exist.
      */
     public function getRobot(int $id): Robot
     {
-        $entity = $this->robotRepository->findOneBy($id);
+        $this->robotValidatorService->validateRobotIds([$id]);
 
-        if ($entity === null) {
-            throw new RobotServiceException("There are no robots with id: $id", 404);
-        }
-
-        return $entity;
+        return $this->robotRepository->findOneBy($id);
     }
 
     /**
@@ -90,11 +63,6 @@ final class RobotService
      */
     public function setRobotDanceOff(RobotDanceOffRequest $robotDanceOffRequest): void
     {
-        // Validation
-        if (count($robotDanceOffRequest->teamA) !== 5 || count($robotDanceOffRequest->teamB) !== 5) {
-            throw new RobotServiceException("Each team must have exactly 5 robots.", 400);
-        }
-
         // Create the teams and associate robots
         $teamOne = new Team('Team One');
         $teamTwo = new Team('Team Two');
@@ -118,9 +86,9 @@ final class RobotService
         $danceOff->setTeamOne($teamOne);
         $danceOff->setTeamTwo($teamTwo);
 
-        // Calculate and set the winner
-        $winner = $this->calculateWinningTeam($teamOne, $teamTwo);
-        $danceOff->setWinner($winner);
+        // Calculate and set the winning team
+        $winningTeam = $this->calculateWinningTeam($teamOne, $teamTwo);
+        $danceOff->setWinningTeam($winningTeam);
 
         // Persist the DanceOff
         $this->robotDanceOffRepository->save($danceOff);

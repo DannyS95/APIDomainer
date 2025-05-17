@@ -9,13 +9,15 @@ class RobotDanceOffNormalizer implements NormalizerInterface
 {
     public function normalize($object, ?string $format = null, array $context = []): array
     {
-        return [
+        $response = [
             'id' => $object->getId(),
             'createdAt' => $object->getCreatedAt()->format('Y-m-d H:i:s'),
+            'winningTeam' => $object->getWinningTeam()?->getId(),
             'teamOne' => $object->getTeamOne(),
             'teamTwo' => $object->getTeamTwo(),
-            'winner' => $object->getWinner()?->getId()
         ];
+
+        return $response;
     }
 
     public function supportsNormalization($data, ?string $format = null): bool

@@ -40,7 +40,7 @@ final class Version20240122220625 extends AbstractMigration
             id INT AUTO_INCREMENT PRIMARY KEY,
             team_one_id INT NOT NULL,
             team_two_id INT NOT NULL,
-            winner_id INT DEFAULT NULL,
+            winning_team_id INT DEFAULT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )');
 
@@ -63,7 +63,7 @@ final class Version20240122220625 extends AbstractMigration
 
         $this->addSql('CREATE INDEX idx_team_one ON robot_dance_offs (team_one_id);');
         $this->addSql('CREATE INDEX idx_team_two ON robot_dance_offs (team_two_id);');
-        $this->addSql('CREATE INDEX idx_winner ON robot_dance_offs (winner_id);');
+        $this->addSql('CREATE INDEX idx_winning_team ON robot_dance_offs (winning_team_id);');
     }
 
     public function down(Schema $schema): void

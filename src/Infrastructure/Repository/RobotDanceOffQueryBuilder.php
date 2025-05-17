@@ -17,7 +17,7 @@ final class RobotDanceOffQueryBuilder
             ->from(RobotDanceOff::class, 'rdo')
             ->leftJoin('rdo.teamOne', 't1')
             ->leftJoin('rdo.teamTwo', 't2')
-            ->leftJoin('rdo.winner', 'w');
+            ->leftJoin('rdo.winningTeam', 'w');
     }
 
     public function whereClauses(array $filters, array $operations): self

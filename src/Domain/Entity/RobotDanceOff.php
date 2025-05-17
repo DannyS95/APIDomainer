@@ -22,8 +22,8 @@ class RobotDanceOff
     private ?Team $teamTwo = null;
 
     #[ORM\ManyToOne(targetEntity: Team::class)]
-    #[ORM\JoinColumn(name: 'winner_id', referencedColumnName: 'id', nullable: true)]
-    private ?Team $winner = null;
+    #[ORM\JoinColumn(name: 'winning_team_id', referencedColumnName: 'id', nullable: true)]
+    private ?Team $winningTeam = null;
 
     #[ORM\Column(type: 'datetime')]
     private \DateTime $createdAt;
@@ -60,14 +60,14 @@ class RobotDanceOff
         return $this;
     }
 
-    public function getWinner(): ?Team
+    public function getWinningTeam(): ?Team
     {
-        return $this->winner;
+        return $this->winningTeam;
     }
 
-    public function setWinner(?Team $winner): self
+    public function setWinningTeam(?Team $winningTeam): self
     {
-        $this->winner = $winner;
+        $this->winningTeam = $winningTeam;
         return $this;
     }
 
