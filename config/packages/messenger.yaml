@@ -12,10 +12,7 @@ framework:
 
         buses:
             command.bus: ~
-            query.bus:
-                default_middleware: allow_no_handlers
-                middleware:
-                    - messenger.middleware.handle_message
+            query.bus: ~
 
         routing:
             # Route your messages to the transports

@@ -9,7 +9,7 @@ use App\Domain\Service\RobotValidatorService;
 use RobotServiceException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(bus: 'query.bus')]
+#[AsMessageHandler(bus: 'command.bus')]
 final class GetRobotQueryHandler
 {
     public function __construct(

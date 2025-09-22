@@ -14,6 +14,27 @@ A Domain-Driven API Platform Framework with ADR structure.
 
 This project follows a clean **DDD (Domain-Driven Design)** and **ADR (Action-Domain-Responder)** architecture with clear separation of concerns.
 
+### **🏷️ CQRS Principles**
+**Command Query Responsibility Segregation (CQRS)** is implemented to separate the responsibilities of reading and writing data. This ensures a clean and maintainable architecture.
+
+- **Commands**:
+  - Handled by the `command.bus` using Symfony Messenger.
+  - Focused on write operations, such as creating or updating entities.
+  - Example: Creating a `DanceOff` or updating a `Robot`.
+
+- **Queries**:
+  - Handled by the `query.bus` using Symfony Messenger.
+  - Focused on read operations, such as fetching data or retrieving specific entities.
+  - Example: Fetching a list of `RobotDanceOffs` or retrieving a `Robot` by ID.
+
+- **Separation of Models**:
+  - Write models are used for commands to handle business logic and persistence.
+  - Read models are optimized for queries to provide efficient data retrieval.
+
+- **Flow Example**:
+  - A `POST` request to create a `DanceOff` triggers a command handled by the `command.bus`.
+  - A `GET` request to fetch `DanceOff` details triggers a query handled by the `query.bus`.
+
 ---
 
 ### **🏷️ Domain Layer**
@@ -142,25 +163,13 @@ When a `POST` request is made to:
 
 ---
 
-## 🚀 Future Roadmap:
-1️⃣ **Phase 1 → Command Bus Mastery**  
-   - Focus on clean write operations using Symfony Messenger and API Platform.
-
-2️⃣ **Phase 2 → Read Handlers Introduction**  
-   - Introduce `Query` objects for read operations.
-   - Experiment with Symfony Messenger for synchronous queries.
-
-3️⃣ **Phase 3 → Full CQRS API**  
-   - Separate Read and Write models entirely.
-   - Implement optimized read handlers with dedicated query objects.
-
-
 ## ⚡️ Quick Start
 To start the application, simply run:
 
 ```bash
 docker compose up -d
 make install
+````
 
-🌐 http://localhost:8080/api
+🌐 [API endpoint](http://localhost:8080/api)
 
