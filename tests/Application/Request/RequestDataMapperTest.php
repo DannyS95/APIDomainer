@@ -78,4 +78,32 @@ final class RequestDataMapperTest extends TestCase
         self::assertEquals(['id' => '0'], $requestDataMapper->getFilters());
         self::assertEquals(['id' => 'eq'], $requestDataMapper->getOperations());
     }
+
+    public function testItRefreshesParametersForSubsequentRequests(): void
+    {
+        $requestStack = new RequestStack();
+
+        $firstRequest = Request::create('/robots', 'GET');
+        $requestStack->push($firstRequest);
+
+        $requestDataMapper = new RequestDataMapper($requestStack);
+
+        self::assertSame([], $requestDataMapper->getFilters());
+        self::assertSame([], $requestDataMapper->getOperations());
+
+        $requestStack->pop();
+
+        $secondRequest = Request::create(
+            '/robots',
+            'GET',
+            [
+                'id' => ['eq' => '2'],
+            ]
+        );
+
+        $requestStack->push($secondRequest);
+
+        self::assertEquals(['id' => '2'], $requestDataMapper->getFilters());
+        self::assertEquals(['id' => 'eq'], $requestDataMapper->getOperations());
+    }
 }

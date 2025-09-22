@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 final class RequestDataMapper
 {
-    private ParameterBag $parameterBag;
     private const FILTER_KEY = 'filter';
     private const SORT_KEY = 'orderBy';
     private const DEFAULT_OPERATION = 'eq';
@@ -20,12 +19,6 @@ final class RequestDataMapper
 
     public function __construct(private RequestStack $requestStack)
     {
-        $request = $this->requestStack->getCurrentRequest();
-        if ($request) {
-            $this->parameterBag = new ParameterBag(parameters: $request->query->all());
-        } else {
-            throw new \RuntimeException('Request could not be fetched from the RequestStack.');
-        }
     }
 
     public function getFilters(): array
@@ -76,14 +69,16 @@ final class RequestDataMapper
 
     public function getSorts(): array
     {
-        return $this->parameterBag->get(self::SORT_KEY, []);
+        return $this->getParameterBag()->get(self::SORT_KEY, []);
     }
 
     public function getPagination(): array
     {
+        $parameterBag = $this->getParameterBag();
+
         return [
-            'page' => (int) $this->parameterBag->get('page', 1),
-            'itemsPerPage' => (int) $this->parameterBag->get('itemsPerPage', 10),
+            'page' => (int) $parameterBag->get('page', 1),
+            'itemsPerPage' => (int) $parameterBag->get('itemsPerPage', 10),
         ];
     }
 
@@ -92,13 +87,14 @@ final class RequestDataMapper
      */
     private function collectRawFilters(): array
     {
-        $rawFilters = $this->parameterBag->get(self::FILTER_KEY, []);
+        $parameterBag = $this->getParameterBag();
+        $rawFilters = $parameterBag->get(self::FILTER_KEY, []);
 
         if (!is_array($rawFilters)) {
             $rawFilters = [];
         }
 
-        foreach ($this->parameterBag->all() as $key => $value) {
+        foreach ($parameterBag->all() as $key => $value) {
             if (in_array($key, self::IGNORED_QUERY_PARAMETERS, true) || $value === null) {
                 continue;
             }
@@ -107,5 +103,16 @@ final class RequestDataMapper
         }
 
         return $rawFilters;
+    }
+
+    private function getParameterBag(): ParameterBag
+    {
+        $request = $this->requestStack->getCurrentRequest();
+
+        if ($request === null) {
+            throw new \RuntimeException('Request could not be fetched from the RequestStack.');
+        }
+
+        return new ParameterBag(parameters: $request->query->all());
     }
 }
