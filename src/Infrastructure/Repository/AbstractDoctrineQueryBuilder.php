@@ -67,6 +67,9 @@ abstract class AbstractDoctrineQueryBuilder
         return $this;
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     protected function fetchArrayResult(): array
     {
         $qb = $this->getQueryBuilder();
