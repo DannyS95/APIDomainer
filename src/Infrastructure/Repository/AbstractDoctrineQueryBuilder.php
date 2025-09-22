@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Repository;
 
-use App\Infrastructure\DoctrineComparisonEnum;
+use App\Infrastructure\Repository\DoctrineComparisonEnum;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -71,6 +71,18 @@ abstract class AbstractDoctrineQueryBuilder
     {
         $qb = $this->getQueryBuilder();
         $results = $qb->getQuery()->getArrayResult();
+        $this->clearQueryBuilder();
+
+        return $results;
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    protected function fetchResult(): array
+    {
+        $qb = $this->getQueryBuilder();
+        $results = $qb->getQuery()->getResult();
         $this->clearQueryBuilder();
 
         return $results;

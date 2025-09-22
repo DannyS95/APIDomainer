@@ -7,6 +7,9 @@ use App\Application\DTO\ApiFiltersDTO;
 
 interface RobotDanceOffRepositoryInterface
 {
+    /**
+     * @return array<int, RobotDanceOff>
+     */
     public function findAll(ApiFiltersDTO $apiFiltersDTO): array;
 
     public function findOneBy(int $id): ?RobotDanceOff;

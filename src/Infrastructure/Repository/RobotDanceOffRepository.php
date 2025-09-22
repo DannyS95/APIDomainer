@@ -16,6 +16,8 @@ final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
 
     /**
      * Fetch all dance-offs with filters and sorting.
+     *
+     * @return array<int, RobotDanceOff>
      */
     public function findAll(ApiFiltersDTO $apiFiltersDTO): array
     {
@@ -31,7 +33,7 @@ final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
                 $apiFiltersDTO->getPage(),
                 $apiFiltersDTO->getItemsPerPage()
             )
-            ->fetchArray();
+            ->fetch();
     }
 
     /**
