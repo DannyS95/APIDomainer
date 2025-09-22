@@ -5,6 +5,7 @@ namespace App\Infrastructure\Repository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use App\Domain\Entity\RobotDanceOff;
+use App\Infrastructure\Repository\DoctrineComparisonEnum;
 
 final class RobotDanceOffQueryBuilder
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure;
+namespace App\Infrastructure\Repository;
 
 use Doctrine\Common\Collections\Expr\Comparison;
 
