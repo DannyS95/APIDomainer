@@ -17,7 +17,7 @@ use Symfony\Component\Messenger\Stamp\HandledStamp;
 final class RobotDanceOffsCollectionAction
 {
     public function __construct(
-        #[Autowire(service: 'command.bus')]
+        #[Autowire(service: 'query.bus')]
         private MessageBusInterface $queryBus,
         private RequestDataMapper $requestDataMapper,
         private RobotDanceOffResponder $robotDanceOffResponder

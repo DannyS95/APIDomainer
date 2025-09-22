@@ -18,7 +18,9 @@ final class RobotRepository implements RobotRepositoryInterface
      */
     public function findAll(ApiFiltersDTO $apiFiltersDTO): array
     {
-        return $this->robotQueryBuilder
+        $queryBuilder = $this->robotQueryBuilder->create();
+
+        return $queryBuilder
             ->whereClauses(
                 $apiFiltersDTO->getFilters(),
                 $apiFiltersDTO->getOperations()
@@ -45,7 +47,9 @@ final class RobotRepository implements RobotRepositoryInterface
      */
     public function findOneBy(int $id): ?Robot
     {
-        return $this->robotQueryBuilder
+        $queryBuilder = $this->robotQueryBuilder->create();
+
+        return $queryBuilder
             ->whereId($id)
             ->fetchOne();
     }

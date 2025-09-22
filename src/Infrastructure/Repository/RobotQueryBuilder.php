@@ -14,13 +14,38 @@ final class RobotQueryBuilder
     private const ENTITY = Robot::class;
     private const ALIAS = 'r';
 
-    private QueryBuilder $qb;
+    private ?QueryBuilder $qb = null;
 
     public function __construct(private EntityManagerInterface $entityManager)
     {
-        $this->qb = $entityManager->createQueryBuilder()
+    }
+
+    public function create(): self
+    {
+        return new self($this->entityManager);
+    }
+
+    private function newQueryBuilder(): QueryBuilder
+    {
+        return $this->entityManager->createQueryBuilder()
             ->select(self::ALIAS)
             ->from(self::ENTITY, self::ALIAS);
+    }
+
+    private function resetQueryBuilder(): QueryBuilder
+    {
+        $this->qb = $this->newQueryBuilder();
+
+        return $this->qb;
+    }
+
+    private function getInitializedQueryBuilder(): QueryBuilder
+    {
+        if ($this->qb === null) {
+            throw new \LogicException('Query builder must be initialised before building the query.');
+        }
+
+        return $this->qb;
     }
 
     /**
@@ -28,8 +53,10 @@ final class RobotQueryBuilder
      */
     public function whereId(int $id): self
     {
-        $this->qb->andWhere(self::ALIAS . '.id = :id')
-                 ->setParameter('id', $id);
+        $qb = $this->resetQueryBuilder();
+
+        $qb->andWhere(self::ALIAS . '.id = :id')
+           ->setParameter('id', $id);
 
         return $this;
     }
@@ -39,8 +66,18 @@ final class RobotQueryBuilder
      */
     public function whereClauses(array $filters, array $operations): self
     {
-        $this->applyFilters($this->qb, $filters, $operations, self::ALIAS);
+        $qb = $this->resetQueryBuilder();
 
+        foreach ($filters as $filter => $value) {
+            $operation = $operations[$filter] ?? DoctrineComparisonEnum::eq->value;
+
+            if (!DoctrineComparisonEnum::tryFrom($operation)) {
+                throw new \InvalidArgumentException("Invalid operation: $operation");
+            }
+
+            $qb->andWhere(self::ALIAS . ".$filter $operation :$filter")
+               ->setParameter($filter, $value);
+        }
         return $this;
     }
 
@@ -49,8 +86,10 @@ final class RobotQueryBuilder
      */
     public function addSorts(array $sorts): self
     {
+        $qb = $this->getInitializedQueryBuilder();
+
         foreach ($sorts as $field => $order) {
-            $this->qb->addOrderBy(self::ALIAS . ".$field", $order);
+            $qb->addOrderBy(self::ALIAS . ".$field", $order);
         }
         return $this;
     }
@@ -60,8 +99,10 @@ final class RobotQueryBuilder
      */
     public function paginate(int $page, int $itemsPerPage): self
     {
-        $this->qb->setFirstResult(($page - 1) * $itemsPerPage)
-                 ->setMaxResults($itemsPerPage);
+        $qb = $this->getInitializedQueryBuilder();
+
+        $qb->setFirstResult(($page - 1) * $itemsPerPage)
+           ->setMaxResults($itemsPerPage);
         return $this;
     }
 
@@ -70,7 +111,11 @@ final class RobotQueryBuilder
      */
     public function fetchArray(): array
     {
-        return $this->qb->getQuery()->getArrayResult();
+        $qb = $this->getInitializedQueryBuilder();
+        $results = $qb->getQuery()->getArrayResult();
+        $this->qb = null;
+
+        return $results;
     }
 
     /**
@@ -78,6 +123,10 @@ final class RobotQueryBuilder
      */
     public function fetchOne(): ?Robot
     {
-        return $this->qb->getQuery()->getOneOrNullResult();
+        $qb = $this->getInitializedQueryBuilder();
+        $result = $qb->getQuery()->getOneOrNullResult();
+        $this->qb = null;
+
+        return $result;
     }
 }
