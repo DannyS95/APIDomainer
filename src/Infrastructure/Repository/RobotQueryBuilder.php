@@ -5,10 +5,11 @@ namespace App\Infrastructure\Repository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use App\Domain\Entity\Robot;
-use App\Infrastructure\DoctrineComparisonEnum;
 
 final class RobotQueryBuilder
 {
+    use DoctrineComparisonFilterTrait;
+
     private const ENTITY = Robot::class;
     private const ALIAS = 'r';
 
@@ -37,16 +38,8 @@ final class RobotQueryBuilder
      */
     public function whereClauses(array $filters, array $operations): self
     {
-        foreach ($filters as $filter => $value) {
-            $operation = $operations[$filter] ?? DoctrineComparisonEnum::eq->value;
+        $this->applyFilters($this->qb, $filters, $operations, self::ALIAS);
 
-            if (!DoctrineComparisonEnum::tryFrom($operation)) {
-                throw new \InvalidArgumentException("Invalid operation: $operation");
-            }
-
-            $this->qb->andWhere(self::ALIAS . ".$filter $operation :$filter")
-                     ->setParameter($filter, $value);
-        }
         return $this;
     }
 

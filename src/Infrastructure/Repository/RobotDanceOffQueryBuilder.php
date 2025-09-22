@@ -5,10 +5,11 @@ namespace App\Infrastructure\Repository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use App\Domain\Entity\RobotDanceOff;
-use App\Infrastructure\DoctrineComparisonEnum;
 
 final class RobotDanceOffQueryBuilder
 {
+    use DoctrineComparisonFilterTrait;
+
     private const ENTITY = RobotDanceOff::class;
     private const ALIAS = 'rdo';
     private const TEAM_ONE_ALIAS = 'teamOne';
@@ -29,17 +30,8 @@ final class RobotDanceOffQueryBuilder
 
     public function whereClauses(array $filters, array $operations): self
     {
-        foreach ($filters as $filter => $value) {
-            $operation = $operations[$filter] ?? DoctrineComparisonEnum::eq->value;
+        $this->applyFilters($this->qb, $filters, $operations, self::ALIAS);
 
-            if (!DoctrineComparisonEnum::tryFrom($operation)) {
-                throw new \InvalidArgumentException("Invalid operation: $operation");
-            }
-
-            // ✅ Self-references for alias
-            $this->qb->andWhere(self::ALIAS . ".$filter $operation :$filter")
-                     ->setParameter($filter, $value);
-        }
         return $this;
     }
 
