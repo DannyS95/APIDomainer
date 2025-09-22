@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Repository;
 
-use App\Infrastructure\DoctrineComparisonEnum;
+use App\Infrastructure\Repository\DoctrineComparisonEnum;
 use Doctrine\ORM\QueryBuilder;
 use InvalidArgumentException;
 use ValueError;

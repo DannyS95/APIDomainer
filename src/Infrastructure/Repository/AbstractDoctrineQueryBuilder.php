@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Repository;
 
-use App\Infrastructure\DoctrineComparisonEnum;
+use App\Infrastructure\Repository\DoctrineComparisonEnum;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
