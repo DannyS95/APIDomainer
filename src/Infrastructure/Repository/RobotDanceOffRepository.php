@@ -19,7 +19,9 @@ final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
      */
     public function findAll(ApiFiltersDTO $apiFiltersDTO): array
     {
-        return $this->robotDanceOffQueryBuilder
+        $queryBuilder = $this->robotDanceOffQueryBuilder->create();
+
+        return $queryBuilder
             ->whereClauses(
                 $apiFiltersDTO->getFilters(),
                 $apiFiltersDTO->getOperations()
