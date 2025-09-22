@@ -5,11 +5,12 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Entity\Team;
 use App\Domain\Repository\TeamRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\QueryBuilder;
 use App\Application\DTO\ApiFiltersDTO;
 
 class TeamRepository implements TeamRepositoryInterface
 {
+    use DoctrineComparisonFilterTrait;
+
     public function __construct(
         private EntityManagerInterface $entityManager
     ) {}
@@ -31,11 +32,12 @@ class TeamRepository implements TeamRepositoryInterface
             ->select('t')
             ->from(Team::class, 't');
 
-        foreach ($apiFiltersDTO->getFilters() as $filter => $value) {
-            $operator = $apiFiltersDTO->getOperations()[$filter] ?? '=';
-            $qb->andWhere("t.$filter $operator :$filter")
-               ->setParameter($filter, $value);
-        }
+        $this->applyFilters(
+            $qb,
+            $apiFiltersDTO->getFilters(),
+            $apiFiltersDTO->getOperations(),
+            't'
+        );
 
         foreach ($apiFiltersDTO->getSorts() as $field => $order) {
             $qb->addOrderBy("t.$field", $order);
