@@ -2,17 +2,14 @@
 
 namespace App\Domain\Service;
 
-use App\Application\Transformer\RobotDanceOffTransformer;
 use RobotServiceException;
 use App\Domain\Entity\Robot;
 use App\Domain\Entity\RobotDanceOff;
 use App\Domain\Entity\Team;
-use App\Application\DTO\ApiFiltersDTO;
 use App\Domain\Repository\RobotRepositoryInterface;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
 use App\Domain\Repository\TeamRepositoryInterface;
 use App\Infrastructure\Request\RobotDanceOffRequest;
-use App\Infrastructure\Response\RobotDanceOffResponse;
 
 final class RobotService
 {
@@ -24,57 +21,27 @@ final class RobotService
     ) {}
 
     /**
-     * Find all Robot Resources against given API Filters.
-     *
-     * @param ApiFiltersDTO $apiFiltersDTO
-     * @return array|null
-     */
-    public function getRobots(ApiFiltersDTO $apiFiltersDTO): array
-    {
-        return $this->robotRepository->findAll($apiFiltersDTO);
-    }
-
-    /**
-     * Find all Robot DanceOffs with their full team details.
-     */
-    public function getRobotDanceOffs(ApiFiltersDTO $apiFiltersDTO): array
-    {
-        return $this->robotDanceOffRepository->findAll($apiFiltersDTO);
-    }
-
-    /**
-     * Find a robot by ID.
-     *
-     * @param int $id The ID of the robot to find.
-     * 
-     * @return Robot The found Robot entity.
-     * 
-     * @throws RobotServiceException If the robot with the given ID does not exist.
-     */
-    public function getRobot(int $id): Robot
-    {
-        $this->robotValidatorService->validateRobotIds([$id]);
-
-        return $this->robotRepository->findOneBy($id);
-    }
-
-    /**
      * Set a dance off between two teams of robots.
      */
     public function setRobotDanceOff(RobotDanceOffRequest $robotDanceOffRequest): void
     {
+        $robotIds = [
+            ...$robotDanceOffRequest->teamA,
+            ...$robotDanceOffRequest->teamB,
+        ];
+
+        $this->robotValidatorService->validateRobotIds($robotIds);
+
         // Create the teams and associate robots
         $teamOne = new Team('Team One');
         $teamTwo = new Team('Team Two');
 
         foreach ($robotDanceOffRequest->teamA as $robotId) {
-            $robot = $this->getRobot($robotId);
-            $teamOne->addRobot($robot);
+            $teamOne->addRobot($this->loadRobot($robotId));
         }
 
         foreach ($robotDanceOffRequest->teamB as $robotId) {
-            $robot = $this->getRobot($robotId);
-            $teamTwo->addRobot($robot);
+            $teamTwo->addRobot($this->loadRobot($robotId));
         }
 
         // Persist teams
@@ -120,5 +87,16 @@ final class RobotService
         }
 
         return null;
+    }
+
+    private function loadRobot(int $id): Robot
+    {
+        $robot = $this->robotRepository->findOneBy($id);
+
+        if ($robot === null) {
+            throw new RobotServiceException("Robot ID $id does not exist.");
+        }
+
+        return $robot;
     }
 }

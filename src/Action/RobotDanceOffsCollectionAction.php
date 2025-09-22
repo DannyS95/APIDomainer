@@ -3,8 +3,9 @@
 namespace App\Action;
 
 use App\Application\DTO\ApiFiltersDTO;
+use App\Application\Query\GetRobotDanceOffsQuery;
+use App\Application\Query\Handler\GetRobotDanceOffsQueryHandler;
 use App\Application\Request\RequestDataMapper;
-use App\Domain\Service\RobotService;
 use App\Responder\RobotDanceOffResponder;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -13,7 +14,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 final class RobotDanceOffsCollectionAction
 {
     public function __construct(
-        private RobotService $robotService,
+        private GetRobotDanceOffsQueryHandler $getRobotDanceOffsQueryHandler,
         private RequestDataMapper $requestDataMapper,
         private RobotDanceOffResponder $robotDanceOffResponder
     ) {
@@ -34,7 +35,8 @@ final class RobotDanceOffsCollectionAction
             itemsPerPage: $pagination['itemsPerPage']
         );
 
-        $models = $this->robotService->getRobotDanceOffs($apiFiltersDTO);
+        $query = new GetRobotDanceOffsQuery($apiFiltersDTO);
+        $models = $this->getRobotDanceOffsQueryHandler->__invoke($query);
 
         return $this->robotDanceOffResponder->respond($models);
     }
