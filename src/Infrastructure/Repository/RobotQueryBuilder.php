@@ -2,12 +2,12 @@
 
 namespace App\Infrastructure\Repository;
 
-use Doctrine\ORM\EntityManagerInterface;
+use App\Domain\Entity\Robot;
 use Doctrine\ORM\QueryBuilder;
 use App\Domain\Entity\Robot;
 use App\Infrastructure\Repository\DoctrineComparisonEnum;
 
-final class RobotQueryBuilder
+final class RobotQueryBuilder extends AbstractDoctrineQueryBuilder
 {
     use DoctrineComparisonFilterTrait;
 
@@ -61,24 +61,20 @@ final class RobotQueryBuilder
         return $this;
     }
 
-    /**
-     * Add multiple WHERE clauses based on filters and operations.
-     */
-    public function whereClauses(array $filters, array $operations): self
+    public function fetchArray(): array
     {
-        $qb = $this->resetQueryBuilder();
+        return $this->fetchArrayResult();
+    }
 
-        foreach ($filters as $filter => $value) {
-            $operation = $operations[$filter] ?? DoctrineComparisonEnum::eq->value;
+    public function fetchOne(): ?Robot
+    {
+        $result = $this->fetchOneResult();
 
-            if (!DoctrineComparisonEnum::tryFrom($operation)) {
-                throw new \InvalidArgumentException("Invalid operation: $operation");
-            }
-
-            $qb->andWhere(self::ALIAS . ".$filter $operation :$filter")
-               ->setParameter($filter, $value);
+        if ($result !== null && !$result instanceof Robot) {
+            throw new \LogicException(sprintf('Expected instance of %s, got %s', Robot::class, get_debug_type($result)));
         }
-        return $this;
+
+        return $result;
     }
 
     /**
@@ -118,10 +114,7 @@ final class RobotQueryBuilder
         return $results;
     }
 
-    /**
-     * Execute the query and return a single result.
-     */
-    public function fetchOne(): ?Robot
+    protected function alias(): string
     {
         $qb = $this->getInitializedQueryBuilder();
         $result = $qb->getQuery()->getOneOrNullResult();

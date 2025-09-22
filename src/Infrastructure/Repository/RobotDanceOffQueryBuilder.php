@@ -2,12 +2,11 @@
 
 namespace App\Infrastructure\Repository;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\QueryBuilder;
 use App\Domain\Entity\RobotDanceOff;
 use App\Infrastructure\Repository\DoctrineComparisonEnum;
+use Doctrine\ORM\QueryBuilder;
 
-final class RobotDanceOffQueryBuilder
+final class RobotDanceOffQueryBuilder extends AbstractDoctrineQueryBuilder
 {
     use DoctrineComparisonFilterTrait;
 
