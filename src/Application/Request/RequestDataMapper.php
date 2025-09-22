@@ -10,6 +10,13 @@ final class RequestDataMapper
     private ParameterBag $parameterBag;
     private const FILTER_KEY = 'filter';
     private const SORT_KEY = 'orderBy';
+    private const DEFAULT_OPERATION = 'eq';
+    private const IGNORED_QUERY_PARAMETERS = [
+        self::FILTER_KEY,
+        self::SORT_KEY,
+        'page',
+        'itemsPerPage',
+    ];
 
     public function __construct(private RequestStack $requestStack)
     {
@@ -23,17 +30,21 @@ final class RequestDataMapper
 
     public function getFilters(): array
     {
-        $rawFilters = $this->parameterBag->get(self::FILTER_KEY, []);
         $parsedFilters = [];
 
-        foreach ($rawFilters as $field => $condition) {
+        foreach ($this->collectRawFilters() as $field => $condition) {
             if (is_array($condition)) {
-                $operation = key($condition);
-                $value = $condition[$operation];
+                foreach ($condition as $operation => $value) {
+                    if ($operation === null || $operation === '' || $value === null || $value === '') {
+                        continue;
+                    }
 
-                if (!empty($value) && !empty($operation)) {
                     $parsedFilters[$field] = $value;
+
+                    break;
                 }
+            } elseif ($condition !== null && $condition !== '') {
+                $parsedFilters[$field] = $condition;
             }
         }
 
@@ -42,15 +53,21 @@ final class RequestDataMapper
 
     public function getOperations(): array
     {
-        $rawFilters = $this->parameterBag->get(self::FILTER_KEY, []);
         $parsedOperations = [];
 
-        foreach ($rawFilters as $field => $condition) {
+        foreach ($this->collectRawFilters() as $field => $condition) {
             if (is_array($condition)) {
-                $operation = key($condition);
-                if (!empty($operation)) {
+                foreach ($condition as $operation => $value) {
+                    if ($operation === null || $operation === '' || $value === null || $value === '') {
+                        continue;
+                    }
+
                     $parsedOperations[$field] = $operation;
+
+                    break;
                 }
+            } elseif ($condition !== null && $condition !== '') {
+                $parsedOperations[$field] = self::DEFAULT_OPERATION;
             }
         }
 
@@ -68,5 +85,27 @@ final class RequestDataMapper
             'page' => (int) $this->parameterBag->get('page', 1),
             'itemsPerPage' => (int) $this->parameterBag->get('itemsPerPage', 10),
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function collectRawFilters(): array
+    {
+        $rawFilters = $this->parameterBag->get(self::FILTER_KEY, []);
+
+        if (!is_array($rawFilters)) {
+            $rawFilters = [];
+        }
+
+        foreach ($this->parameterBag->all() as $key => $value) {
+            if (in_array($key, self::IGNORED_QUERY_PARAMETERS, true) || $value === null) {
+                continue;
+            }
+
+            $rawFilters[$key] = $value;
+        }
+
+        return $rawFilters;
     }
 }
