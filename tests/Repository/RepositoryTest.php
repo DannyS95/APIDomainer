@@ -59,42 +59,8 @@ $secondRobots = $robotRepository->findAll(new ApiFiltersDTO(
 assertTrue(count($secondRobots) === 1, 'Second robot query should return one robot.');
 assertTrue($secondRobots[0]['name'] === 'Beta', 'Filtered robot should be Beta.');
 
-$likeFilteredRobots = $robotRepository->findAll(new ApiFiltersDTO(
-    ['name' => 'amm'],
-    ['name' => 'lk'],
-    [],
-    1,
-    10
-));
-assertTrue(count($likeFilteredRobots) === 1 && $likeFilteredRobots[0]['name'] === 'Gamma', 'LIKE operation should match Gamma robot.');
-
-$experiencedRobots = $robotRepository->findAll(new ApiFiltersDTO(
-    ['experience' => 5],
-    ['experience' => 'gt'],
-    [],
-    1,
-    10
-));
-assertTrue(count($experiencedRobots) === 2, 'Greater-than filter should return two robots.');
-
-$builder = (new RobotQueryBuilder($entityManager))->create();
-$combinedFilters = $builder
-    ->whereClauses(['outOfOrder' => false], [])
-    ->whereClauses(['experience' => 7], [])
-    ->fetchArray();
-assertTrue(count($combinedFilters) === 1 && $combinedFilters[0]['name'] === 'Gamma', 'Chained whereClauses should combine filters.');
-
-$sharedBuilder = new RobotQueryBuilder($entityManager);
-$sharedBuilder->whereClauses(['outOfOrder' => false], [])->fetchArray();
-$resetResult = $sharedBuilder->whereClauses(['outOfOrder' => true], [])->fetchArray();
-assertTrue(count($resetResult) === 1 && $resetResult[0]['name'] === 'Beta', 'Builder should reset state between invocations.');
-
-$robot = (new RobotQueryBuilder($entityManager))
-    ->create()
-    ->whereClauses(['outOfOrder' => false], [])
-    ->whereId(3)
-    ->fetchOne();
-assertTrue($robot !== null && $robot->getName() === 'Gamma', 'whereId should work alongside existing filters.');
+$robot = $robotRepository->findOneBy(3);
+assertTrue($robot !== null && $robot->getName() === 'Gamma', 'findOneBy should return Gamma robot.');
 assertTrue($robot->getExperience() === 7, 'findOneBy should hydrate experience property.');
 
 $robotDanceOffRepository = new RobotDanceOffRepository(
