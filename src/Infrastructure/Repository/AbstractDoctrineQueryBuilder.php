@@ -34,8 +34,9 @@ abstract class AbstractDoctrineQueryBuilder
         foreach ($filters as $field => $value) {
             $operator = $this->resolveOperator($operations[$field] ?? null);
             $parameter = $this->normalizeParameterName($field);
+            [$alias, $fieldName] = $this->resolveAliasAndField($field);
 
-            $qb->andWhere(sprintf('%s.%s %s :%s', $this->alias(), $field, $operator, $parameter))
+            $qb->andWhere(sprintf('%s.%s %s :%s', $alias, $fieldName, $operator, $parameter))
                ->setParameter($parameter, $this->prepareValue($operator, $value));
         }
 
@@ -50,7 +51,8 @@ abstract class AbstractDoctrineQueryBuilder
         $qb = $this->getQueryBuilder();
 
         foreach ($sorts as $field => $direction) {
-            $qb->addOrderBy(sprintf('%s.%s', $this->alias(), $field), $direction);
+            [$alias, $fieldName] = $this->resolveAliasAndField($field);
+            $qb->addOrderBy(sprintf('%s.%s', $alias, $fieldName), $direction);
         }
 
         return $this;
@@ -152,5 +154,21 @@ abstract class AbstractDoctrineQueryBuilder
     private function normalizeParameterName(string $field): string
     {
         return str_replace('.', '_', $field);
+    }
+
+    /**
+     * @return array{0: string, 1: string}
+     */
+    private function resolveAliasAndField(string $field): array
+    {
+        if (str_contains($field, '.')) {
+            $parts = explode('.', $field);
+            $fieldName = array_pop($parts);
+            $alias = array_pop($parts) ?? $this->alias();
+
+            return [$alias, $fieldName];
+        }
+
+        return [$this->alias(), $field];
     }
 }

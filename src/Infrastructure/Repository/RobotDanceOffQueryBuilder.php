@@ -3,100 +3,36 @@
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\RobotDanceOff;
-use App\Infrastructure\Repository\DoctrineComparisonEnum;
 use Doctrine\ORM\QueryBuilder;
 
 final class RobotDanceOffQueryBuilder extends AbstractDoctrineQueryBuilder
-final class RobotDanceOffQueryBuilder extends AbstractDoctrineQueryBuilder
 {
-    use DoctrineComparisonFilterTrait;
-
     private const ENTITY = RobotDanceOff::class;
     private const ALIAS = 'rdo';
     private const TEAM_ONE_ALIAS = 'teamOne';
     private const TEAM_TWO_ALIAS = 'teamTwo';
-    private const WINNER_ALIAS = 'winningTeam';
+    private const WINNING_TEAM_ALIAS = 'winningTeam';
 
-    private ?QueryBuilder $qb = null;
-
-    public function __construct(private EntityManagerInterface $entityManager)
-    {
-    }
-
-    public function create(): self
-    {
-        return new self($this->entityManager);
-    }
-
-    private function newQueryBuilder(): QueryBuilder
+    protected function buildBaseQueryBuilder(): QueryBuilder
     {
         return $this->entityManager->createQueryBuilder()
-            ->select(self::ALIAS, self::TEAM_ONE_ALIAS, self::TEAM_TWO_ALIAS, self::WINNER_ALIAS)
+            ->select(self::ALIAS, self::TEAM_ONE_ALIAS, self::TEAM_TWO_ALIAS, self::WINNING_TEAM_ALIAS)
             ->from(self::ENTITY, self::ALIAS)
-            ->leftJoin(self::ALIAS . '.teamOne', self::TEAM_ONE_ALIAS)
-            ->leftJoin(self::ALIAS . '.teamTwo', self::TEAM_TWO_ALIAS)
-            ->leftJoin(self::ALIAS . '.winningTeam', self::WINNER_ALIAS);
+            ->leftJoin(sprintf('%s.teamOne', self::ALIAS), self::TEAM_ONE_ALIAS)
+            ->leftJoin(sprintf('%s.teamTwo', self::ALIAS), self::TEAM_TWO_ALIAS)
+            ->leftJoin(sprintf('%s.winningTeam', self::ALIAS), self::WINNING_TEAM_ALIAS);
     }
 
-    private function resetQueryBuilder(): QueryBuilder
+    protected function alias(): string
     {
-        $this->qb = $this->newQueryBuilder();
-
-        return $this->qb;
+        return self::ALIAS;
     }
 
-    private function getInitializedQueryBuilder(): QueryBuilder
-    {
-        if ($this->qb === null) {
-            throw new \LogicException('Query builder must be initialised before building the query.');
-        }
-
-        return $this->qb;
-    }
-
-    public function whereClauses(array $filters, array $operations): self
-    {
-        $qb = $this->resetQueryBuilder();
-
-        foreach ($filters as $filter => $value) {
-            $operation = $operations[$filter] ?? DoctrineComparisonEnum::eq->value;
-
-            if (!DoctrineComparisonEnum::tryFrom($operation)) {
-                throw new \InvalidArgumentException("Invalid operation: $operation");
-            }
-
-            $qb->andWhere(self::ALIAS . ".$filter $operation :$filter")
-               ->setParameter($filter, $value);
-        }
-        return $this;
-    }
-
-    public function addSorts(array $sorts): self
-    {
-        $qb = $this->getInitializedQueryBuilder();
-
-        foreach ($sorts as $field => $order) {
-            $qb->addOrderBy(self::ALIAS . ".$field", $order);
-        }
-        return $this;
-    }
-
-    public function paginate(int $page, int $itemsPerPage): self
-    {
-        $qb = $this->getInitializedQueryBuilder();
-
-        $qb->setFirstResult(($page - 1) * $itemsPerPage)
-           ->setMaxResults($itemsPerPage);
-
-        return $this;
-    }
-
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function fetchArray(): array
     {
-        $qb = $this->getInitializedQueryBuilder();
-        $results = $qb->getQuery()->getResult();
-        $this->qb = null;
-
-        return $results;
+        return $this->fetchArrayResult();
     }
 }
