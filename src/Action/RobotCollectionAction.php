@@ -2,18 +2,19 @@
 
 namespace App\Action;
 
-use App\Domain\Service\RobotService;
 use App\Application\DTO\ApiFiltersDTO;
-use Symfony\Component\HttpFoundation\Request;
+use App\Application\Query\GetRobotsQuery;
+use App\Application\Query\Handler\GetRobotsQueryHandler;
 use App\Application\Request\RequestDataMapper;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
 final class RobotCollectionAction
 {
     public function __construct(
-        private RobotService $robotService,
+        private GetRobotsQueryHandler $getRobotsQueryHandler,
         private RequestDataMapper $requestDataMapper,
     ) {
     }
@@ -32,7 +33,8 @@ final class RobotCollectionAction
             itemsPerPage: $request->query->getInt('itemsPerPage', 10)
         );
     
-        $models = $this->robotService->getRobots($apiFiltersDTO);
+        $query = new GetRobotsQuery($apiFiltersDTO);
+        $models = $this->getRobotsQueryHandler->__invoke($query);
 
         return new ArrayCollection($models);
     }
