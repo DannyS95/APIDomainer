@@ -20,3 +20,6 @@ services:
 
     App\Infrastructure\Serializer\RobotDanceOffNormalizer:
         tags: ['serializer.normalizer']
+
+    query.bus:
+        alias: 'messenger.bus.query'

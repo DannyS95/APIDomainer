@@ -4,17 +4,21 @@ namespace App\Action;
 
 use App\Application\DTO\ApiFiltersDTO;
 use App\Application\Query\GetRobotDanceOffsQuery;
-use App\Application\Query\Handler\GetRobotDanceOffsQueryHandler;
 use App\Application\Request\RequestDataMapper;
 use App\Responder\RobotDanceOffResponder;
 use Doctrine\Common\Collections\Collection;
+use RuntimeException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 #[AsController]
 final class RobotDanceOffsCollectionAction
 {
     public function __construct(
-        private GetRobotDanceOffsQueryHandler $getRobotDanceOffsQueryHandler,
+        #[Autowire(service: 'query.bus')]
+        private MessageBusInterface $queryBus,
         private RequestDataMapper $requestDataMapper,
         private RobotDanceOffResponder $robotDanceOffResponder
     ) {
@@ -36,7 +40,14 @@ final class RobotDanceOffsCollectionAction
         );
 
         $query = new GetRobotDanceOffsQuery($apiFiltersDTO);
-        $models = $this->getRobotDanceOffsQueryHandler->__invoke($query);
+        $envelope = $this->queryBus->dispatch($query);
+        $handledStamp = $envelope->last(HandledStamp::class);
+
+        if (!$handledStamp instanceof HandledStamp) {
+            throw new RuntimeException('No handler returned a result for GetRobotDanceOffsQuery.');
+        }
+
+        $models = $handledStamp->getResult();
 
         return $this->robotDanceOffResponder->respond($models);
     }
