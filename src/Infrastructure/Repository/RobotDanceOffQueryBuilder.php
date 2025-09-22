@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\RobotDanceOff;
 use Doctrine\ORM\QueryBuilder;
+use UnexpectedValueException;
 
 final class RobotDanceOffQueryBuilder extends AbstractDoctrineQueryBuilder
 {
@@ -34,5 +35,39 @@ final class RobotDanceOffQueryBuilder extends AbstractDoctrineQueryBuilder
     public function fetchArray(): array
     {
         return $this->fetchArrayResult();
+    }
+
+    /**
+     * @return array<int, RobotDanceOff>
+     */
+    public function fetch(): array
+    {
+        $results = $this->fetchResult();
+
+        return array_map(function (mixed $row): RobotDanceOff {
+            if ($row instanceof RobotDanceOff) {
+                return $row;
+            }
+
+            if (is_array($row)) {
+                $byAlias = $row[self::ALIAS] ?? null;
+                if ($byAlias instanceof RobotDanceOff) {
+                    return $byAlias;
+                }
+
+                $first = $row[0] ?? null;
+                if ($first instanceof RobotDanceOff) {
+                    return $first;
+                }
+
+                foreach ($row as $value) {
+                    if ($value instanceof RobotDanceOff) {
+                        return $value;
+                    }
+                }
+            }
+
+            throw new UnexpectedValueException('Expected RobotDanceOff instance from query result.');
+        }, $results);
     }
 }

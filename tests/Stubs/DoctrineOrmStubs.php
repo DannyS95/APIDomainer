@@ -22,11 +22,21 @@ final class Query
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return array<int, array<string, mixed>|object>
      */
     public function getResult(): array
     {
-        return $this->getArrayResult();
+        return array_map(function (array|object $row): array|object {
+            if (is_object($row)) {
+                return $row;
+            }
+
+            if ($this->entityClass === null || !class_exists($this->entityClass)) {
+                return (object) $row;
+            }
+
+            return $this->hydrateEntity($row);
+        }, $this->results);
     }
 
     public function getOneOrNullResult(): ?object
@@ -134,7 +144,7 @@ final class QueryBuilder
 
     private ?int $maxResults = null;
 
-    /** @var array<int, array<string, mixed>> */
+    /** @var array<int, array<string, mixed>|object> */
     private array $data = [];
 
     /** @param array<class-string, array<int, array<string, mixed>>> $datasets */
@@ -237,10 +247,10 @@ final class QueryBuilder
 
         return array_values(array_filter(
             $dataset,
-            function (array $row): bool {
+            function (array|object $row): bool {
                 foreach ($this->conditions as $condition) {
                     $field = $this->extractField($condition['field']);
-                    $value = $row[$field] ?? null;
+                    $value = $this->extractValue($row, $field);
                     $parameter = $this->parameters[$condition['parameter']] ?? null;
 
                     if (!$this->compare($value, $parameter, $condition['operator'])) {
@@ -265,17 +275,24 @@ final class QueryBuilder
 
         usort(
             $dataset,
-            function (array $left, array $right): int {
+            function (array|object $left, array|object $right): int {
                 foreach ($this->orderBy as $order) {
                     $field = $this->extractField($order['field']);
-                    $leftValue = $left[$field] ?? null;
-                    $rightValue = $right[$field] ?? null;
+                    $leftValue = $this->extractValue($left, $field);
+                    $rightValue = $this->extractValue($right, $field);
 
-                    if ($leftValue === $rightValue) {
+                    if ($leftValue == $rightValue) {
                         continue;
                     }
 
-                    $comparison = $leftValue <=> $rightValue;
+                    $leftComparable = $this->normalizeComparable($leftValue);
+                    $rightComparable = $this->normalizeComparable($rightValue);
+
+                    if ($leftComparable === $rightComparable) {
+                        continue;
+                    }
+
+                    $comparison = $leftComparable <=> $rightComparable;
                     if ($order['direction'] === 'DESC') {
                         $comparison *= -1;
                     }
@@ -290,6 +307,53 @@ final class QueryBuilder
         );
 
         return $dataset;
+    }
+
+    /**
+     * @param array<string, mixed>|object $row
+     */
+    private function extractValue(array|object $row, string $field): mixed
+    {
+        if (is_array($row)) {
+            return $row[$field] ?? null;
+        }
+
+        $getter = 'get' . ucfirst($field);
+        if (method_exists($row, $getter)) {
+            return $row->$getter();
+        }
+
+        $isser = 'is' . ucfirst($field);
+        if (method_exists($row, $isser)) {
+            return $row->$isser();
+        }
+
+        $reflection = new \ReflectionObject($row);
+        if ($reflection->hasProperty($field)) {
+            $property = $reflection->getProperty($field);
+            $property->setAccessible(true);
+
+            return $property->getValue($row);
+        }
+
+        return null;
+    }
+
+    private function normalizeComparable(mixed $value): mixed
+    {
+        if ($value instanceof \DateTimeInterface) {
+            return $value->getTimestamp();
+        }
+
+        if (is_scalar($value) || $value === null) {
+            return $value;
+        }
+
+        if (is_object($value)) {
+            return spl_object_hash($value);
+        }
+
+        return (string) $value;
     }
 
     /**

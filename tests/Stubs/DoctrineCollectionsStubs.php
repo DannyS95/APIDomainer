@@ -11,6 +11,14 @@ interface Collection
     public function add(mixed $element): void;
 
     public function removeElement(mixed $element): void;
+
+    public function map(callable $callback): self;
+
+    public function toArray(): array;
+
+    public function count(): int;
+
+    public function first(): mixed;
 }
 
 final class ArrayCollection implements Collection
@@ -43,5 +51,25 @@ final class ArrayCollection implements Collection
                 static fn (mixed $existing): bool => $existing !== $element
             )
         );
+    }
+
+    public function map(callable $callback): Collection
+    {
+        return new self(array_map($callback, $this->elements));
+    }
+
+    public function toArray(): array
+    {
+        return $this->elements;
+    }
+
+    public function count(): int
+    {
+        return count($this->elements);
+    }
+
+    public function first(): mixed
+    {
+        return $this->elements[0] ?? false;
     }
 }
