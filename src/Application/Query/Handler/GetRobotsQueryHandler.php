@@ -6,7 +6,7 @@ use App\Application\Query\GetRobotsQuery;
 use App\Domain\Repository\RobotRepositoryInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(bus: 'command.bus')]
+#[AsMessageHandler(bus: 'query.bus')]
 final class GetRobotsQueryHandler
 {
     public function __construct(private readonly RobotRepositoryInterface $robotRepository)

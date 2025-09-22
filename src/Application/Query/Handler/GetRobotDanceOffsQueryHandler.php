@@ -6,7 +6,7 @@ use App\Application\Query\GetRobotDanceOffsQuery;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(bus: 'command.bus')]
+#[AsMessageHandler(bus: 'query.bus')]
 final class GetRobotDanceOffsQueryHandler
 {
     public function __construct(private readonly RobotDanceOffRepositoryInterface $robotDanceOffRepository)
