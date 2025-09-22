@@ -9,6 +9,8 @@ use App\Infrastructure\Repository\DoctrineComparisonEnum;
 
 final class RobotDanceOffQueryBuilder
 {
+    use DoctrineComparisonFilterTrait;
+
     private const ENTITY = RobotDanceOff::class;
     private const ALIAS = 'rdo';
     private const TEAM_ONE_ALIAS = 'teamOne';

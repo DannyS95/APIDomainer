@@ -9,6 +9,8 @@ use App\Infrastructure\Repository\DoctrineComparisonEnum;
 
 final class RobotQueryBuilder
 {
+    use DoctrineComparisonFilterTrait;
+
     private const ENTITY = Robot::class;
     private const ALIAS = 'r';
 
