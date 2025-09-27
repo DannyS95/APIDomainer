@@ -2,9 +2,9 @@
 
 namespace App\Infrastructure\Repository;
 
-use App\Application\DTO\ApiFiltersDTO;
 use App\Domain\Entity\RobotDanceOff;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
+use App\Domain\ValueObject\FilterCriteria;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
@@ -19,19 +19,19 @@ final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
      *
      * @return array<int, RobotDanceOff>
      */
-    public function findAll(ApiFiltersDTO $apiFiltersDTO): array
+    public function findAll(FilterCriteria $filterCriteria): array
     {
         $queryBuilder = $this->robotDanceOffQueryBuilder->create();
 
         return $queryBuilder
             ->whereClauses(
-                $apiFiltersDTO->getFilters(),
-                $apiFiltersDTO->getOperations()
+                $filterCriteria->getFilters(),
+                $filterCriteria->getOperations()
             )
-            ->addSorts($apiFiltersDTO->getSorts())
+            ->addSorts($filterCriteria->getSorts())
             ->paginate(
-                $apiFiltersDTO->getPage(),
-                $apiFiltersDTO->getItemsPerPage()
+                $filterCriteria->getPage(),
+                $filterCriteria->getItemsPerPage()
             )
             ->fetch();
     }
@@ -39,7 +39,7 @@ final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
     /**
      * Save a single dance-off.
      */
-    public function save(RobotDanceOff $danceOff): void
+    public function save(RobotDanceOff $danceOff): void # these mthods will repeat
     {
         $this->entityManager->persist($danceOff);
         $this->entityManager->flush();

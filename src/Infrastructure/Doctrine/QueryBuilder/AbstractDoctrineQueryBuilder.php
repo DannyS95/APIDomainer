@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Infrastructure\Repository;
-
-use App\Infrastructure\Repository\DoctrineComparisonEnum;
+namespace App\Infrastructure\Doctrine\QueryBuilder;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 
+#TODO: Improve class's PHPDoc and readability/explicitness
 abstract class AbstractDoctrineQueryBuilder
 {
     private ?QueryBuilder $qb = null;

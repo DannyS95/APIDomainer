@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Infrastructure\Repository;
+namespace App\Infrastructure\Doctrine\Repository;
 
-use App\Infrastructure\Repository\DoctrineComparisonEnum;
+use App\Infrastructure\Doctrine\QueryBuilder\DoctrineComparisonEnum;
 use Doctrine\ORM\QueryBuilder;
 use InvalidArgumentException;
 use ValueError;

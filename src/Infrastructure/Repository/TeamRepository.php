@@ -4,8 +4,9 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\Team;
 use App\Domain\Repository\TeamRepositoryInterface;
+use App\Domain\ValueObject\FilterCriteria;
+use App\Infrastructure\Doctrine\Repository\DoctrineComparisonFilterTrait;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Application\DTO\ApiFiltersDTO;
 
 class TeamRepository implements TeamRepositoryInterface
 {
@@ -26,7 +27,7 @@ class TeamRepository implements TeamRepositoryInterface
         return $this->entityManager->getRepository(Team::class)->find($id);
     }
 
-    public function findAll(ApiFiltersDTO $apiFiltersDTO): array
+    public function findAll(FilterCriteria $filterCriteria): array
     {
         $qb = $this->entityManager->createQueryBuilder()
             ->select('t')
@@ -34,17 +35,17 @@ class TeamRepository implements TeamRepositoryInterface
 
         $this->applyFilters(
             $qb,
-            $apiFiltersDTO->getFilters(),
-            $apiFiltersDTO->getOperations(),
+            $filterCriteria->getFilters(),
+            $filterCriteria->getOperations(),
             't'
         );
 
-        foreach ($apiFiltersDTO->getSorts() as $field => $order) {
+        foreach ($filterCriteria->getSorts() as $field => $order) {
             $qb->addOrderBy("t.$field", $order);
         }
 
-        $qb->setFirstResult(($apiFiltersDTO->getPage() - 1) * $apiFiltersDTO->getItemsPerPage())
-           ->setMaxResults($apiFiltersDTO->getItemsPerPage());
+        $qb->setFirstResult(($filterCriteria->getPage() - 1) * $filterCriteria->getItemsPerPage())
+           ->setMaxResults($filterCriteria->getItemsPerPage());
 
         return $qb->getQuery()->getResult();
     }

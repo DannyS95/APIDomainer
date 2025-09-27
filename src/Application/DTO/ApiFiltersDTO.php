@@ -2,6 +2,8 @@
 
 namespace App\Application\DTO;
 
+use App\Domain\ValueObject\FilterCriteria;
+
 final class ApiFiltersDTO
 {
     public function __construct(
@@ -35,5 +37,16 @@ final class ApiFiltersDTO
     public function getItemsPerPage(): int
     {
         return $this->itemsPerPage;
+    }
+
+    public function toFilterCriteria(): FilterCriteria
+    {
+        return new FilterCriteria(
+            $this->filters,
+            $this->operations,
+            $this->sorts,
+            $this->page,
+            $this->itemsPerPage
+        );
     }
 }

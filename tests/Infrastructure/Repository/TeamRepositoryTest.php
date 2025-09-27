@@ -50,6 +50,6 @@ final class TeamRepositoryTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid operation: INVALID');
 
-        $repository->findAll($apiFilters);
+        $repository->findAll($apiFilters->toFilterCriteria());
     }
 }

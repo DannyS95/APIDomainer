@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Stub;
 
-use App\Infrastructure\Repository\DoctrineRepositoryInterface;
+use App\Infrastructure\Doctrine\Repository\DoctrineRepositoryInterface;
 
 final class FakeDoctrineRepository implements DoctrineRepositoryInterface
 {

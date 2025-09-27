@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\Robot;
+use App\Infrastructure\Doctrine\QueryBuilder\AbstractDoctrineQueryBuilder;
 use Doctrine\ORM\QueryBuilder;
 
 final class RobotQueryBuilder extends AbstractDoctrineQueryBuilder

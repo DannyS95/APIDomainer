@@ -111,22 +111,26 @@ $robotRepository = new RobotRepository(
     new FakeDoctrineRepository()
 );
 
-$firstRobots = $robotRepository->findAll(new ApiFiltersDTO(
-    ['outOfOrder' => false],
-    [],
-    [],
-    1,
-    10
-));
+$firstRobots = $robotRepository->findAll(
+    (new ApiFiltersDTO(
+        ['outOfOrder' => false],
+        [],
+        [],
+        1,
+        10
+    ))->toFilterCriteria()
+);
 assertTrue(count($firstRobots) === 2, 'First robot query should return two robots.');
 
-$secondRobots = $robotRepository->findAll(new ApiFiltersDTO(
-    ['outOfOrder' => true],
-    [],
-    [],
-    1,
-    10
-));
+$secondRobots = $robotRepository->findAll(
+    (new ApiFiltersDTO(
+        ['outOfOrder' => true],
+        [],
+        [],
+        1,
+        10
+    ))->toFilterCriteria()
+);
 assertTrue(count($secondRobots) === 1, 'Second robot query should return one robot.');
 assertTrue($secondRobots[0]['name'] === 'Beta', 'Filtered robot should be Beta.');
 
@@ -139,25 +143,29 @@ $robotDanceOffRepository = new RobotDanceOffRepository(
     new RobotDanceOffQueryBuilder($entityManager)
 );
 
-$firstDance = $robotDanceOffRepository->findAll(new ApiFiltersDTO(
-    ['id' => 1],
-    [],
-    [],
-    1,
-    10
-));
+$firstDance = $robotDanceOffRepository->findAll(
+    (new ApiFiltersDTO(
+        ['id' => 1],
+        [],
+        [],
+        1,
+        10
+    ))->toFilterCriteria()
+);
 assertTrue(count($firstDance) === 1, 'First dance-off query should return one result.');
 assertTrue($firstDance[0] instanceof RobotDanceOff, 'Dance-off result should be a RobotDanceOff entity.');
 assertTrue($firstDance[0]->getId() === 1, 'First dance-off query should return ID 1.');
 assertTrue($firstDance[0]->getWinningTeam()?->getName() === 'Team One', 'Winning team should be Team One.');
 
-$secondDance = $robotDanceOffRepository->findAll(new ApiFiltersDTO(
-    ['id' => 2],
-    [],
-    [],
-    1,
-    10
-));
+$secondDance = $robotDanceOffRepository->findAll(
+    (new ApiFiltersDTO(
+        ['id' => 2],
+        [],
+        [],
+        1,
+        10
+    ))->toFilterCriteria()
+);
 assertTrue(count($secondDance) === 1, 'Second dance-off query should return one result.');
 assertTrue($secondDance[0] instanceof RobotDanceOff, 'Dance-off result should be a RobotDanceOff entity.');
 assertTrue($secondDance[0]->getId() === 2, 'Second dance-off query should return ID 2.');

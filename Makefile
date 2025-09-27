@@ -2,6 +2,15 @@ DOCKER_COMPOSE := docker compose
 DOCKER_EXEC := $(DOCKER_COMPOSE) exec
 CONTAINER_NAME := robots-api
 
+up:
+	$(DOCKER_COMPOSE) up -d
+
+build:
+	$(DOCKER_COMPOSE) up --build
+
+stop:
+	$(DOCKER_COMPOSE) down
+
 migrate:
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/console --no-interaction doctrine:migrations:migrate'
 
@@ -21,7 +30,7 @@ composer-install:
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'composer install --no-interaction'
 
 composer-update:
-	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'composer update --no-interaction'
+	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/console composer update --no-interaction' || true
 
 composer-require:
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'composer require $(pkg)'
@@ -54,4 +63,4 @@ phpstan:
 test:
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/phpunit'
 
-.PHONY: migrate migrations-clear migrations-diff migrations-generate composer-install composer-update composer-require console install sh cache-clear refresh routes services phpstan test
+.PHONY: migrate migrations-clear migrations-diff migrations-generate composer-install composer-update composer-require console install sh cache-clear refresh routes services phpstan test up up-foreground stop

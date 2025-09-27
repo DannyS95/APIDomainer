@@ -15,6 +15,8 @@ final class GetRobotsQueryHandler
 
     public function __invoke(GetRobotsQuery $query): array
     {
-        return $this->robotRepository->findAll($query->getApiFiltersDTO());
+        return $this->robotRepository->findAll(
+            $query->getApiFiltersDTO()->toFilterCriteria()
+        );
     }
 }

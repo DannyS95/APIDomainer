@@ -3,14 +3,14 @@
 namespace App\Domain\Repository;
 
 use App\Domain\Entity\RobotDanceOff;
-use App\Application\DTO\ApiFiltersDTO;
+use App\Domain\ValueObject\FilterCriteria;
 
 interface RobotDanceOffRepositoryInterface
 {
     /**
      * @return array<int, RobotDanceOff>
      */
-    public function findAll(ApiFiltersDTO $apiFiltersDTO): array;
+    public function findAll(FilterCriteria $filterCriteria): array;
 
     public function findOneBy(int $id): ?RobotDanceOff;
 

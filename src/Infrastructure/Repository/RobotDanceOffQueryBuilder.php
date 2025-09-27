@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\RobotDanceOff;
+use App\Infrastructure\Doctrine\QueryBuilder\AbstractDoctrineQueryBuilder;
 use Doctrine\ORM\QueryBuilder;
 use UnexpectedValueException;
 

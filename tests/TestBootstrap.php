@@ -25,7 +25,7 @@ spl_autoload_register(function (string $class): void {
 
 // Handle classes that live outside of the PSR-4 directory expectations in this
 // lightweight test environment.
-require_once __DIR__ . '/../src/Infrastructure/Repository/DoctrineComparisonEnum.php';
+require_once __DIR__ . '/../src/Infrastructure/Doctrine/QueryBuilder/DoctrineComparisonEnum.php';
 
 require_once __DIR__ . '/Stubs/FakeEntityManager.php';
 require_once __DIR__ . '/Stubs/FakeObjectRepository.php';

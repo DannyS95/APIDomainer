@@ -15,6 +15,8 @@ final class GetRobotDanceOffsQueryHandler
 
     public function __invoke(GetRobotDanceOffsQuery $query): array
     {
-        return $this->robotDanceOffRepository->findAll($query->getApiFiltersDTO());
+        return $this->robotDanceOffRepository->findAll(
+            $query->getApiFiltersDTO()->toFilterCriteria()
+        );
     }
 }

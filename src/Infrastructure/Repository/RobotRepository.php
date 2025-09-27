@@ -3,8 +3,9 @@
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\Robot;
-use App\Application\DTO\ApiFiltersDTO;
 use App\Domain\Repository\RobotRepositoryInterface;
+use App\Domain\ValueObject\FilterCriteria;
+use App\Infrastructure\Doctrine\Repository\DoctrineRepositoryInterface;
 
 final class RobotRepository implements RobotRepositoryInterface
 {
@@ -16,19 +17,19 @@ final class RobotRepository implements RobotRepositoryInterface
     /**
      * Fetch all robots with applied filters, sorts, and pagination.
      */
-    public function findAll(ApiFiltersDTO $apiFiltersDTO): array
+    public function findAll(FilterCriteria $filterCriteria): array
     {
         $queryBuilder = $this->robotQueryBuilder->create();
 
         return $queryBuilder
             ->whereClauses(
-                $apiFiltersDTO->getFilters(),
-                $apiFiltersDTO->getOperations()
+                $filterCriteria->getFilters(),
+                $filterCriteria->getOperations()
             )
-            ->addSorts($apiFiltersDTO->getSorts())
+            ->addSorts($filterCriteria->getSorts())
             ->paginate(
-                $apiFiltersDTO->getPage(),
-                $apiFiltersDTO->getItemsPerPage()
+                $filterCriteria->getPage(),
+                $filterCriteria->getItemsPerPage()
             )
             ->fetchArray();
     }

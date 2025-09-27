@@ -3,11 +3,11 @@
 namespace App\Domain\Repository;
 
 use App\Domain\Entity\Team;
-use App\Application\DTO\ApiFiltersDTO;
+use App\Domain\ValueObject\FilterCriteria;
 
 interface TeamRepositoryInterface
 {
-    public function findAll(ApiFiltersDTO $apiFiltersDTO): array;
+    public function findAll(FilterCriteria $filterCriteria): array;
 
     public function findOneBy(int $id): ?Team;
 

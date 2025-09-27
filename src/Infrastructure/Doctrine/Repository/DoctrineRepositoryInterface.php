@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\Repository;
+namespace App\Infrastructure\Doctrine\Repository;
 
 interface DoctrineRepositoryInterface
 {
