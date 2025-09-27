@@ -6,7 +6,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\ApiResource;
 use App\Action\RobotCollectionAction;
 use ApiPlatform\Metadata\GetCollection;
-use App\Action\RobotDanceOffsCollectionAction;
+use App\Action\RobotDanceOffCollectionAction;
 use App\Infrastructure\Response\RobotResponse;
 use App\Infrastructure\Request\RobotDanceOffRequest;
 use App\Infrastructure\Response\RobotDanceOffResponse;
@@ -39,7 +39,7 @@ use App\Infrastructure\ApiResource\Filter\RobotDanceOffSearchFilter;
         new GetCollection(
             uriTemplate: '/dance-offs',
             name: 'Robot Dance-offs',
-            controller: RobotDanceOffsCollectionAction::class,
+            controller: RobotDanceOffCollectionAction::class,
             read: false,
             filters: [ RobotDanceOffSearchFilter::class, RobotDanceOffOrderFilter::class ],
             output: RobotDanceOffResponse::class,

@@ -25,7 +25,7 @@ This project follows a clean **DDD (Domain-Driven Design)** and **ADR (Action-Do
 - **Queries**:
   - Handled by the `query.bus` using Symfony Messenger.
   - Focused on read operations, such as fetching data or retrieving specific entities.
-  - Example: Fetching a list of `RobotDanceOffs` or retrieving a `Robot` by ID.
+  - Example: Fetching a list of `RobotDanceOff` or retrieving a `Robot` by ID.
 
 - **Separation of Models**:
   - Write models are used for commands to handle business logic and persistence.

@@ -5,7 +5,7 @@ namespace App\Infrastructure\ApiResource\Filter;
 use Symfony\Component\PropertyInfo\Type;
 use ApiPlatform\Metadata\FilterInterface;
 
-class RobotDanceOffSearchFilter implements FilterInterface
+final class RobotDanceOffSearchFilter implements FilterInterface
 {
     public function getDescription(string $resourceClass): array
     {

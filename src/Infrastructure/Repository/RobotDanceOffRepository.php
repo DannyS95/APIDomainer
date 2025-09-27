@@ -65,9 +65,9 @@ final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
     /**
      * Bulk save multiple dance-offs.
      */
-    public function bulkSave(array $robotDanceOffs): void
+    public function bulkSave(array $RobotDanceOff): void
     {
-        foreach ($robotDanceOffs as $entity) {
+        foreach ($RobotDanceOff as $entity) {
             $this->entityManager->persist($entity);
         }
         $this->entityManager->flush();
