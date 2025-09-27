@@ -4,7 +4,7 @@ namespace App\Application\Query;
 
 use App\Application\DTO\ApiFiltersDTO;
 
-final class GetRobotDanceOffsQuery
+final class GetRobotDanceOffQuery
 {
     public function __construct(private readonly ApiFiltersDTO $apiFiltersDTO)
     {

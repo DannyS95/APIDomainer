@@ -3,7 +3,7 @@
 namespace App\Action;
 
 use App\Application\DTO\ApiFiltersDTO;
-use App\Application\Query\GetRobotDanceOffsQuery;
+use App\Application\Query\GetRobotDanceOffQuery;
 use App\Application\Request\RequestDataMapper;
 use App\Responder\RobotDanceOffResponder;
 use Doctrine\Common\Collections\Collection;
@@ -39,12 +39,12 @@ final class RobotDanceOffsCollectionAction
             itemsPerPage: $pagination['itemsPerPage']
         );
 
-        $query = new GetRobotDanceOffsQuery($apiFiltersDTO);
+        $query = new GetRobotDanceOffQuery($apiFiltersDTO);
         $envelope = $this->queryBus->dispatch($query);
         $handledStamp = $envelope->last(HandledStamp::class);
 
         if (!$handledStamp instanceof HandledStamp) {
-            throw new RuntimeException('No handler returned a result for GetRobotDanceOffsQuery.');
+            throw new RuntimeException('No handler returned a result for GetRobotDanceOffQuery.');
         }
 
         $models = $handledStamp->getResult();

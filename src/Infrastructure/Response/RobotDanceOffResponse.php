@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Response;
 
-class RobotDanceOffResponse
+final class RobotDanceOffResponse
 {
     private int $id;
     private array $teamOne;

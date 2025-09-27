@@ -16,10 +16,15 @@ abstract class AbstractDoctrineQueryBuilder
 
     public function create(): static
     {
-        $builder = new static($this->entityManager);
+        $builder = clone $this;
         $builder->resetQueryBuilder();
 
         return $builder;
+    }
+
+    public function __clone(): void
+    {
+        $this->clearQueryBuilder();
     }
 
     /**
