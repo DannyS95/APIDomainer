@@ -1,175 +1,43 @@
 # ApiDomainer
-A Domain-Driven API Platform Framework with ADR structure.
 
----
+ApiDomainer powers a robot battle league: send two lists of robot IDs, watch the platform assemble teams automatically, run a dance-off, and record the champion. The end result shows how to keep real-world business logic clean and testable while still shipping features quickly.
 
-## 🚀 Features:
-- 🗂️ **Domain-Driven Design (DDD)** principles.
-- 🎯 **Action-Domain-Responder (ADR)** architecture.
-- 🔄 **Command Bus Pattern** for clean write operations.
-- 🔍 **API Platform Integration** with custom serialization.
-- 📦 **Dockerized environment** for easy setup and scalability.
+## ⚡ Core Highlights
+- **Robot Dance-Off Engine** – POST two squads of robot IDs and the domain layer forms the teams, validates participants, runs the match-up, and persists the winner.
+- **Clean CQRS Messaging** – Read/write concerns split across Symfony Messenger buses; queries return optimized payloads while commands orchestrate domain workflows.
+- **API Platform Ready** – Resources, filters, and responders wire the domain to HTTP without leaking framework details into the core logic.
+- **Developer-Friendly Separation** – Domain, Application, Infrastructure, and Action layers keep responsibilities sharp and testing approachable.
 
-## ⚙️ Project Architecture
-
-This project follows a clean **DDD (Domain-Driven Design)** and **ADR (Action-Domain-Responder)** architecture with clear separation of concerns.
-
-### **🏷️ CQRS Principles**
-**Command Query Responsibility Segregation (CQRS)** is implemented to separate the responsibilities of reading and writing data. This ensures a clean and maintainable architecture.
-
-- **Commands**:
-  - Handled by the `command.bus` using Symfony Messenger.
-  - Focused on write operations, such as creating or updating entities.
-  - Example: Creating a `DanceOff` or updating a `Robot`.
-
-- **Queries**:
-  - Handled by the `query.bus` using Symfony Messenger.
-  - Focused on read operations, such as fetching data or retrieving specific entities.
-  - Example: Fetching a list of `RobotDanceOff` or retrieving a `Robot` by ID.
-
-- **Separation of Models**:
-  - Write models are used for commands to handle business logic and persistence.
-  - Read models are optimized for queries to provide efficient data retrieval.
-
-- **Flow Example**:
-  - A `POST` request to create a `DanceOff` triggers a command handled by the `command.bus`.
-  - A `GET` request to fetch `DanceOff` details triggers a query handled by the `query.bus`.
-
----
-
-### **🏷️ Domain Layer**
-**Path:** `src/Domain/Repository/`
-
-The **Domain Layer** is responsible for:
-- Defining entities (`Robot`, `RobotDanceOff`, etc.).
-- Providing the repository interfaces (`RobotRepositoryInterface`, `RobotDanceOffRepositoryInterface`).
-- Managing business logic related to fetching and persisting entities.
-- Applying query logic by calling Infrastructure's `DoctrineRepository`.
-
----
-
-### **🏷️ Infrastructure Layer**
-**Path:** `src/Infrastructure/Repository/`
-
-The **Infrastructure Layer** handles:
-- Direct database communication with Doctrine.
-- **Normalizers:**  
-    - Custom normalizers are used to transform entities into the appropriate API response format.  
-    - These are injected and mapped in `services.yaml` for API Platform serialization.
-
----
-
-### **🏷️ Application Layer**
-**Path:** `src/Application/Service/`
-
-The **Application Layer** handles:
-- Orchestration of calls to Domain Repositories.
-- Business logic and service calls (e.g., bulk saves, custom queries).
-- Manages transactions and interactions between multiple repositories.
-
----
-
-### **🏷️ Action Layer (ADR Pattern)**
-**Path:** `src/Action/`
-
-The **Action Layer** is the controller endpoint for API requests:
-- API Resources (configured with API Platform) map directly to Actions.
-- Actions are decoupled from Symfony controllers and follow ADR principles.
-- **Flow Example:**  
-    - API Resource `/api/robots` → Calls `RobotCollectionAction`.  
-    - Action retrieves request data and filters → Calls Domain Service.  
-    - Domain Service → Calls the appropriate Repository.  
-    - Repository → Calls `DoctrineRepository` for database operations.  
-    - Response is sent back, optionally through a **Normalizer** for transformation.
-
----
-
-# 🤖 **Robot Flow Explanation**
-
----
-
-## 🚀 **Overview**
-The **Robot Flow** is part of the **Robot API** responsible for managing:
-- The creation of **Robot DanceOffs**.
-- Building **Teams** dynamically based on provided Robot IDs.
-- Performing **DanceOffs** between two teams.
-- Selecting a **winner** if the logic requires it.
-
-The flow is built around **DDD (Domain-Driven Design)** and follows **ADR (Action-Domain-Responder)** principles for clean separation of logic.
-
----
-
-# 🤖 **DanceOff Workflow Explanation**
-
----
-
-## 🚀 **Overview**
-The **DanceOff Workflow** is the central logic for orchestrating competitive matchups between two robot teams within the **Robot API**.  
-It leverages **Domain-Driven Design (DDD)** principles and follows **ADR (Action-Domain-Responder)** architecture to keep business logic isolated and maintainable.
-
----
-
-# 🤖 **Team Formation and Winner Selection Workflow for Robot Battles API**
-
----
-
-## 🚀 **Overview**
-The **Team Formation and Winner Selection Workflow** is part of the `DanceOff` creation logic.  
-It follows DDD principles to:
-1. Create **Team Alpha** and **Team Beta** based on provided Robot IDs.
-2. Register the teams into a `DanceOff`.
-3. Manage the **winner selection** logic when a DanceOff is concluded.
-
----
-
-## 🔄 **Workflow Breakdown**
-### **1️⃣ Team Formation**
-When a `POST` request is made to:
-
-## 🔄 **Team Formation Workflow**
-
----
-
-### **Steps:**
-1. The request payload contains two arrays of `Robot IDs`:
-   - **teamA:** Represents the IDs for **Team Alpha**.
-   - **teamB:** Represents the IDs for **Team Omega**.
-
-2. The request is handled by the `RobotDanceOffHandler`, which triggers the `RobotService`.
-
-3. Inside `RobotService`, the `DanceOffFactory` is called to:
-   - Create two new instances of `Team`.
-   - Name them **Team Alpha** and **Team Omega**.
-   - Fetch each `Robot` from the database using its ID.
-   - Populate each `Team` with the fetched `Robot` entities.
-
-4. If any of the Robot IDs are not found in the database:
-   - An exception is thrown.
-   - The DanceOff creation is aborted.
-
-5. If all IDs are valid:
-   - Both `Team Alpha` and `Team Omega` are constructed and ready for the `DanceOff`.
-
----
-
-### **Example Payload:**  
-```json
-{
-  "teamA": [1, 2, 3, 4, 5],
-  "teamB": [6, 7, 8, 9, 10]
-}
-```
-
-
----
-
-## ⚡️ Quick Start
-To start the application, simply run:
-
+## 🚀 Quick Start
 ```bash
-docker compose up -d
+make build / make up
 make install
-````
+```
+Visit the 🌐 [API endpoint](http://localhost:8080/api)
 
-🌐 [API endpoint](http://localhost:8080/api)
+## 🧭 Architecture at a Glance
+- **Domain** – Entities (`Robot`, `Team`, `RobotDanceOff`), repositories, and services such as `RobotService`, plus value objects like `DanceOffTeams` that keep the domain framework-agnostic.
+- **Application** – Query handlers (e.g., `GetRobotDanceOffQueryHandler`) and orchestration logic that coordinate domain services via Symfony Messenger.
+- **Infrastructure** – Doctrine repositories, query builders, API Platform filters, and request DTOs. Handlers translate transport objects into domain value objects before delegating.
+- **Action / Responder** – ADR-style actions act as controllers and responders turn domain models into API responses.
 
+## 🔬 Feature Flow: Creating a Dance-Off
+1. **Request** – `POST /api/robots/dance-off` accepts a `RobotDanceOffRequest` with two arrays of robot IDs.
+2. **Handler** – `RobotDanceOffHandler` converts the request into the `DanceOffTeams` value object.
+3. **Domain Service** – `RobotService` validates each robot, assembles two `Team` aggregates, runs the experience-based scoring algorithm, and persists the resulting `RobotDanceOff`.
+4. **Persistence & Response** – Teams and dance-off entities are saved via Doctrine repositories. The responder layer presents a structured payload when queried.
+
+### Explore the League
+- `GET /api/robots` – Browse all registered robots, filter by name, sort by experience, or inspect their stats individually.
+- `GET /api/robots/dance-offs` – List dance-offs with search and ordering support, perfect for replaying past battles.
+- `GET /api/robots/{id}` – Fetch a single competitor and see if they are ready for the next matchup.
+
+Each read endpoint rides the query bus for separation of concerns and returns serialized responses through dedicated responders.
+
+## 🧱 Tech Stack
+- PHP 8.2, Symfony Messenger, API Platform, Doctrine ORM
+- Docker + Makefile for repeatable environments, Apache reverse proxy fronting the PHP-FPM container
+- PHPUnit with lightweight stubs for fast feedback
+
+## 🤝 Why It Matters
+This project demonstrates how production-grade patterns (DDD, CQRS, ADR) can stay approachable. You can trace a feature end-to-end—from HTTP request through domain logic—without wading through framework noise.
