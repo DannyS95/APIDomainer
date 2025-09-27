@@ -9,7 +9,7 @@ use App\Domain\Entity\Team;
 use App\Domain\Repository\RobotRepositoryInterface;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
 use App\Domain\Repository\TeamRepositoryInterface;
-use App\Infrastructure\Request\RobotDanceOffRequest;
+use App\Domain\ValueObject\DanceOffTeams;
 
 final class RobotService
 {
@@ -23,12 +23,9 @@ final class RobotService
     /**
      * Set a dance off between two teams of robots.
      */
-    public function setRobotDanceOff(RobotDanceOffRequest $robotDanceOffRequest): void
+    public function setRobotDanceOff(DanceOffTeams $danceOffTeams): void
     {
-        $robotIds = [
-            ...$robotDanceOffRequest->teamA,
-            ...$robotDanceOffRequest->teamB,
-        ];
+        $robotIds = $danceOffTeams->allRobotIds();
 
         $this->robotValidatorService->validateRobotIds($robotIds);
 
@@ -36,11 +33,11 @@ final class RobotService
         $teamOne = new Team('Team One');
         $teamTwo = new Team('Team Two');
 
-        foreach ($robotDanceOffRequest->teamA as $robotId) {
+        foreach ($danceOffTeams->teamOneRobotIds() as $robotId) {
             $teamOne->addRobot($this->loadRobot($robotId));
         }
 
-        foreach ($robotDanceOffRequest->teamB as $robotId) {
+        foreach ($danceOffTeams->teamTwoRobotIds() as $robotId) {
             $teamTwo->addRobot($this->loadRobot($robotId));
         }
 

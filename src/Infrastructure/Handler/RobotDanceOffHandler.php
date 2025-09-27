@@ -3,11 +3,12 @@
 namespace App\Infrastructure\Handler;
 
 use App\Domain\Service\RobotService;
+use App\Domain\ValueObject\DanceOffTeams;
 use App\Infrastructure\Request\RobotDanceOffRequest;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-class RobotDanceOffHandler
+final class RobotDanceOffHandler
 {
     private RobotService $robotService;
 
@@ -15,8 +16,10 @@ class RobotDanceOffHandler
         $this->robotService = $robotService;
     }
 
-    public function __invoke(RobotDanceOffRequest $request)
+    public function __invoke(RobotDanceOffRequest $request): void
     {
-        $this->robotService->setRobotDanceOff($request);
+        $danceOffTeams = new DanceOffTeams($request->teamA, $request->teamB);
+
+        $this->robotService->setRobotDanceOff($danceOffTeams);
     }
 }
