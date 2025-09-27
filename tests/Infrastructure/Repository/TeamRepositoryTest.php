@@ -4,6 +4,7 @@ namespace App\Tests\Infrastructure\Repository;
 
 use App\Application\DTO\ApiFiltersDTO;
 use App\Domain\Entity\Team;
+use App\Infrastructure\Repository\TeamQueryBuilder;
 use App\Infrastructure\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -45,7 +46,8 @@ final class TeamRepositoryTest extends TestCase
             itemsPerPage: 10
         );
 
-        $repository = new TeamRepository($entityManager);
+        $teamQueryBuilder = new TeamQueryBuilder($entityManager);
+        $repository = new TeamRepository($entityManager, $teamQueryBuilder);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid operation: INVALID');

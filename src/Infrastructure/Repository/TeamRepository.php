@@ -5,15 +5,13 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Entity\Team;
 use App\Domain\Repository\TeamRepositoryInterface;
 use App\Domain\ValueObject\FilterCriteria;
-use App\Infrastructure\Doctrine\Repository\DoctrineComparisonFilterTrait;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TeamRepository implements TeamRepositoryInterface
 {
-    use DoctrineComparisonFilterTrait;
-
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private TeamQueryBuilder $teamQueryBuilder
     ) {}
 
     public function save(Team $team): void
@@ -29,25 +27,19 @@ class TeamRepository implements TeamRepositoryInterface
 
     public function findAll(FilterCriteria $filterCriteria): array
     {
-        $qb = $this->entityManager->createQueryBuilder()
-            ->select('t')
-            ->from(Team::class, 't');
+        $queryBuilder = $this->teamQueryBuilder->create();
 
-        $this->applyFilters(
-            $qb,
-            $filterCriteria->getFilters(),
-            $filterCriteria->getOperations(),
-            't'
-        );
-
-        foreach ($filterCriteria->getSorts() as $field => $order) {
-            $qb->addOrderBy("t.$field", $order);
-        }
-
-        $qb->setFirstResult(($filterCriteria->getPage() - 1) * $filterCriteria->getItemsPerPage())
-           ->setMaxResults($filterCriteria->getItemsPerPage());
-
-        return $qb->getQuery()->getResult();
+        return $queryBuilder
+            ->whereClauses(
+                $filterCriteria->getFilters(),
+                $filterCriteria->getOperations()
+            )
+            ->addSorts($filterCriteria->getSorts())
+            ->paginate(
+                $filterCriteria->getPage(),
+                $filterCriteria->getItemsPerPage()
+            )
+            ->fetch();
     }
 
     public function delete(Team $team): void
