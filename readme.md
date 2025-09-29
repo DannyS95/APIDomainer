@@ -13,7 +13,7 @@ ApiDomainer powers a robot battle league: send two lists of robot IDs, watch the
 make build / make up
 make install
 ```
-Visit the 🌐 [API endpoint](http://localhost:8080/api)
+Visit the 🌐 [API endpoint](http://localhost:8085/api)
 
 ## 🧭 Architecture at a Glance
 - **Domain** – Entities (`Robot`, `Team`, `RobotDanceOff`), repositories, and services such as `RobotService`, plus value objects like `DanceOffTeams` that keep the domain framework-agnostic.

@@ -28,7 +28,7 @@ services:
     image: httpd:2.4
     container_name: apache
     ports: 
-      - 8080:80
+      - 8085:80
     volumes:
       - app:/app
       - ./httpd/my-httpd.conf:/usr/local/apache2/conf/httpd.conf
