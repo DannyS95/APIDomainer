@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\RobotDanceOff;
+use App\Domain\ReadModel\RobotBattleViewInterface;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
 use App\Domain\ValueObject\FilterCriteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,17 +12,17 @@ final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private RobotDanceOffQueryBuilder $robotDanceOffQueryBuilder
+        private RobotBattleViewQueryBuilder $robotBattleViewQueryBuilder
     ) {}
 
     /**
      * Fetch all dance-offs with filters and sorting.
      *
-     * @return array<int, RobotDanceOff>
+     * @return array<int, RobotBattleViewInterface>
      */
     public function findAll(FilterCriteria $filterCriteria): array
     {
-        $queryBuilder = $this->robotDanceOffQueryBuilder->create();
+        $queryBuilder = $this->robotBattleViewQueryBuilder->create();
 
         return $queryBuilder
             ->whereClauses(

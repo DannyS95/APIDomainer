@@ -17,7 +17,25 @@ class RobotDanceOffOrderFilter implements FilterInterface
             ],
             'createdAt' => [
                 'type' => Type::BUILTIN_TYPE_STRING,
-            ]
+            ],
+            'teamOneId' => [
+                'type' => Type::BUILTIN_TYPE_INT,
+            ],
+            'teamOneName' => [
+                'type' => Type::BUILTIN_TYPE_STRING,
+            ],
+            'teamTwoId' => [
+                'type' => Type::BUILTIN_TYPE_INT,
+            ],
+            'teamTwoName' => [
+                'type' => Type::BUILTIN_TYPE_STRING,
+            ],
+            'winningTeamId' => [
+                'type' => Type::BUILTIN_TYPE_INT,
+            ],
+            'winningTeamName' => [
+                'type' => Type::BUILTIN_TYPE_STRING,
+            ],
         ];
 
         foreach ($properties as $property => $config) {

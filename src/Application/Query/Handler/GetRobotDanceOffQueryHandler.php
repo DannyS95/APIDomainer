@@ -3,7 +3,7 @@
 namespace App\Application\Query\Handler;
 
 use App\Application\Query\GetRobotDanceOffQuery;
-use App\Domain\Entity\RobotDanceOff;
+use App\Domain\ReadModel\RobotBattleViewInterface;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -15,7 +15,7 @@ final class GetRobotDanceOffQueryHandler
     }
 
     /**
-     * @return array<int, RobotDanceOff>
+     * @return array<int, RobotBattleViewInterface>
      */
     public function __invoke(GetRobotDanceOffQuery $query): array
     {

@@ -46,6 +46,12 @@ sh:
 cache-clear:
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/console cache:clear'
 
+cache-clear-container:
+	@if ! $(DOCKER_COMPOSE) ps -q $(CONTAINER_NAME) >/dev/null; then \
+		$(DOCKER_COMPOSE) up -d $(CONTAINER_NAME); \
+	fi
+	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/console cache:clear'
+
 refresh:
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/console doctrine:database:drop --force --if-exists'
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/console doctrine:database:create'

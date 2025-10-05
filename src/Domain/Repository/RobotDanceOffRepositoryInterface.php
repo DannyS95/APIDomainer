@@ -3,12 +3,13 @@
 namespace App\Domain\Repository;
 
 use App\Domain\Entity\RobotDanceOff;
+use App\Domain\ReadModel\RobotBattleViewInterface;
 use App\Domain\ValueObject\FilterCriteria;
 
 interface RobotDanceOffRepositoryInterface
 {
     /**
-     * @return array<int, RobotDanceOff>
+     * @return array<int, RobotBattleViewInterface>
      */
     public function findAll(FilterCriteria $filterCriteria): array;
 

@@ -108,7 +108,6 @@ abstract class AbstractDoctrineQueryBuilder
     {
         if ($this->qb === null) {
             $this->qb = $this->buildBaseQueryBuilder();
-            $this->applyDefaultFilters($this->qb);
         }
 
         return $this->qb;
@@ -127,11 +126,6 @@ abstract class AbstractDoctrineQueryBuilder
     }
 
     abstract protected function buildBaseQueryBuilder(): QueryBuilder;
-
-    protected function applyDefaultFilters(QueryBuilder $qb): void
-    {
-        // Intentionally left blank for subclasses to override when needed.
-    }
 
     abstract protected function alias(): string;
 

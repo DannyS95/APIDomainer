@@ -20,6 +20,30 @@ final class RobotDanceOffSearchFilter implements FilterInterface
                 'operations' => ['eq', 'gt', 'gte', 'lt', 'lte'],
                 'type' => Type::BUILTIN_TYPE_STRING,
             ],
+            'teamOneId' => [
+                'operations' => ['eq', 'gt', 'gte', 'lt', 'lte'],
+                'type' => Type::BUILTIN_TYPE_INT,
+            ],
+            'teamOneName' => [
+                'operations' => ['eq', 'lk'],
+                'type' => Type::BUILTIN_TYPE_STRING,
+            ],
+            'teamTwoId' => [
+                'operations' => ['eq', 'gt', 'gte', 'lt', 'lte'],
+                'type' => Type::BUILTIN_TYPE_INT,
+            ],
+            'teamTwoName' => [
+                'operations' => ['eq', 'lk'],
+                'type' => Type::BUILTIN_TYPE_STRING,
+            ],
+            'winningTeamId' => [
+                'operations' => ['eq', 'gt', 'gte', 'lt', 'lte'],
+                'type' => Type::BUILTIN_TYPE_INT,
+            ],
+            'winningTeamName' => [
+                'operations' => ['eq', 'lk'],
+                'type' => Type::BUILTIN_TYPE_STRING,
+            ],
         ];
 
         foreach ($properties as $property => $config) {

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../TestBootstrap.php';
 
-use App\Domain\Entity\Robot;
-use App\Domain\Entity\RobotDanceOff;
-use App\Domain\Entity\Team;
+use App\Infrastructure\Doctrine\View\RobotBattleView;
 use App\Infrastructure\Response\RobotDanceOffResponse;
 use App\Responder\RobotDanceOffResponder;
 use Doctrine\Common\Collections\Collection;
@@ -18,57 +16,48 @@ function assertTrue(bool $condition, string $message): void
     }
 }
 
-function setProperty(object $entity, string $property, mixed $value): void
-{
-    $reflection = new \ReflectionObject($entity);
-    if (!$reflection->hasProperty($property)) {
-        return;
-    }
+$teamOneRobots = [
+    [
+        'id' => 1,
+        'name' => 'Atlas',
+        'powermove' => 'Flare',
+        'experience' => 12,
+        'outOfOrder' => false,
+        'avatar' => 'atlas.png',
+    ],
+    [
+        'id' => 2,
+        'name' => 'Bolt',
+        'powermove' => 'Slide',
+        'experience' => 8,
+        'outOfOrder' => false,
+        'avatar' => 'bolt.png',
+    ],
+];
 
-    $propertyRef = $reflection->getProperty($property);
-    $propertyRef->setAccessible(true);
-    $propertyRef->setValue($entity, $value);
-}
+$teamTwoRobots = [
+    [
+        'id' => 3,
+        'name' => 'Circuit',
+        'powermove' => 'Spin',
+        'experience' => 6,
+        'outOfOrder' => true,
+        'avatar' => 'circuit.png',
+    ],
+];
 
-function createRobot(int $id, string $name, string $powermove, int $experience, bool $outOfOrder, ?string $avatar): Robot
-{
-    $robot = new Robot();
-    setProperty($robot, 'id', $id);
-    $robot
-        ->setName($name)
-        ->setPowermove($powermove)
-        ->setExperience($experience)
-        ->setOutOfOrder($outOfOrder)
-        ->setAvatar($avatar);
-
-    return $robot;
-}
-
-function createTeam(int $id, string $name, Robot ...$robots): Team
-{
-    $team = new Team($name);
-    setProperty($team, 'id', $id);
-
-    foreach ($robots as $robot) {
-        $team->addRobot($robot);
-    }
-
-    return $team;
-}
-
-$robotOne = createRobot(1, 'Atlas', 'Flare', 12, false, 'atlas.png');
-$robotTwo = createRobot(2, 'Bolt', 'Slide', 8, false, 'bolt.png');
-$robotThree = createRobot(3, 'Circuit', 'Spin', 6, true, 'circuit.png');
-
-$teamAlpha = createTeam(10, 'Alpha Team', $robotOne, $robotTwo);
-$teamBeta = createTeam(20, 'Beta Squad', $robotThree);
-
-$danceOff = new RobotDanceOff();
-setProperty($danceOff, 'id', 42);
-setProperty($danceOff, 'createdAt', new \DateTime('2024-03-01 09:30:00'));
-$danceOff->setTeamOne($teamAlpha);
-$danceOff->setTeamTwo($teamBeta);
-$danceOff->setWinningTeam($teamAlpha);
+$danceOff = RobotBattleView::fromData(
+    id: 42,
+    createdAt: new \DateTimeImmutable('2024-03-01 09:30:00'),
+    teamOneId: 10,
+    teamOneName: 'Alpha Team',
+    teamOneRobots: $teamOneRobots,
+    teamTwoId: 20,
+    teamTwoName: 'Beta Squad',
+    teamTwoRobots: $teamTwoRobots,
+    winningTeamId: 10,
+    winningTeamName: 'Alpha Team'
+);
 
 $responder = new RobotDanceOffResponder();
 $responses = $responder->respond([$danceOff]);
@@ -81,8 +70,8 @@ assertTrue($firstResponse instanceof RobotDanceOffResponse, 'Responder should ma
 assertTrue($firstResponse->getId() === 42, 'Response should expose the dance-off ID.');
 
 $teamOneDetails = $firstResponse->getTeamOne();
-assertTrue($teamOneDetails['id'] === 10, 'Team One ID should match the entity.');
-assertTrue($teamOneDetails['name'] === 'Alpha Team', 'Team One name should match the entity.');
+assertTrue($teamOneDetails['id'] === 10, 'Team One ID should match the read model.');
+assertTrue($teamOneDetails['name'] === 'Alpha Team', 'Team One name should match the read model.');
 assertTrue(count($teamOneDetails['robots']) === 2, 'Team One should list both robots.');
 $firstRobot = $teamOneDetails['robots'][0];
 assertTrue($firstRobot['id'] === 1, 'Mapped robot should include its ID.');
@@ -90,11 +79,11 @@ assertTrue($firstRobot['powermove'] === 'Flare', 'Mapped robot should include po
 
 $winningTeamDetails = $firstResponse->getWinningTeam();
 assertTrue($winningTeamDetails !== null, 'Winning team should be present.');
-assertTrue($winningTeamDetails['name'] === 'Alpha Team', 'Winning team name should match the entity.');
+assertTrue($winningTeamDetails['name'] === 'Alpha Team', 'Winning team name should match the read model.');
 assertTrue(count($winningTeamDetails['robots']) === 2, 'Winning team robots should be mapped.');
 
 $teamTwoDetails = $firstResponse->getTeamTwo();
-assertTrue($teamTwoDetails['id'] === 20, 'Team Two ID should match the entity.');
+assertTrue($teamTwoDetails['id'] === 20, 'Team Two ID should match the read model.');
 assertTrue(count($teamTwoDetails['robots']) === 1, 'Team Two should list its single robot.');
 assertTrue($teamTwoDetails['robots'][0]['outOfOrder'] === true, 'Robot attributes should include the outOfOrder flag.');
 

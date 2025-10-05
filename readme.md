@@ -5,6 +5,7 @@ ApiDomainer powers a robot battle league: send two lists of robot IDs, watch the
 ## ⚡ Core Highlights
 - **Robot Dance-Off Engine** – POST two squads of robot IDs and the domain layer forms the teams, validates participants, runs the match-up, and persists the winner.
 - **Clean CQRS Messaging** – Read/write concerns split across Symfony Messenger buses; queries return optimized payloads while commands orchestrate domain workflows.
+- **View-Backed Read Models** – Doctrine maps read-only projections via attributes (`config/packages/doctrine.yaml`’s `AppView`) so we can hydrate DTO-like objects straight from SQL views.
 - **API Platform Ready** – Resources, filters, and responders wire the domain to HTTP without leaking framework details into the core logic.
 - **Developer-Friendly Separation** – Domain, Application, Infrastructure, and Action layers keep responsibilities sharp and testing approachable.
 
@@ -20,6 +21,11 @@ Visit the 🌐 [API endpoint](http://localhost:8085/api)
 - **Application** – Query handlers (e.g., `GetRobotDanceOffQueryHandler`) and orchestration logic that coordinate domain services via Symfony Messenger.
 - **Infrastructure** – Doctrine repositories, query builders, API Platform filters, and request DTOs. Handlers translate transport objects into domain value objects before delegating.
 - **Action / Responder** – ADR-style actions act as controllers and responders turn domain models into API responses.
+
+### Read Models & CQRS
+- Write-side commands persist canonical aggregates (`RobotDanceOff`, `Team`, `Robot`).
+- Read-side queries hydrate `RobotBattleView` objects from the `robot_battle_view` SQL view; Doctrine treats the view namespace (`App\\Infrastructure\\Doctrine\\View`) as attribute-mapped entities declared read-only.
+- API Platform filters and orderers target these projections, keeping HTTP responses decoupled from the write models while still using Doctrine’s metadata and hydration pipeline.
 
 ## 🔬 Feature Flow: Creating a Dance-Off
 1. **Request** – `POST /api/robots/dance-off` accepts a `RobotDanceOffRequest` with two arrays of robot IDs.
