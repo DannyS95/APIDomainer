@@ -20,7 +20,3 @@ services:
 
     App\Infrastructure\Serializer\RobotDanceOffNormalizer:
         tags: ['serializer.normalizer']
-
-    App\Application\Query\Handler\GetRobotDanceOffQueryHandler:
-        tags:
-            - { name: 'messenger.message_handler', bus: 'query.bus' }
