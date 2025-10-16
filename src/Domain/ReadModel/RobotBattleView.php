@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Infrastructure\Doctrine\View;
+namespace App\Domain\ReadModel;
 
-use App\Domain\ReadModel\RobotBattleViewInterface;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 

@@ -24,7 +24,7 @@ Visit the 🌐 [API endpoint](http://localhost:8085/api)
 
 ### Read Models & CQRS
 - Write-side commands persist canonical aggregates (`RobotDanceOff`, `Team`, `Robot`).
-- Read-side queries hydrate `RobotBattleView` objects from the `robot_battle_view` SQL view; Doctrine treats the view namespace (`App\\Infrastructure\\Doctrine\\View`) as attribute-mapped entities declared read-only.
+- Read-side queries hydrate `RobotBattleView` objects from the `robot_battle_view` SQL view; Doctrine treats the view namespace (`App\\Domain\\ReadModel`) as attribute-mapped entities declared read-only.
 - API Platform filters and orderers target these projections, keeping HTTP responses decoupled from the write models while still using Doctrine’s metadata and hydration pipeline.
 
 ## 🔬 Feature Flow: Creating a Dance-Off

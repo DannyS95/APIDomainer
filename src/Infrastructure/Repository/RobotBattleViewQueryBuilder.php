@@ -2,8 +2,8 @@
 
 namespace App\Infrastructure\Repository;
 
+use App\Domain\ReadModel\RobotBattleView;
 use App\Infrastructure\Doctrine\QueryBuilder\AbstractDoctrineQueryBuilder;
-use App\Infrastructure\Doctrine\View\RobotBattleView;
 use App\Infrastructure\Repository\Exception\UnexpectedQueryResultException;
 use Doctrine\ORM\QueryBuilder;
 

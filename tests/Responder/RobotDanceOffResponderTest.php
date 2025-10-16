@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../TestBootstrap.php';
 
-use App\Infrastructure\Doctrine\View\RobotBattleView;
+use App\Domain\ReadModel\RobotBattleView;
 use App\Infrastructure\Response\RobotDanceOffResponse;
 use App\Responder\RobotDanceOffResponder;
 use Doctrine\Common\Collections\Collection;

@@ -23,8 +23,8 @@ doctrine:
             AppView:
                 is_bundle: false
                 type: attribute
-                dir: '%kernel.project_dir%/src/Infrastructure/Doctrine/View'
-                prefix: 'App\Infrastructure\Doctrine\View'
+                dir: '%kernel.project_dir%/src/Domain/ReadModel'
+                prefix: 'App\Domain\ReadModel'
                 alias: AppView
 
 

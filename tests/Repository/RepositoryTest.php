@@ -7,7 +7,7 @@ require_once __DIR__ . '/../TestBootstrap.php';
 use App\Application\DTO\ApiFiltersDTO;
 use App\Domain\Entity\Robot;
 use App\Domain\Entity\RobotDanceOff;
-use App\Infrastructure\Doctrine\View\RobotBattleView;
+use App\Domain\ReadModel\RobotBattleView;
 use App\Infrastructure\Repository\RobotBattleViewQueryBuilder;
 use App\Infrastructure\Repository\RobotDanceOffRepository;
 use App\Infrastructure\Repository\RobotQueryBuilder;
