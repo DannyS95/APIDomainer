@@ -10,8 +10,11 @@ use Doctrine\ORM\Mapping as ORM;
 final class RobotBattleView implements RobotBattleViewInterface
 {
     #[ORM\Id]
-    #[ORM\Column(name: 'battle_id', type: 'integer')]
+    #[ORM\Column(name: 'dance_off_id', type: 'integer')]
     private int $id;
+
+    #[ORM\Column(name: 'battle_id', type: 'integer')]
+    private int $battleId;
 
     #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
     private DateTimeImmutable $createdAt;
@@ -50,6 +53,12 @@ final class RobotBattleView implements RobotBattleViewInterface
     {
     }
 
+    /**
+     * Factory used in tests to hydrate the read model without Doctrine.
+     *
+     * @param list<array<string, mixed>> $teamOneRobots
+     * @param list<array<string, mixed>> $teamTwoRobots
+     */
     public static function fromData(
         int $id,
         DateTimeImmutable $createdAt,
@@ -60,10 +69,12 @@ final class RobotBattleView implements RobotBattleViewInterface
         string $teamTwoName,
         array $teamTwoRobots,
         ?int $winningTeamId,
-        ?string $winningTeamName
+        ?string $winningTeamName,
+        int $battleId
     ): self {
         $instance = new self();
         $instance->id = $id;
+        $instance->battleId = $battleId;
         $instance->createdAt = $createdAt;
         $instance->teamOneId = $teamOneId;
         $instance->teamOneName = $teamOneName;
@@ -80,6 +91,11 @@ final class RobotBattleView implements RobotBattleViewInterface
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getBattleId(): int
+    {
+        return $this->battleId;
     }
 
     public function getCreatedAt(): DateTimeImmutable
@@ -112,6 +128,16 @@ final class RobotBattleView implements RobotBattleViewInterface
         }
 
         return $this->buildTeamData($this->winningTeamId, $this->winningTeamName ?? 'Unknown Team', []);
+    }
+
+    public function getTeamOneRobotIds(): array
+    {
+        return array_map(static fn (array $robot): int => (int) ($robot['id'] ?? 0), $this->teamOneRobots);
+    }
+
+    public function getTeamTwoRobotIds(): array
+    {
+        return array_map(static fn (array $robot): int => (int) ($robot['id'] ?? 0), $this->teamTwoRobots);
     }
 
     /**

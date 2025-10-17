@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Repository;
 
+use App\Domain\Entity\RobotBattle;
 use App\Domain\Entity\RobotDanceOff;
 use App\Domain\ReadModel\RobotBattleViewInterface;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
@@ -72,5 +73,17 @@ final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
             $this->entityManager->persist($entity);
         }
         $this->entityManager->flush();
+    }
+
+    public function findLatestByBattle(RobotBattle $battle): ?RobotDanceOff
+    {
+        return $this->entityManager->getRepository(RobotDanceOff::class)
+            ->createQueryBuilder('rdo')
+            ->where('rdo.battle = :battle')
+            ->setParameter('battle', $battle)
+            ->orderBy('rdo.createdAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

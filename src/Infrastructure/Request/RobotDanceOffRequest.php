@@ -44,4 +44,5 @@ final class RobotDanceOffRequest
      * @var array<int> $teamB
      */
     public array $teamB;
+
 }

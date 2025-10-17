@@ -17,7 +17,7 @@ make install
 Visit the 🌐 [API endpoint](http://localhost:8085/api)
 
 ## 🧭 Architecture at a Glance
-- **Domain** – Entities (`Robot`, `Team`, `RobotDanceOff`), repositories, and services such as `RobotService`, plus value objects like `DanceOffTeams` that keep the domain framework-agnostic.
+- **Domain** – Entities (`Robot`, `Team`, `RobotDanceOff`, `RobotBattle`), repositories, and services such as `RobotService`, plus value objects like `DanceOffTeams` that keep the domain framework-agnostic.
 - **Application** – Query handlers (e.g., `GetRobotDanceOffQueryHandler`) and orchestration logic that coordinate domain services via Symfony Messenger.
 - **Infrastructure** – Doctrine repositories, query builders, API Platform filters, and request DTOs. Handlers translate transport objects into domain value objects before delegating.
 - **Action / Responder** – ADR-style actions act as controllers and responders turn domain models into API responses.
@@ -28,14 +28,27 @@ Visit the 🌐 [API endpoint](http://localhost:8085/api)
 - API Platform filters and orderers target these projections, keeping HTTP responses decoupled from the write models while still using Doctrine’s metadata and hydration pipeline.
 
 ## 🔬 Feature Flow: Creating a Dance-Off
-1. **Request** – `POST /api/robots/dance-off` accepts a `RobotDanceOffRequest` with two arrays of robot IDs.
+1. **Request** – `POST /api/robots/dance-off` accepts a `RobotDanceOffRequest` with two arrays of robot IDs; the domain spins up a brand-new battle aggregate automatically.
 2. **Handler** – `RobotDanceOffHandler` converts the request into the `DanceOffTeams` value object.
 3. **Domain Service** – `RobotService` validates each robot, assembles two `Team` aggregates, runs the experience-based scoring algorithm, and persists the resulting `RobotDanceOff`.
 4. **Persistence & Response** – Teams and dance-off entities are saved via Doctrine repositories. The responder layer presents a structured payload when queried.
 
+### Replaying Battles
+- `POST /api/robot-battles/replays` – Provide a `battleId` plus up to two robot swaps per side (`out` ➜ `in`) to run another dance-off using the same battle history. Example payload:
+  ```json
+  {
+    "battleId": 3,
+    "teamAReplacements": [{ "out": 12, "in": 34 }],
+    "teamBReplacements": [{ "out": 21, "in": 55 }]
+  }
+  ```
+- `GET /api/robot-battles/{battleId}/dance-offs` – Retrieve the full list of dance-offs for a given battle, including every roster permutation and winner.
+- `GET /api/robot-battles/{battleId}/teams` – Return only the robot ID lists for each team across every dance-off in the battle; perfect for building replay lineups or roster views.
+- `GET /api/robot-battles` – Quick scoreboard summarising each battle’s latest result and total number of replays so you can surface standings at a glance.
+
 ### Explore the League
 - `GET /api/robots` – Browse all registered robots, filter by name, sort by experience, or inspect their stats individually.
-- `GET /api/robots/dance-offs` – List dance-offs with search and ordering support, perfect for replaying past battles.
+- `GET /api/robots/dance-offs` – List dance-offs with search and ordering support, including the parent `battleId` so you can branch into replays.
 - `GET /api/robots/{id}` – Fetch a single competitor and see if they are ready for the next matchup.
 
 Each read endpoint rides the query bus for separation of concerns and returns serialized responses through dedicated responders.

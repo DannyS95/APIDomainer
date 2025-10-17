@@ -5,17 +5,20 @@ namespace App\Infrastructure\Response;
 final class RobotDanceOffResponse
 {
     private int $id;
+    private int $battleId;
     private array $teamOne;
     private array $teamTwo;
     private ?array $winningTeam;
 
     public function __construct(
         int $id,
+        int $battleId,
         array $teamOne,
         array $teamTwo,
         ?array $winningTeam
     ) {
         $this->id = $id;
+        $this->battleId = $battleId;
         $this->teamOne = $teamOne;
         $this->teamTwo = $teamTwo;
         $this->winningTeam = $winningTeam;
@@ -24,6 +27,11 @@ final class RobotDanceOffResponse
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getBattleId(): int
+    {
+        return $this->battleId;
     }
 
     /**

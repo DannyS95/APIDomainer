@@ -15,6 +15,9 @@ class RobotDanceOffOrderFilter implements FilterInterface
             'id' => [
                 'type' => Type::BUILTIN_TYPE_INT,
             ],
+            'battleId' => [
+                'type' => Type::BUILTIN_TYPE_INT,
+            ],
             'createdAt' => [
                 'type' => Type::BUILTIN_TYPE_STRING,
             ],

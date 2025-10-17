@@ -29,6 +29,7 @@ final class RobotDanceOffResponder
     {
         return new RobotDanceOffResponse(
             $danceOff->getId(),
+            $danceOff->getBattleId(),
             $danceOff->getTeamOne(),
             $danceOff->getTeamTwo(),
             $danceOff->getWinningTeam()

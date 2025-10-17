@@ -25,6 +25,10 @@ class RobotDanceOff
     #[ORM\JoinColumn(name: 'winning_team_id', referencedColumnName: 'id', nullable: true)]
     private ?Team $winningTeam = null;
 
+    #[ORM\ManyToOne(targetEntity: RobotBattle::class, inversedBy: 'occurrences')]
+    #[ORM\JoinColumn(name: 'robot_battle_id', referencedColumnName: 'id', nullable: false)]
+    private ?RobotBattle $battle = null;
+
     #[ORM\Column(type: 'datetime')]
     private \DateTime $createdAt;
 
@@ -74,5 +78,17 @@ class RobotDanceOff
     public function getCreatedAt(): \DateTime
     {
         return $this->createdAt;
+    }
+
+    public function getBattle(): ?RobotBattle
+    {
+        return $this->battle;
+    }
+
+    public function setBattle(?RobotBattle $battle): self
+    {
+        $this->battle = $battle;
+
+        return $this;
     }
 }

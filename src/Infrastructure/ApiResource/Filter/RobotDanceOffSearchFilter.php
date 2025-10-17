@@ -16,6 +16,10 @@ final class RobotDanceOffSearchFilter implements FilterInterface
                 'operations' => ['eq', 'gt', 'gte', 'lt', 'lte'],
                 'type' => Type::BUILTIN_TYPE_INT,
             ],
+            'battleId' => [
+                'operations' => ['eq', 'gt', 'gte', 'lt', 'lte'],
+                'type' => Type::BUILTIN_TYPE_INT,
+            ],
             'createdAt' => [
                 'operations' => ['eq', 'gt', 'gte', 'lt', 'lte'],
                 'type' => Type::BUILTIN_TYPE_STRING,

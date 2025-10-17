@@ -56,7 +56,8 @@ $danceOff = RobotBattleView::fromData(
     teamTwoName: 'Beta Squad',
     teamTwoRobots: $teamTwoRobots,
     winningTeamId: 10,
-    winningTeamName: 'Alpha Team'
+    winningTeamName: 'Alpha Team',
+    battleId: 7
 );
 
 $responder = new RobotDanceOffResponder();
@@ -68,6 +69,7 @@ assertTrue($responses->count() === 1, 'Responder should produce one response ite
 $firstResponse = $responses->first();
 assertTrue($firstResponse instanceof RobotDanceOffResponse, 'Responder should map entities to RobotDanceOffResponse objects.');
 assertTrue($firstResponse->getId() === 42, 'Response should expose the dance-off ID.');
+assertTrue($firstResponse->getBattleId() === 7, 'Response should expose the battle aggregate ID.');
 
 $teamOneDetails = $firstResponse->getTeamOne();
 assertTrue($teamOneDetails['id'] === 10, 'Team One ID should match the read model.');

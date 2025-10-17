@@ -31,6 +31,7 @@ $robotDataset = [
 $robotBattleDataset = [
     [
         'id' => 1,
+        'battleId' => 1001,
         'createdAt' => new \DateTimeImmutable('2024-01-01 12:00:00'),
         'teamOneId' => 101,
         'teamOneName' => 'Team One',
@@ -47,6 +48,7 @@ $robotBattleDataset = [
     ],
     [
         'id' => 2,
+        'battleId' => 1002,
         'createdAt' => new \DateTimeImmutable('2024-01-02 12:00:00'),
         'teamOneId' => 102,
         'teamOneName' => 'Team Two',
@@ -123,6 +125,7 @@ $firstDance = $robotDanceOffRepository->findAll(
 assertTrue(count($firstDance) === 1, 'First dance-off query should return one result.');
 assertTrue($firstDance[0] instanceof RobotBattleView, 'Dance-off result should be a RobotBattleView read model.');
 assertTrue($firstDance[0]->getId() === 1, 'First dance-off query should return ID 1.');
+assertTrue($firstDance[0]->getBattleId() === 1001, 'First dance-off should reference battle 1001.');
 assertTrue($firstDance[0]->getWinningTeam()['name'] === 'Team One', 'Winning team should be Team One.');
 
 $secondDance = $robotDanceOffRepository->findAll(
@@ -137,6 +140,19 @@ $secondDance = $robotDanceOffRepository->findAll(
 assertTrue(count($secondDance) === 1, 'Second dance-off query should return one result.');
 assertTrue($secondDance[0] instanceof RobotBattleView, 'Dance-off result should be a RobotBattleView read model.');
 assertTrue($secondDance[0]->getId() === 2, 'Second dance-off query should return ID 2.');
+assertTrue($secondDance[0]->getBattleId() === 1002, 'Second dance-off should reference battle 1002.');
 assertTrue($secondDance[0]->getWinningTeam()['name'] === 'Team Two', 'Winning team should be Team Two.');
+
+$battleReplay = $robotDanceOffRepository->findAll(
+    (new ApiFiltersDTO(
+        ['battleId' => 1001],
+        [],
+        [],
+        1,
+        10
+    ))->toFilterCriteria()
+);
+assertTrue(count($battleReplay) === 1, 'Filtering by battleId should limit the dataset.');
+assertTrue($battleReplay[0]->getBattleId() === 1001, 'Filtered battle should match the requested aggregate.');
 
 echo "Repository tests completed successfully.\n";

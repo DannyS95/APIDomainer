@@ -3,6 +3,7 @@
 namespace App\Domain\Repository;
 
 use App\Domain\Entity\RobotDanceOff;
+use App\Domain\Entity\RobotBattle;
 use App\Domain\ReadModel\RobotBattleViewInterface;
 use App\Domain\ValueObject\FilterCriteria;
 
@@ -18,4 +19,6 @@ interface RobotDanceOffRepositoryInterface
     public function save(RobotDanceOff $robotDanceOff): void;
 
     public function delete(RobotDanceOff $robotDanceOff): void;
+
+    public function findLatestByBattle(RobotBattle $battle): ?RobotDanceOff;
 }
