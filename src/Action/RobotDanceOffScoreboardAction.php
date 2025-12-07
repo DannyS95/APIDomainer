@@ -3,19 +3,19 @@
 namespace App\Action;
 
 use App\Domain\Entity\RobotDanceOff;
-use App\Domain\Repository\RobotBattleRepositoryInterface;
-use App\Infrastructure\Response\RobotBattleScoreboardResponse;
+use App\Domain\Repository\RobotDanceOffHistoryRepositoryInterface;
+use App\Infrastructure\Response\RobotDanceOffScoreboardResponse;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
-final class RobotBattleScoreboardAction
+final class RobotDanceOffScoreboardAction
 {
-    public function __construct(private RobotBattleRepositoryInterface $robotBattleRepository)
+    public function __construct(private RobotDanceOffHistoryRepositoryInterface $robotBattleRepository)
     {
     }
 
     /**
-     * @return array<int, RobotBattleScoreboardResponse>
+     * @return array<int, RobotDanceOffScoreboardResponse>
      */
     public function __invoke(): array
     {
@@ -39,7 +39,7 @@ final class RobotBattleScoreboardAction
             /** @var RobotDanceOff $latest */
             $latest = end($danceOffs);
 
-            $scoreboard[] = new RobotBattleScoreboardResponse(
+            $scoreboard[] = new RobotDanceOffScoreboardResponse(
                 $battle->getId() ?? 0,
                 count($danceOffs),
                 $latest->getId() ?? 0,

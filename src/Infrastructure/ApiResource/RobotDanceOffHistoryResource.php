@@ -5,13 +5,13 @@ namespace App\Infrastructure\ApiResource;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
-use App\Action\RobotBattleHistoryAction;
-use App\Action\RobotBattleScoreboardAction;
-use App\Action\RobotBattleTeamsAction;
+use App\Action\RobotDanceOffHistoryAction;
+use App\Action\RobotDanceOffScoreboardAction;
+use App\Action\RobotDanceOffTeamsAction;
 use App\Infrastructure\Request\RobotBattleReplayRequest;
-use App\Infrastructure\Response\RobotBattleScoreboardResponse;
+use App\Infrastructure\Response\RobotDanceOffScoreboardResponse;
 use App\Infrastructure\Response\RobotDanceOffResponse;
-use App\Infrastructure\Response\RobotBattleTeamsResponse;
+use App\Infrastructure\Response\RobotDanceOffTeamsResponse;
 
 #[ApiResource(
     routePrefix: '/robot-battles',
@@ -26,27 +26,27 @@ use App\Infrastructure\Response\RobotBattleTeamsResponse;
         ),
         new GetCollection(
             uriTemplate: '/',
-            name: 'Robot Battle Scoreboard',
-            controller: RobotBattleScoreboardAction::class,
-            output: RobotBattleScoreboardResponse::class,
+            name: 'Robot Dance-Off History Scoreboard',
+            controller: RobotDanceOffScoreboardAction::class,
+            output: RobotDanceOffScoreboardResponse::class,
             read: false
         ),
         new GetCollection(
             uriTemplate: '/{battleId}/dance-offs',
-            name: 'Robot Battle History',
-            controller: RobotBattleHistoryAction::class,
+            name: 'Robot Dance-Off History',
+            controller: RobotDanceOffHistoryAction::class,
             output: RobotDanceOffResponse::class,
             read: false
         ),
         new GetCollection(
             uriTemplate: '/{battleId}/teams',
-            name: 'Robot Battle Teams',
-            controller: RobotBattleTeamsAction::class,
-            output: RobotBattleTeamsResponse::class,
+            name: 'Robot Dance-Off Teams',
+            controller: RobotDanceOffTeamsAction::class,
+            output: RobotDanceOffTeamsResponse::class,
             read: false
         ),
     ]
 )]
-final class RobotBattleResource
+final class RobotDanceOffHistoryResource
 {
 }

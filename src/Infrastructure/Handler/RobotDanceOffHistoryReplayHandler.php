@@ -9,7 +9,7 @@ use App\Infrastructure\Request\RobotBattleReplayRequest;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-final class RobotBattleReplayHandler
+final class RobotDanceOffHistoryReplayHandler
 {
     public function __construct(private RobotService $robotService)
     {

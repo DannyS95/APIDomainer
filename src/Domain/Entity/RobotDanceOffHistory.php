@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'robot_battles')]
-class RobotBattle
+class RobotDanceOffHistory
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

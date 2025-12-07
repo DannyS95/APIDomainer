@@ -21,4 +21,4 @@ services:
     App\Infrastructure\Serializer\RobotDanceOffNormalizer:
         tags: ['serializer.normalizer']
 
-    App\Domain\Repository\RobotBattleRepositoryInterface: '@App\Infrastructure\Repository\RobotBattleRepository'
+    App\Domain\Repository\RobotDanceOffHistoryRepositoryInterface: '@App\Infrastructure\Repository\RobotDanceOffHistoryRepository'

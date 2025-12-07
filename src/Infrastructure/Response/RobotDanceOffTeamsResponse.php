@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Response;
 
-final class RobotBattleTeamsResponse
+final class RobotDanceOffTeamsResponse
 {
     /**
      * @param array<int, int> $teamOneRobotIds

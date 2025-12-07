@@ -31,9 +31,9 @@ class RobotDanceOff
     #[ORM\JoinColumn(name: 'winning_team_id', referencedColumnName: 'id', nullable: true)]
     private ?Team $winningTeam = null;
 
-    #[ORM\ManyToOne(targetEntity: RobotBattle::class, inversedBy: 'danceOffs')]
+    #[ORM\ManyToOne(targetEntity: RobotDanceOffHistory::class, inversedBy: 'danceOffs')]
     #[ORM\JoinColumn(name: 'robot_battle_id', referencedColumnName: 'id', nullable: false)]
-    private ?RobotBattle $battle = null;
+    private ?RobotDanceOffHistory $battle = null;
 
     #[ORM\Column(type: 'datetime')]
     private \DateTime $createdAt;
@@ -110,12 +110,12 @@ class RobotDanceOff
         return $this->createdAt;
     }
 
-    public function getBattle(): ?RobotBattle
+    public function getBattle(): ?RobotDanceOffHistory
     {
         return $this->battle;
     }
 
-    public function setBattle(?RobotBattle $battle): self
+    public function setBattle(?RobotDanceOffHistory $battle): self
     {
         $this->battle = $battle;
 

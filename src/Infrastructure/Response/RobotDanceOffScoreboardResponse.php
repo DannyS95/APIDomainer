@@ -4,7 +4,7 @@ namespace App\Infrastructure\Response;
 
 use DateTimeInterface;
 
-final class RobotBattleScoreboardResponse
+final class RobotDanceOffScoreboardResponse
 {
     public function __construct(
         private int $battleId,

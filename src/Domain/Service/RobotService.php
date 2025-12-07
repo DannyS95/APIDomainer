@@ -4,12 +4,12 @@ namespace App\Domain\Service;
 
 use RobotServiceException;
 use App\Domain\Entity\Robot;
-use App\Domain\Entity\RobotBattle;
+use App\Domain\Entity\RobotDanceOffHistory;
 use App\Domain\Entity\RobotDanceOff;
 use App\Domain\Entity\Team;
 use App\Domain\Repository\RobotRepositoryInterface;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
-use App\Domain\Repository\RobotBattleRepositoryInterface;
+use App\Domain\Repository\RobotDanceOffHistoryRepositoryInterface;
 use App\Domain\Repository\TeamRepositoryInterface;
 use App\Domain\ValueObject\BattleReplayInstruction;
 use App\Domain\ValueObject\DanceOffTeams;
@@ -20,7 +20,7 @@ final class RobotService
     public function __construct(
         private RobotRepositoryInterface $robotRepository,
         private RobotDanceOffRepositoryInterface $robotDanceOffRepository,
-        private RobotBattleRepositoryInterface $robotBattleRepository,
+        private RobotDanceOffHistoryRepositoryInterface $robotDanceOffHistoryRepository,
         private TeamRepositoryInterface $teamRepository,
         private RobotValidatorService $robotValidatorService
     ) {}
@@ -189,16 +189,16 @@ final class RobotService
         return false;
     }
 
-    private function resolveBattle(?int $battleId): RobotBattle
+    private function resolveBattle(?int $battleId): RobotDanceOffHistory
     {
         if ($battleId === null) {
-            $battle = new RobotBattle();
-            $this->robotBattleRepository->save($battle);
+            $battle = new RobotDanceOffHistory();
+            $this->robotDanceOffHistoryRepository->save($battle);
 
             return $battle;
         }
 
-        $battle = $this->robotBattleRepository->findOneBy($battleId);
+        $battle = $this->robotDanceOffHistoryRepository->findOneBy($battleId);
 
         if ($battle === null) {
             throw new RobotServiceException("Robot Battle ID $battleId does not exist.");
@@ -207,7 +207,7 @@ final class RobotService
         return $battle;
     }
 
-    private function createDanceOff(RobotBattle $battle, Team $teamOne, Team $teamTwo): void
+    private function createDanceOff(RobotDanceOffHistory $battle, Team $teamOne, Team $teamTwo): void
     {
         $danceOff = new RobotDanceOff();
         $battle->addDanceOff($danceOff);

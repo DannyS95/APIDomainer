@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
-final class RobotBattleHistoryAction
+final class RobotDanceOffHistoryAction
 {
     public function __construct(
         private RobotDanceOffRepositoryInterface $robotDanceOffRepository,

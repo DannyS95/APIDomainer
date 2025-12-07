@@ -5,19 +5,19 @@ namespace App\Action;
 use App\Domain\ReadModel\RobotBattleViewInterface;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
 use App\Domain\ValueObject\FilterCriteria;
-use App\Infrastructure\Response\RobotBattleTeamsResponse;
+use App\Infrastructure\Response\RobotDanceOffTeamsResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
-final class RobotBattleTeamsAction
+final class RobotDanceOffTeamsAction
 {
     public function __construct(private RobotDanceOffRepositoryInterface $robotDanceOffRepository)
     {
     }
 
     /**
-     * @return array<int, RobotBattleTeamsResponse>
+     * @return array<int, RobotDanceOffTeamsResponse>
      */
     public function __invoke(Request $request): array
     {
@@ -34,7 +34,7 @@ final class RobotBattleTeamsAction
         $danceOffs = $this->robotDanceOffRepository->findAll($filterCriteria);
 
         return array_map(
-            static fn (RobotBattleViewInterface $danceOff): RobotBattleTeamsResponse => new RobotBattleTeamsResponse(
+            static fn (RobotBattleViewInterface $danceOff): RobotDanceOffTeamsResponse => new RobotDanceOffTeamsResponse(
                 $danceOff->getBattleId(),
                 $danceOff->getId(),
                 $danceOff->getTeamOneRobotIds(),
