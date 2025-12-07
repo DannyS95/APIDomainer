@@ -56,20 +56,10 @@ final class RobotService
     }
 
     /**
-     * Determines the winning team based on total robot experience.
+     * Determines the winning team from precomputed power totals.
      */
-    private function calculateWinningTeam(Team $teamOne, Team $teamTwo): ?Team
+    private function calculateWinningTeam(Team $teamOne, Team $teamTwo, int $teamOnePower, int $teamTwoPower): ?Team
     {
-        $teamOnePower = 0;
-        foreach ($teamOne->getRobots() as $robot) {
-            $teamOnePower += $robot->getExperience();
-        }
-
-        $teamTwoPower = 0;
-        foreach ($teamTwo->getRobots() as $robot) {
-            $teamTwoPower += $robot->getExperience();
-        }
-
         if ($teamOnePower > $teamTwoPower) {
             return $teamOne;
         }
@@ -79,6 +69,17 @@ final class RobotService
         }
 
         return null;
+    }
+
+    private function calculateTeamPower(Team $team): int
+    {
+        $power = 0;
+
+        foreach ($team->getRobots() as $robot) {
+            $power += $robot->getExperience();
+        }
+
+        return $power;
     }
 
     private function loadRobot(int $id): Robot
@@ -215,7 +216,12 @@ final class RobotService
         $teamOne->setDanceOff($danceOff);
         $teamTwo->setDanceOff($danceOff);
 
-        $winningTeam = $this->calculateWinningTeam($teamOne, $teamTwo);
+        $teamOnePower = $this->calculateTeamPower($teamOne);
+        $teamTwoPower = $this->calculateTeamPower($teamTwo);
+        $danceOff->setTeamOnePower($teamOnePower);
+        $danceOff->setTeamTwoPower($teamTwoPower);
+
+        $winningTeam = $this->calculateWinningTeam($teamOne, $teamTwo, $teamOnePower, $teamTwoPower);
         $danceOff->setWinningTeam($winningTeam);
 
         $this->robotDanceOffRepository->save($danceOff);

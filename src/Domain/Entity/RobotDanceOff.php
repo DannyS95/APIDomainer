@@ -21,6 +21,12 @@ class RobotDanceOff
     #[ORM\JoinColumn(name: 'team_two_id', referencedColumnName: 'id', nullable: false)]
     private ?Team $teamTwo = null;
 
+    #[ORM\Column(name: 'team_one_power', type: 'integer')]
+    private int $teamOnePower = 0;
+
+    #[ORM\Column(name: 'team_two_power', type: 'integer')]
+    private int $teamTwoPower = 0;
+
     #[ORM\ManyToOne(targetEntity: Team::class)]
     #[ORM\JoinColumn(name: 'winning_team_id', referencedColumnName: 'id', nullable: true)]
     private ?Team $winningTeam = null;
@@ -61,6 +67,30 @@ class RobotDanceOff
     public function setTeamTwo(Team $teamTwo): self
     {
         $this->teamTwo = $teamTwo;
+        return $this;
+    }
+
+    public function getTeamOnePower(): int
+    {
+        return $this->teamOnePower;
+    }
+
+    public function setTeamOnePower(int $teamOnePower): self
+    {
+        $this->teamOnePower = $teamOnePower;
+
+        return $this;
+    }
+
+    public function getTeamTwoPower(): int
+    {
+        return $this->teamTwoPower;
+    }
+
+    public function setTeamTwoPower(int $teamTwoPower): self
+    {
+        $this->teamTwoPower = $teamTwoPower;
+
         return $this;
     }
 

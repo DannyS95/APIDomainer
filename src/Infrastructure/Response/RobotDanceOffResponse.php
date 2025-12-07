@@ -9,19 +9,25 @@ final class RobotDanceOffResponse
     private array $teamOne;
     private array $teamTwo;
     private ?array $winningTeam;
+    private int $teamOnePower;
+    private int $teamTwoPower;
 
     public function __construct(
         int $id,
         int $battleId,
         array $teamOne,
         array $teamTwo,
-        ?array $winningTeam
+        ?array $winningTeam,
+        int $teamOnePower,
+        int $teamTwoPower
     ) {
         $this->id = $id;
         $this->battleId = $battleId;
         $this->teamOne = $teamOne;
         $this->teamTwo = $teamTwo;
         $this->winningTeam = $winningTeam;
+        $this->teamOnePower = $teamOnePower;
+        $this->teamTwoPower = $teamTwoPower;
     }
 
     public function getId(): int
@@ -56,5 +62,15 @@ final class RobotDanceOffResponse
     public function getWinningTeam(): ?array
     {
         return $this->winningTeam;
+    }
+
+    public function getTeamOnePower(): int
+    {
+        return $this->teamOnePower;
+    }
+
+    public function getTeamTwoPower(): int
+    {
+        return $this->teamTwoPower;
     }
 }

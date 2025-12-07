@@ -51,9 +51,11 @@ $danceOff = RobotBattleView::fromData(
     createdAt: new \DateTimeImmutable('2024-03-01 09:30:00'),
     teamOneId: 10,
     teamOneName: 'Alpha Team',
+    teamOnePower: 20,
     teamOneRobots: $teamOneRobots,
     teamTwoId: 20,
     teamTwoName: 'Beta Squad',
+    teamTwoPower: 6,
     teamTwoRobots: $teamTwoRobots,
     winningTeamId: 10,
     winningTeamName: 'Alpha Team',
@@ -70,6 +72,8 @@ $firstResponse = $responses->first();
 assertTrue($firstResponse instanceof RobotDanceOffResponse, 'Responder should map entities to RobotDanceOffResponse objects.');
 assertTrue($firstResponse->getId() === 42, 'Response should expose the dance-off ID.');
 assertTrue($firstResponse->getBattleId() === 7, 'Response should expose the battle aggregate ID.');
+assertTrue($firstResponse->getTeamOnePower() === 20, 'Response should expose Team One power total.');
+assertTrue($firstResponse->getTeamTwoPower() === 6, 'Response should expose Team Two power total.');
 
 $teamOneDetails = $firstResponse->getTeamOne();
 assertTrue($teamOneDetails['id'] === 10, 'Team One ID should match the read model.');

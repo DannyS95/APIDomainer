@@ -32,7 +32,9 @@ final class RobotDanceOffResponder
             $danceOff->getBattleId(),
             $danceOff->getTeamOne(),
             $danceOff->getTeamTwo(),
-            $danceOff->getWinningTeam()
+            $danceOff->getWinningTeam(),
+            $danceOff->getTeamOnePower(),
+            $danceOff->getTeamTwoPower()
         );
     }
 }

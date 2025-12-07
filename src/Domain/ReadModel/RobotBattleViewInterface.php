@@ -23,10 +23,14 @@ interface RobotBattleViewInterface
      */
     public function getTeamOne(): array;
 
+    public function getTeamOnePower(): int;
+
     /**
      * @return array{id: int, name: string, robots: array<int, array<string, mixed>>}
      */
     public function getTeamTwo(): array;
+
+    public function getTeamTwoPower(): int;
 
     /**
      * @return array{id: int, name: string, robots: array<int, array<string, mixed>>}|null

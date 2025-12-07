@@ -25,6 +25,9 @@ final class RobotBattleView implements RobotBattleViewInterface
     #[ORM\Column(name: 'team_one_name', type: 'string', length: 100)]
     private string $teamOneName;
 
+    #[ORM\Column(name: 'team_one_power', type: 'integer')]
+    private int $teamOnePower;
+
     /**
      * @var list<array<string, mixed>> Plain robot payload for team one pulled from the view JSON column
      */
@@ -36,6 +39,9 @@ final class RobotBattleView implements RobotBattleViewInterface
 
     #[ORM\Column(name: 'team_two_name', type: 'string', length: 100)]
     private string $teamTwoName;
+
+    #[ORM\Column(name: 'team_two_power', type: 'integer')]
+    private int $teamTwoPower;
 
     /**
      * @var list<array<string, mixed>> Plain robot payload for team two pulled from the view JSON column
@@ -64,9 +70,11 @@ final class RobotBattleView implements RobotBattleViewInterface
         DateTimeImmutable $createdAt,
         int $teamOneId,
         string $teamOneName,
+        int $teamOnePower,
         array $teamOneRobots,
         int $teamTwoId,
         string $teamTwoName,
+        int $teamTwoPower,
         array $teamTwoRobots,
         ?int $winningTeamId,
         ?string $winningTeamName,
@@ -78,9 +86,11 @@ final class RobotBattleView implements RobotBattleViewInterface
         $instance->createdAt = $createdAt;
         $instance->teamOneId = $teamOneId;
         $instance->teamOneName = $teamOneName;
+        $instance->teamOnePower = $teamOnePower;
         $instance->teamOneRobots = $teamOneRobots;
         $instance->teamTwoId = $teamTwoId;
         $instance->teamTwoName = $teamTwoName;
+        $instance->teamTwoPower = $teamTwoPower;
         $instance->teamTwoRobots = $teamTwoRobots;
         $instance->winningTeamId = $winningTeamId;
         $instance->winningTeamName = $winningTeamName;
@@ -108,9 +118,19 @@ final class RobotBattleView implements RobotBattleViewInterface
         return $this->buildTeamData($this->teamOneId, $this->teamOneName, $this->teamOneRobots);
     }
 
+    public function getTeamOnePower(): int
+    {
+        return $this->teamOnePower;
+    }
+
     public function getTeamTwo(): array
     {
         return $this->buildTeamData($this->teamTwoId, $this->teamTwoName, $this->teamTwoRobots);
+    }
+
+    public function getTeamTwoPower(): int
+    {
+        return $this->teamTwoPower;
     }
 
     public function getWinningTeam(): ?array
