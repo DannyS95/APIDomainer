@@ -23,25 +23,25 @@ final class RobotBattleScoreboardAction
         $scoreboard = [];
 
         foreach ($battles as $battle) {
-            $occurrences = $battle->getOccurrences()->toArray();
+            $danceOffs = $battle->getDanceOffs()->toArray();
 
-            if ($occurrences === []) {
+            if ($danceOffs === []) {
                 continue;
             }
 
             usort(
-                $occurrences,
+                $danceOffs,
                 static function (RobotDanceOff $left, RobotDanceOff $right): int {
                     return $left->getCreatedAt()->getTimestamp() <=> $right->getCreatedAt()->getTimestamp();
                 }
             );
 
             /** @var RobotDanceOff $latest */
-            $latest = end($occurrences);
+            $latest = end($danceOffs);
 
             $scoreboard[] = new RobotBattleScoreboardResponse(
                 $battle->getId() ?? 0,
-                count($occurrences),
+                count($danceOffs),
                 $latest->getId() ?? 0,
                 $latest->getCreatedAt(),
                 $latest->getWinningTeam()?->getName(),

@@ -25,7 +25,7 @@ class RobotDanceOff
     #[ORM\JoinColumn(name: 'winning_team_id', referencedColumnName: 'id', nullable: true)]
     private ?Team $winningTeam = null;
 
-    #[ORM\ManyToOne(targetEntity: RobotBattle::class, inversedBy: 'occurrences')]
+    #[ORM\ManyToOne(targetEntity: RobotBattle::class, inversedBy: 'danceOffs')]
     #[ORM\JoinColumn(name: 'robot_battle_id', referencedColumnName: 'id', nullable: false)]
     private ?RobotBattle $battle = null;
 

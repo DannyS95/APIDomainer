@@ -21,12 +21,12 @@ class RobotBattle
 
     /** @var Collection<int, RobotDanceOff> */
     #[ORM\OneToMany(mappedBy: 'battle', targetEntity: RobotDanceOff::class, cascade: ['persist'], orphanRemoval: true)]
-    private Collection $occurrences;
+    private Collection $danceOffs;
 
     public function __construct(?DateTimeImmutable $createdAt = null)
     {
         $this->createdAt = $createdAt ?? new DateTimeImmutable();
-        $this->occurrences = new ArrayCollection();
+        $this->danceOffs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -42,26 +42,26 @@ class RobotBattle
     /**
      * @return Collection<int, RobotDanceOff>
      */
-    public function getOccurrences(): Collection
+    public function getDanceOffs(): Collection
     {
-        return $this->occurrences;
+        return $this->danceOffs;
     }
 
-    public function addOccurrence(RobotDanceOff $occurrence): self
+    public function addDanceOff(RobotDanceOff $danceOff): self
     {
-        if (!$this->occurrences->contains($occurrence)) {
-            $this->occurrences->add($occurrence);
-            $occurrence->setBattle($this);
+        if (!$this->danceOffs->contains($danceOff)) {
+            $this->danceOffs->add($danceOff);
+            $danceOff->setBattle($this);
         }
 
         return $this;
     }
 
-    public function removeOccurrence(RobotDanceOff $occurrence): self
+    public function removeDanceOff(RobotDanceOff $danceOff): self
     {
-        if ($this->occurrences->removeElement($occurrence)) {
-            if ($occurrence->getBattle() === $this) {
-                $occurrence->setBattle(null);
+        if ($this->danceOffs->removeElement($danceOff)) {
+            if ($danceOff->getBattle() === $this) {
+                $danceOff->setBattle(null);
             }
         }
 

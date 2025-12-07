@@ -52,53 +52,29 @@ final class RobotService
         $this->teamRepository->save($teamOne);
         $this->teamRepository->save($teamTwo);
 
-        // Create the DanceOff and set relationships
-        $danceOff = new RobotDanceOff();
-        $battle->addOccurrence($danceOff);
-        $danceOff->setTeamOne($teamOne);
-        $danceOff->setTeamTwo($teamTwo);
-        $teamOne->setDanceOff($danceOff);
-        $teamTwo->setDanceOff($danceOff);
-
-        // Calculate and set the winning team
-        $winningTeam = $this->calculateWinningTeam($teamOne, $teamTwo);
-        $danceOff->setWinningTeam($winningTeam);
-
-        // Persist the DanceOff
-        $this->robotDanceOffRepository->save($danceOff);
+        $this->createDanceOff($battle, $teamOne, $teamTwo);
     }
 
     /**
-     * Determines the winning team based on individual battles.
+     * Determines the winning team based on total robot experience.
      */
     private function calculateWinningTeam(Team $teamOne, Team $teamTwo): ?Team
     {
-        $teamOneWins = 0;
-        $teamTwoWins = 0;
-
-        $rounds = min($teamOne->getRobots()->count(), $teamTwo->getRobots()->count());
-
-        for ($index = 0; $index < $rounds; $index++) {
-            $robotA = $teamOne->getRobots()->get($index);
-            $robotB = $teamTwo->getRobots()->get($index);
-
-            if ($robotA === null || $robotB === null) {
-                continue;
-            }
-
-            if ($robotA->getExperience() > $robotB->getExperience()) {
-                $teamOneWins++;
-                continue;
-            }
-
-            if ($robotB->getExperience() > $robotA->getExperience()) {
-                $teamTwoWins++;
-            }
+        $teamOnePower = 0;
+        foreach ($teamOne->getRobots() as $robot) {
+            $teamOnePower += $robot->getExperience();
         }
 
-        if ($teamOneWins > $teamTwoWins) {
+        $teamTwoPower = 0;
+        foreach ($teamTwo->getRobots() as $robot) {
+            $teamTwoPower += $robot->getExperience();
+        }
+
+        if ($teamOnePower > $teamTwoPower) {
             return $teamOne;
-        } elseif ($teamTwoWins > $teamOneWins) {
+        }
+
+        if ($teamTwoPower > $teamOnePower) {
             return $teamTwo;
         }
 
@@ -137,17 +113,7 @@ final class RobotService
         $this->teamRepository->save($teamOne);
         $this->teamRepository->save($teamTwo);
 
-        $danceOff = new RobotDanceOff();
-        $battle->addOccurrence($danceOff);
-        $danceOff->setTeamOne($teamOne);
-        $danceOff->setTeamTwo($teamTwo);
-        $teamOne->setDanceOff($danceOff);
-        $teamTwo->setDanceOff($danceOff);
-
-        $winningTeam = $this->calculateWinningTeam($teamOne, $teamTwo);
-        $danceOff->setWinningTeam($winningTeam);
-
-        $this->robotDanceOffRepository->save($danceOff);
+        $this->createDanceOff($battle, $teamOne, $teamTwo);
     }
 
     /**
@@ -163,15 +129,15 @@ final class RobotService
     /**
      * @param list<RobotReplacement> $replacements
      */
-    private function cloneTeamForReplay(?Team $baseline, array $replacements): Team
+    private function cloneTeamForReplay(?Team $originalTeam, array $replacements): Team
     {
-        if ($baseline === null) {
-            throw new RobotServiceException('Baseline team could not be determined for replay.');
+        if ($originalTeam === null) {
+            throw new RobotServiceException('Original team could not be determined for replay.');
         }
 
-        $team = new Team($baseline->getName());
+        $team = new Team($originalTeam->getName());
 
-        foreach ($baseline->getRobots() as $robot) {
+        foreach ($originalTeam->getRobots() as $robot) {
             $team->addRobot($robot);
         }
 
@@ -238,5 +204,20 @@ final class RobotService
         }
 
         return $battle;
+    }
+
+    private function createDanceOff(RobotBattle $battle, Team $teamOne, Team $teamTwo): void
+    {
+        $danceOff = new RobotDanceOff();
+        $battle->addDanceOff($danceOff);
+        $danceOff->setTeamOne($teamOne);
+        $danceOff->setTeamTwo($teamTwo);
+        $teamOne->setDanceOff($danceOff);
+        $teamTwo->setDanceOff($danceOff);
+
+        $winningTeam = $this->calculateWinningTeam($teamOne, $teamTwo);
+        $danceOff->setWinningTeam($winningTeam);
+
+        $this->robotDanceOffRepository->save($danceOff);
     }
 }
