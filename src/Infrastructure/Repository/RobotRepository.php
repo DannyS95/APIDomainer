@@ -4,34 +4,16 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\Robot;
 use App\Domain\Repository\RobotRepositoryInterface;
-use App\Domain\ValueObject\FilterCriteria;
-use App\Infrastructure\Doctrine\Repository\DoctrineRepositoryInterface;
+use App\Infrastructure\Repository\Doctrine\DoctrineRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
-final class RobotRepository implements RobotRepositoryInterface
+final class RobotRepository extends DoctrineRepository implements RobotRepositoryInterface
 {
     public function __construct(
-        private RobotQueryBuilder $robotQueryBuilder,
-        private DoctrineRepositoryInterface $doctrineRepository
-    ) {}
-
-    /**
-     * Fetch all robots with applied filters, sorts, and pagination.
-     */
-    public function findAll(FilterCriteria $filterCriteria): array
-    {
-        $queryBuilder = $this->robotQueryBuilder->create();
-
-        return $queryBuilder
-            ->whereClauses(
-                $filterCriteria->getFilters(),
-                $filterCriteria->getOperations()
-            )
-            ->addSorts($filterCriteria->getSorts())
-            ->paginate(
-                $filterCriteria->getPage(),
-                $filterCriteria->getItemsPerPage()
-            )
-            ->fetchArray();
+        EntityManagerInterface $entityManager,
+        private RobotQueryBuilder $robotQueryBuilder
+    ) {
+        parent::__construct($entityManager);
     }
 
     /**
@@ -39,8 +21,7 @@ final class RobotRepository implements RobotRepositoryInterface
      */
     public function save(Robot $robot): void
     {
-        $this->doctrineRepository->persist($robot);
-        $this->doctrineRepository->save();
+        $this->persistEntity($robot);
     }
 
     /**
@@ -48,11 +29,17 @@ final class RobotRepository implements RobotRepositoryInterface
      */
     public function findOneBy(int $id): ?Robot
     {
-        $queryBuilder = $this->robotQueryBuilder->create();
+        $entity = $this->findOneEntityById($id);
 
-        return $queryBuilder
-            ->whereId($id)
-            ->fetchOne();
+        if ($entity === null) {
+            return null;
+        }
+
+        if (!$entity instanceof Robot) {
+            throw new \LogicException(sprintf('Expected %s, got %s', Robot::class, get_debug_type($entity)));
+        }
+
+        return $entity;
     }
 
     /**
@@ -60,7 +47,21 @@ final class RobotRepository implements RobotRepositoryInterface
      */
     public function remove(Robot $robot): void
     {
-        $this->doctrineRepository->remove($robot);
-        $this->doctrineRepository->save();
+        $this->removeEntity($robot);
+    }
+
+    protected function queryBuilder(): RobotQueryBuilder
+    {
+        return $this->robotQueryBuilder;
+    }
+
+    protected function entityClass(): string
+    {
+        return Robot::class;
+    }
+
+    protected function defaultSorts(): array
+    {
+        return ['id' => 'ASC'];
     }
 }

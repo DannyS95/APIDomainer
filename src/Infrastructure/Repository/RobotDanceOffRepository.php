@@ -4,38 +4,17 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\RobotDanceOffHistory;
 use App\Domain\Entity\RobotDanceOff;
-use App\Domain\ReadModel\RobotBattleViewInterface;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
-use App\Domain\ValueObject\FilterCriteria;
+use App\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
+final class RobotDanceOffRepository extends DoctrineRepository implements RobotDanceOffRepositoryInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
+        EntityManagerInterface $entityManager,
         private RobotBattleViewQueryBuilder $robotBattleViewQueryBuilder
-    ) {}
-
-    /**
-     * Fetch all dance-offs with filters and sorting.
-     *
-     * @return array<int, RobotBattleViewInterface>
-     */
-    public function findAll(FilterCriteria $filterCriteria): array
-    {
-        $queryBuilder = $this->robotBattleViewQueryBuilder->create();
-
-        return $queryBuilder
-            ->whereClauses(
-                $filterCriteria->getFilters(),
-                $filterCriteria->getOperations()
-            )
-            ->addSorts($filterCriteria->getSorts())
-            ->paginate(
-                $filterCriteria->getPage(),
-                $filterCriteria->getItemsPerPage()
-            )
-            ->fetch();
+    ) {
+        parent::__construct($entityManager);
     }
 
     /**
@@ -43,8 +22,7 @@ final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
      */
     public function save(RobotDanceOff $danceOff): void # these mthods will repeat
     {
-        $this->entityManager->persist($danceOff);
-        $this->entityManager->flush();
+        $this->persistEntity($danceOff);
     }
 
     /**
@@ -52,16 +30,17 @@ final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
      */
     public function findOneBy(int $id): ?RobotDanceOff
     {
-        return $this->entityManager->getRepository(RobotDanceOff::class)->find($id);
-    }
+        $entity = $this->findOneEntityById($id);
 
-    /**
-     * Delete a single dance-off.
-     */
-    public function delete(RobotDanceOff $danceOff): void
-    {
-        $this->entityManager->remove($danceOff);
-        $this->entityManager->flush();
+        if ($entity === null) {
+            return null;
+        }
+
+        if (!$entity instanceof RobotDanceOff) {
+            throw new \LogicException(sprintf('Expected %s, got %s', RobotDanceOff::class, get_debug_type($entity)));
+        }
+
+        return $entity;
     }
 
     /**
@@ -69,10 +48,7 @@ final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
      */
     public function bulkSave(array $RobotDanceOff): void
     {
-        foreach ($RobotDanceOff as $entity) {
-            $this->entityManager->persist($entity);
-        }
-        $this->entityManager->flush();
+        $this->persistEntities($RobotDanceOff);
     }
 
     public function findLatestByBattle(RobotDanceOffHistory $battle): ?RobotDanceOff
@@ -85,5 +61,30 @@ final class RobotDanceOffRepository implements RobotDanceOffRepositoryInterface
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    protected function queryBuilder(): RobotBattleViewQueryBuilder
+    {
+        return $this->robotBattleViewQueryBuilder;
+    }
+
+    protected function defaultSorts(): array
+    {
+        return ['createdAt' => 'DESC'];
+    }
+
+    protected function defaultItemsPerPage(): int
+    {
+        return 50;
+    }
+
+    protected function maxItemsPerPage(): int
+    {
+        return 100;
+    }
+
+    protected function entityClass(): string
+    {
+        return RobotDanceOff::class;
     }
 }

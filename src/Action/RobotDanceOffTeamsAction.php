@@ -6,6 +6,7 @@ use App\Domain\ReadModel\RobotBattleViewInterface;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
 use App\Domain\ValueObject\FilterCriteria;
 use App\Infrastructure\Response\RobotDanceOffTeamsResponse;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
@@ -22,6 +23,10 @@ final class RobotDanceOffTeamsAction
     public function __invoke(Request $request): array
     {
         $battleId = (int) $request->attributes->get('battleId', 0);
+
+        if ($battleId <= 0) {
+            throw new BadRequestHttpException('Battle ID must be a positive integer.');
+        }
 
         $filterCriteria = new FilterCriteria(
             ['battleId' => $battleId],

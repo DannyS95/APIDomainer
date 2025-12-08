@@ -14,4 +14,9 @@ interface RobotDanceOffHistoryRepositoryInterface
      * @return array<int, RobotDanceOffHistory>
      */
     public function findAll(): array;
+
+    /**
+     * @return array<int, RobotDanceOffHistory>
+     */
+    public function findByPeriod(int $year, int $quarter, int $page, int $perPage): array;
 }

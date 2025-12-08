@@ -2,54 +2,56 @@
 
 namespace App\Action;
 
-use App\Domain\Entity\RobotDanceOff;
-use App\Domain\Repository\RobotDanceOffHistoryRepositoryInterface;
-use App\Infrastructure\Response\RobotDanceOffScoreboardResponse;
+use App\Application\Query\GetRobotDanceOffScoreboardQuery;
+use App\Application\Request\RequestDataMapper;
+use App\Responder\RobotDanceOffScoreboardResponder;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
+use RuntimeException;
 
 #[AsController]
 final class RobotDanceOffScoreboardAction
 {
-    public function __construct(private RobotDanceOffHistoryRepositoryInterface $robotBattleRepository)
-    {
+    public function __construct(
+        #[Autowire(service: 'query.bus')]
+        private MessageBusInterface $queryBus,
+        private RequestDataMapper $requestDataMapper,
+        private RobotDanceOffScoreboardResponder $scoreboardResponder
+    ) {
     }
 
-    /**
-     * @return array<int, RobotDanceOffScoreboardResponse>
-     */
-    public function __invoke(): array
+    public function __invoke()
     {
-        $battles = $this->robotBattleRepository->findAll();
-        $scoreboard = [];
+        $filters = $this->requestDataMapper->getFilters();
+        $pagination = $this->requestDataMapper->getPagination();
 
-        foreach ($battles as $battle) {
-            $danceOffs = $battle->getDanceOffs()->toArray();
+        $query = new GetRobotDanceOffScoreboardQuery(
+            $filters['year'] ?? null,
+            $filters['quarter'] ?? null,
+            $pagination['page'] ?? null,
+            $pagination['itemsPerPage'] ?? null
+        );
 
-            if ($danceOffs === []) {
-                continue;
-            }
+        $envelope = $this->queryBus->dispatch($query);
+        $handled = $envelope->last(HandledStamp::class);
 
-            usort(
-                $danceOffs,
-                static function (RobotDanceOff $left, RobotDanceOff $right): int {
-                    return $left->getCreatedAt()->getTimestamp() <=> $right->getCreatedAt()->getTimestamp();
-                }
-            );
-
-            /** @var RobotDanceOff $latest */
-            $latest = end($danceOffs);
-
-            $scoreboard[] = new RobotDanceOffScoreboardResponse(
-                $battle->getId() ?? 0,
-                count($danceOffs),
-                $latest->getId() ?? 0,
-                $latest->getCreatedAt(),
-                $latest->getWinningTeam()?->getName(),
-                $latest->getTeamOne()?->getName() ?? 'Team One',
-                $latest->getTeamTwo()?->getName() ?? 'Team Two'
-            );
+        if (!$handled instanceof HandledStamp) {
+            throw new RuntimeException('No handler returned a result for GetRobotDanceOffScoreboardQuery.');
         }
 
-        return $scoreboard;
+        $result = $handled->getResult();
+
+        if (!is_array($result)) {
+            throw new RuntimeException('Unexpected response type for GetRobotDanceOffScoreboardQuery.');
+        }
+
+        return $this->scoreboardResponder->respond($result);
+    }
+
+    private function currentQuarter(): int
+    {
+        return (int) ceil((int) date('n') / 3);
     }
 }

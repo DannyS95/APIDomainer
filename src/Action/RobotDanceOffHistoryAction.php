@@ -2,38 +2,67 @@
 
 namespace App\Action;
 
-use App\Domain\Repository\RobotDanceOffRepositoryInterface;
-use App\Domain\ValueObject\FilterCriteria;
-use App\Responder\RobotDanceOffResponder;
+use App\Application\DTO\ApiFiltersDTO;
+use App\Application\Query\GetRobotDanceOffQuery;
+use App\Application\Request\RequestDataMapper;
+use App\Responder\RobotDanceOffHistoryResponder;
+use RuntimeException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 #[AsController]
 final class RobotDanceOffHistoryAction
 {
     public function __construct(
-        private RobotDanceOffRepositoryInterface $robotDanceOffRepository,
-        private RobotDanceOffResponder $robotDanceOffResponder
+        #[Autowire(service: 'query.bus')]
+        private MessageBusInterface $queryBus,
+        private RequestDataMapper $requestDataMapper,
+        private RobotDanceOffHistoryResponder $historyResponder
     ) {
     }
 
-    /**
-     * @return array<int, \App\Infrastructure\Response\RobotDanceOffResponse>
-     */
+    /** @return list<\App\Infrastructure\Response\RobotDanceOffResponse> */
     public function __invoke(Request $request): array
     {
         $battleId = (int) $request->attributes->get('battleId', 0);
 
-        $filterCriteria = new FilterCriteria(
-            ['battleId' => $battleId],
-            ['battleId' => 'eq'],
-            ['createdAt' => 'DESC'],
-            1,
-            50
+        if ($battleId <= 0) {
+            throw new BadRequestHttpException('Battle ID must be a positive integer.');
+        }
+
+        $filters = $this->requestDataMapper->getFilters();
+        $operations = $this->requestDataMapper->getOperations();
+        $sorts = $this->requestDataMapper->getSorts();
+        $pagination = $this->requestDataMapper->getPagination();
+
+        $filters['battleId'] = $battleId;
+
+        if (!$request->query->has('itemsPerPage')) {
+            $pagination['itemsPerPage'] = 0;
+        }
+
+        $apiFiltersDTO = new ApiFiltersDTO(
+            filters: $filters,
+            operations: $operations,
+            sorts: $sorts,
+            page: $pagination['page'],
+            itemsPerPage: $pagination['itemsPerPage']
         );
 
-        $danceOffs = $this->robotDanceOffRepository->findAll($filterCriteria);
+        $query = new GetRobotDanceOffQuery($apiFiltersDTO);
+        $envelope = $this->queryBus->dispatch($query);
+        $handledStamp = $envelope->last(HandledStamp::class);
 
-        return $this->robotDanceOffResponder->respond($danceOffs)->toArray();
+        if (!$handledStamp instanceof HandledStamp) {
+            throw new RuntimeException('No handler returned a result for GetRobotDanceOffQuery.');
+        }
+
+        $danceOffs = $handledStamp->getResult();
+
+        return $this->historyResponder->respond($danceOffs);
     }
 }

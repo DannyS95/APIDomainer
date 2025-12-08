@@ -4,47 +4,50 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\Team;
 use App\Domain\Repository\TeamRepositoryInterface;
-use App\Domain\ValueObject\FilterCriteria;
+use App\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-class TeamRepository implements TeamRepositoryInterface
+class TeamRepository extends DoctrineRepository implements TeamRepositoryInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
+        EntityManagerInterface $entityManager,
         private TeamQueryBuilder $teamQueryBuilder
-    ) {}
+    ) {
+        parent::__construct($entityManager);
+    }
 
     public function save(Team $team): void
     {
-        $this->entityManager->persist($team);
-        $this->entityManager->flush();
+        $this->persistEntity($team);
     }
 
     public function findOneBy(int $id): ?Team
     {
-        return $this->entityManager->getRepository(Team::class)->find($id);
+        $entity = $this->findOneEntityById($id);
+
+        if ($entity === null) {
+            return null;
+        }
+
+        if (!$entity instanceof Team) {
+            throw new \LogicException(sprintf('Expected %s, got %s', Team::class, get_debug_type($entity)));
+        }
+
+        return $entity;
     }
 
-    public function findAll(FilterCriteria $filterCriteria): array
+    protected function queryBuilder(): TeamQueryBuilder
     {
-        $queryBuilder = $this->teamQueryBuilder->create();
-
-        return $queryBuilder
-            ->whereClauses(
-                $filterCriteria->getFilters(),
-                $filterCriteria->getOperations()
-            )
-            ->addSorts($filterCriteria->getSorts())
-            ->paginate(
-                $filterCriteria->getPage(),
-                $filterCriteria->getItemsPerPage()
-            )
-            ->fetch();
+        return $this->teamQueryBuilder;
     }
 
-    public function delete(Team $team): void
+    protected function entityClass(): string
     {
-        $this->entityManager->remove($team);
-        $this->entityManager->flush();
+        return Team::class;
+    }
+
+    protected function defaultSorts(): array
+    {
+        return ['id' => 'ASC'];
     }
 }

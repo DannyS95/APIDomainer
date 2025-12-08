@@ -21,6 +21,7 @@ class RobotDanceOffHistory
 
     /** @var Collection<int, RobotDanceOff> */
     #[ORM\OneToMany(mappedBy: 'battle', targetEntity: RobotDanceOff::class, cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OrderBy(['createdAt' => 'DESC'])]
     private Collection $danceOffs;
 
     public function __construct(?DateTimeImmutable $createdAt = null)

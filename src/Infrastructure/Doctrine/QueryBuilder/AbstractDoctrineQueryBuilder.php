@@ -95,6 +95,16 @@ abstract class AbstractDoctrineQueryBuilder
         return $results;
     }
 
+    /**
+     * Fetch hydrated results (default object hydration).
+     *
+     * @return array<int, mixed>
+     */
+    public function fetch(): array
+    {
+        return $this->fetchResult();
+    }
+
     protected function fetchOneResult(): ?object
     {
         $qb = $this->getQueryBuilder();

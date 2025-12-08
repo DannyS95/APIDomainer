@@ -15,7 +15,7 @@ final class GetRobotDanceOffQueryHandler
     }
 
     /**
-     * @return array<int, RobotBattleViewInterface>
+     * @return list<RobotBattleViewInterface>
      */
     public function __invoke(GetRobotDanceOffQuery $query): array
     {

@@ -51,4 +51,17 @@ final class RobotDanceOffScoreboardResponse
     {
         return $this->teamTwoName;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'battleId' => $this->getBattleId(),
+            'totalMatches' => $this->getTotalMatches(),
+            'lastDanceOffId' => $this->getLastDanceOffId(),
+            'lastPlayedAt' => $this->getLastPlayedAt(),
+            'winningTeamName' => $this->getWinningTeamName(),
+            'teamOneName' => $this->getTeamOneName(),
+            'teamTwoName' => $this->getTeamTwoName(),
+        ];
+    }
 }

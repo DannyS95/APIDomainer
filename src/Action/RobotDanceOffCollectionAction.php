@@ -6,7 +6,6 @@ use App\Application\DTO\ApiFiltersDTO;
 use App\Application\Query\GetRobotDanceOffQuery;
 use App\Application\Request\RequestDataMapper;
 use App\Responder\RobotDanceOffResponder;
-use Doctrine\Common\Collections\Collection;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -24,7 +23,8 @@ final class RobotDanceOffCollectionAction
     ) {
     }
 
-    public function __invoke(): Collection
+    /** @return list<\App\Infrastructure\Response\RobotDanceOffResponse> */
+    public function __invoke(): array
     {
         $filters = $this->requestDataMapper->getFilters();
         $operations = $this->requestDataMapper->getOperations();

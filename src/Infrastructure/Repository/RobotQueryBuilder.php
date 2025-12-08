@@ -41,6 +41,14 @@ final class RobotQueryBuilder extends AbstractDoctrineQueryBuilder
         return $this->fetchArrayResult();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function fetch(): array
+    {
+        return $this->fetchArrayResult();
+    }
+
     public function fetchOne(): ?Robot
     {
         $result = $this->fetchOneResult();

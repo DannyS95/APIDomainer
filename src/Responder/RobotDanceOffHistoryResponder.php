@@ -5,22 +5,20 @@ namespace App\Responder;
 use App\Domain\ReadModel\RobotBattleViewInterface;
 use App\Infrastructure\Response\RobotDanceOffResponse;
 
-final class RobotDanceOffResponder
+/**
+ * Shapes history responses for robot dance-offs tied to a battle.
+ */
+final class RobotDanceOffHistoryResponder
 {
     /**
-     * Transform and respond with a collection of JSON payloads.
-     *
-     * @param RobotBattleViewInterface[] $danceOffs
-     * @return array<int, RobotDanceOffResponse>
+     * @param list<RobotBattleViewInterface> $danceOffs
+     * @return list<RobotDanceOffResponse>
      */
     public function respond(array $danceOffs): array
     {
         return array_map([$this, 'assemble'], $danceOffs);
     }
 
-    /**
-     * Transform a single RobotDanceOff into a RobotDanceOffResponse.
-     */
     private function assemble(RobotBattleViewInterface $danceOff): RobotDanceOffResponse
     {
         return new RobotDanceOffResponse(
