@@ -13,11 +13,9 @@ framework:
         buses:
             command.bus:
                 middleware:
-                    - messenger.middleware.traceable
                     - validation
             query.bus:
                 middleware:
-                    - messenger.middleware.traceable
                     - validation
 
         routing:

@@ -17,7 +17,7 @@ class RobotValidatorService
     public function validateRobotIds(array $ids): void
     {
         foreach ($ids as $id) {
-            if (!$this->robotRepository->findOneBy(intval($id))) {
+            if (!$this->robotRepository->findOneById((int) $id)) {
                 throw new RobotServiceException("Robot ID $id does not exist.");
             }
         }

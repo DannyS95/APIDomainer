@@ -36,7 +36,7 @@ final class RobotDanceOffTeamsAction
             50
         );
 
-        $danceOffs = $this->robotDanceOffRepository->findAll($filterCriteria);
+        $danceOffs = $this->robotDanceOffRepository->findByCriteria($filterCriteria);
 
         return array_map(
             static fn (RobotBattleViewInterface $danceOff): RobotDanceOffTeamsResponse => new RobotDanceOffTeamsResponse(

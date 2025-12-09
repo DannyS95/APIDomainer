@@ -7,9 +7,9 @@ use App\Domain\ValueObject\FilterCriteria;
 
 interface TeamRepositoryInterface
 {
-    public function findAll(FilterCriteria $filterCriteria): array;
+    public function findByCriteria(FilterCriteria $filterCriteria): array;
 
-    public function findOneBy(int $id): ?Team;
+    public function findOneById(int $id): ?Team;
 
     public function save(Team $team): void;
 

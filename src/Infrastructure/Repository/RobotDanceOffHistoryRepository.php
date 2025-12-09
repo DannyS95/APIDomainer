@@ -14,7 +14,7 @@ final class RobotDanceOffHistoryRepository implements RobotDanceOffHistoryReposi
     ) {
     }
 
-    public function findOneBy(int $id): ?RobotDanceOffHistory
+    public function findOneById(int $id): ?RobotDanceOffHistory
     {
         return $this->entityManager->getRepository(RobotDanceOffHistory::class)->find($id);
     }

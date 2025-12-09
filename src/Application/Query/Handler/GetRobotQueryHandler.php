@@ -23,7 +23,7 @@ final class GetRobotQueryHandler
         $robotId = $query->getRobotId();
         $this->robotValidatorService->validateRobotIds([$robotId]);
 
-        $robot = $this->robotRepository->findOneBy($robotId);
+        $robot = $this->robotRepository->findOneById($robotId);
 
         if ($robot === null) {
             throw new RobotServiceException(sprintf('Robot ID %d does not exist.', $robotId));

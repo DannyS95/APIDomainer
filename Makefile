@@ -14,6 +14,9 @@ stop:
 migrate:
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/console --no-interaction doctrine:migrations:migrate'
 
+seed:
+	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/console --no-interaction doctrine:migrations:migrate'
+
 migrations-clear:
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/console doctrine:database:drop --force --if-exists'
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/console doctrine:database:create'

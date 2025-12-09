@@ -5,15 +5,15 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Entity\Team;
 use App\Domain\Repository\TeamRepositoryInterface;
 use App\Infrastructure\Repository\Doctrine\DoctrineRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 class TeamRepository extends DoctrineRepository implements TeamRepositoryInterface
 {
     public function __construct(
-        EntityManagerInterface $entityManager,
+        ManagerRegistry $registry,
         private TeamQueryBuilder $teamQueryBuilder
     ) {
-        parent::__construct($entityManager);
+        parent::__construct($registry);
     }
 
     public function save(Team $team): void
@@ -21,7 +21,7 @@ class TeamRepository extends DoctrineRepository implements TeamRepositoryInterfa
         $this->persistEntity($team);
     }
 
-    public function findOneBy(int $id): ?Team
+    public function findOneById(int $id): ?Team
     {
         $entity = $this->findOneEntityById($id);
 

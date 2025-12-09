@@ -6,7 +6,7 @@ use App\Domain\Entity\RobotDanceOffHistory;
 
 interface RobotDanceOffHistoryRepositoryInterface
 {
-    public function findOneBy(int $id): ?RobotDanceOffHistory;
+    public function findOneById(int $id): ?RobotDanceOffHistory;
 
     public function save(RobotDanceOffHistory $battle): void;
 

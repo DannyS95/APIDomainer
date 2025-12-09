@@ -84,7 +84,7 @@ final class RobotService
 
     private function loadRobot(int $id): Robot
     {
-        $robot = $this->robotRepository->findOneBy($id);
+        $robot = $this->robotRepository->findOneById($id);
 
         if ($robot === null) {
             throw new RobotServiceException("Robot ID $id does not exist.");
@@ -198,7 +198,7 @@ final class RobotService
             return $battle;
         }
 
-        $battle = $this->robotDanceOffHistoryRepository->findOneBy($battleId);
+        $battle = $this->robotDanceOffHistoryRepository->findOneById($battleId);
 
         if ($battle === null) {
             throw new RobotServiceException("Robot Battle ID $battleId does not exist.");

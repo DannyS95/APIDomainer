@@ -12,9 +12,9 @@ interface RobotDanceOffRepositoryInterface
     /**
      * @return array<int, RobotBattleViewInterface>
      */
-    public function findAll(FilterCriteria $filterCriteria): array;
+    public function findByCriteria(FilterCriteria $filterCriteria): array;
 
-    public function findOneBy(int $id): ?RobotDanceOff;
+    public function findOneById(int $id): ?RobotDanceOff;
 
     public function save(RobotDanceOff $robotDanceOff): void;
 

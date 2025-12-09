@@ -22,3 +22,12 @@ services:
         tags: ['serializer.normalizer']
 
     App\Domain\Repository\RobotDanceOffHistoryRepositoryInterface: '@App\Infrastructure\Repository\RobotDanceOffHistoryRepository'
+
+    App\Infrastructure\Repository\RobotRepository:
+        tags: ['doctrine.repository_service']
+
+    App\Infrastructure\Repository\RobotDanceOffRepository:
+        tags: ['doctrine.repository_service']
+
+    App\Infrastructure\Repository\TeamRepository:
+        tags: ['doctrine.repository_service']

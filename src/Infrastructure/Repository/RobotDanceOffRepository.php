@@ -6,15 +6,15 @@ use App\Domain\Entity\RobotDanceOffHistory;
 use App\Domain\Entity\RobotDanceOff;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
 use App\Infrastructure\Repository\Doctrine\DoctrineRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 final class RobotDanceOffRepository extends DoctrineRepository implements RobotDanceOffRepositoryInterface
 {
     public function __construct(
-        EntityManagerInterface $entityManager,
+        ManagerRegistry $registry,
         private RobotBattleViewQueryBuilder $robotBattleViewQueryBuilder
     ) {
-        parent::__construct($entityManager);
+        parent::__construct($registry);
     }
 
     /**
@@ -28,7 +28,7 @@ final class RobotDanceOffRepository extends DoctrineRepository implements RobotD
     /**
      * Find a single dance-off by its ID.
      */
-    public function findOneBy(int $id): ?RobotDanceOff
+    public function findOneById(int $id): ?RobotDanceOff
     {
         $entity = $this->findOneEntityById($id);
 

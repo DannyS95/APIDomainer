@@ -4,15 +4,21 @@ namespace App\Infrastructure\Repository\Doctrine;
 
 use App\Domain\ValueObject\FilterCriteria;
 use App\Infrastructure\Doctrine\QueryBuilder\AbstractDoctrineQueryBuilder;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * Base class for Doctrine-backed repositories using a custom query builder.
  */
-abstract class DoctrineRepository
+abstract class DoctrineRepository extends ServiceEntityRepository
 {
-    public function __construct(protected EntityManagerInterface $entityManager)
+    protected EntityManagerInterface $entityManager;
+
+    public function __construct(ManagerRegistry $registry)
     {
+        parent::__construct($registry, $this->entityClass());
+        $this->entityManager = $this->getEntityManager();
     }
 
     /**
@@ -54,7 +60,7 @@ abstract class DoctrineRepository
     /**
      * Apply criteria and fetch results using the repository's query builder and defaults.
      */
-    public function findAll(FilterCriteria $filterCriteria): array
+    public function findByCriteria(FilterCriteria $filterCriteria): array
     {
         return $this->fetchWithCriteria(
             $this->queryBuilder()->create(),

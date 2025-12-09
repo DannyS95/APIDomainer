@@ -5,15 +5,15 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Entity\Robot;
 use App\Domain\Repository\RobotRepositoryInterface;
 use App\Infrastructure\Repository\Doctrine\DoctrineRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 final class RobotRepository extends DoctrineRepository implements RobotRepositoryInterface
 {
     public function __construct(
-        EntityManagerInterface $entityManager,
+        ManagerRegistry $registry,
         private RobotQueryBuilder $robotQueryBuilder
     ) {
-        parent::__construct($entityManager);
+        parent::__construct($registry);
     }
 
     /**
@@ -27,7 +27,7 @@ final class RobotRepository extends DoctrineRepository implements RobotRepositor
     /**
      * Find a Robot by ID.
      */
-    public function findOneBy(int $id): ?Robot
+    public function findOneById(int $id): ?Robot
     {
         $entity = $this->findOneEntityById($id);
 
