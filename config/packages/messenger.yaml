@@ -11,8 +11,14 @@ framework:
             # sync: 'sync://'
 
         buses:
-            command.bus: ~
-            query.bus: ~
+            command.bus:
+                middleware:
+                    - messenger.middleware.traceable
+                    - validation
+            query.bus:
+                middleware:
+                    - messenger.middleware.traceable
+                    - validation
 
         routing:
             # Route your messages to the transports
