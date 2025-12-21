@@ -10,11 +10,14 @@ use Doctrine\ORM\Mapping as ORM;
 final class RobotBattleView implements RobotBattleViewInterface
 {
     #[ORM\Id]
-    #[ORM\Column(name: 'dance_off_id', type: 'integer')]
-    private int $id;
+    #[ORM\Column(name: 'battle_replay_id', type: 'integer')]
+    private int $battleReplayId;
 
     #[ORM\Column(name: 'battle_id', type: 'integer')]
     private int $battleId;
+
+    #[ORM\Column(name: 'origin_battle_id', type: 'integer', nullable: true)]
+    private ?int $originBattleId = null;
 
     #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
     private DateTimeImmutable $createdAt;
@@ -78,11 +81,13 @@ final class RobotBattleView implements RobotBattleViewInterface
         array $teamTwoRobots,
         ?int $winningTeamId,
         ?string $winningTeamName,
-        int $battleId
+        int $battleId,
+        ?int $originBattleId
     ): self {
         $instance = new self();
-        $instance->id = $id;
+        $instance->battleReplayId = $id;
         $instance->battleId = $battleId;
+        $instance->originBattleId = $originBattleId;
         $instance->createdAt = $createdAt;
         $instance->teamOneId = $teamOneId;
         $instance->teamOneName = $teamOneName;
@@ -98,9 +103,22 @@ final class RobotBattleView implements RobotBattleViewInterface
         return $instance;
     }
 
+    public function getBattleReplayId(): int
+    {
+        return $this->battleReplayId;
+    }
+
+    public function getOriginBattleId(): ?int
+    {
+        return $this->originBattleId;
+    }
+
+    /**
+     * Backwards-compatible alias for the replay identifier.
+     */
     public function getId(): int
     {
-        return $this->id;
+        return $this->getBattleReplayId();
     }
 
     public function getBattleId(): int

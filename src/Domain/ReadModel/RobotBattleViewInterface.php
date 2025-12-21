@@ -7,9 +7,14 @@ use DateTimeImmutable;
 interface RobotBattleViewInterface
 {
     /**
-     * Unique identifier of the dance-off occurrence.
+     * Unique identifier of the dance-off occurrence (battle replay id).
      */
-    public function getId(): int;
+    public function getBattleReplayId(): int;
+
+    /**
+     * Identifier of the original battle this replay is derived from, or null if this is the original.
+     */
+    public function getOriginBattleId(): ?int;
 
     /**
      * Identifier of the aggregate battle that groups original match and its replays.

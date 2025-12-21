@@ -4,8 +4,9 @@ namespace App\Infrastructure\Response;
 
 final class RobotDanceOffResponse
 {
-    private int $id;
+    private int $battleReplayId;
     private int $battleId;
+    private ?int $originBattleId;
     private array $teamOne;
     private array $teamTwo;
     private ?array $winningTeam;
@@ -13,16 +14,18 @@ final class RobotDanceOffResponse
     private int $teamTwoPower;
 
     public function __construct(
-        int $id,
+        int $battleReplayId,
         int $battleId,
+        ?int $originBattleId,
         array $teamOne,
         array $teamTwo,
         ?array $winningTeam,
         int $teamOnePower,
         int $teamTwoPower
     ) {
-        $this->id = $id;
+        $this->battleReplayId = $battleReplayId;
         $this->battleId = $battleId;
+        $this->originBattleId = $originBattleId;
         $this->teamOne = $teamOne;
         $this->teamTwo = $teamTwo;
         $this->winningTeam = $winningTeam;
@@ -30,14 +33,19 @@ final class RobotDanceOffResponse
         $this->teamTwoPower = $teamTwoPower;
     }
 
-    public function getId(): int
+    public function getBattleReplayId(): int
     {
-        return $this->id;
+        return $this->battleReplayId;
     }
 
     public function getBattleId(): int
     {
         return $this->battleId;
+    }
+
+    public function getOriginBattleId(): ?int
+    {
+        return $this->originBattleId;
     }
 
     /**

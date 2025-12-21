@@ -19,6 +19,9 @@ class RobotDanceOffHistory
     #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $createdAt;
 
+    #[ORM\Column(name: 'origin_battle_id', type: 'integer', nullable: true)]
+    private ?int $originBattleId = null;
+
     /** @var Collection<int, RobotDanceOff> */
     #[ORM\OneToMany(mappedBy: 'battle', targetEntity: RobotDanceOff::class, cascade: ['persist'], orphanRemoval: true)]
     #[ORM\OrderBy(['createdAt' => 'DESC'])]
@@ -33,6 +36,18 @@ class RobotDanceOffHistory
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getOriginBattleId(): ?int
+    {
+        return $this->originBattleId;
+    }
+
+    public function setOriginBattleId(?int $originBattleId): self
+    {
+        $this->originBattleId = $originBattleId;
+
+        return $this;
     }
 
     public function getCreatedAt(): DateTimeImmutable

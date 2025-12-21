@@ -34,7 +34,7 @@ final class RobotService
 
         $this->robotValidatorService->validateRobotIds($robotIds);
 
-        $battle = $this->resolveBattle(null);
+        $battle = $this->createNewBattle(null);
 
         // Create the teams and associate robots
         $teamOne = new Team('Team One');
@@ -98,8 +98,8 @@ final class RobotService
         $this->guardReplacementLimit($instruction->teamOneReplacements());
         $this->guardReplacementLimit($instruction->teamTwoReplacements());
 
-        $battle = $this->resolveBattle(battleId: $instruction->battleId());
-        $latestDanceOff = $this->robotDanceOffRepository->findLatestByBattle($battle);
+        $originalBattle = $this->resolveBattle(battleId: $instruction->battleId());
+        $latestDanceOff = $this->robotDanceOffRepository->findLatestByBattle($originalBattle);
 
         if ($latestDanceOff === null) {
             throw new RobotServiceException(sprintf(
@@ -114,7 +114,9 @@ final class RobotService
         $this->teamRepository->save($teamOne);
         $this->teamRepository->save($teamTwo);
 
-        $this->createDanceOff($battle, $teamOne, $teamTwo);
+        $newBattle = $this->createNewBattle($originalBattle->getId());
+
+        $this->createDanceOff($newBattle, $teamOne, $teamTwo);
     }
 
     /**
@@ -191,18 +193,20 @@ final class RobotService
 
     private function resolveBattle(?int $battleId): RobotDanceOffHistory
     {
-        if ($battleId === null) {
-            $battle = new RobotDanceOffHistory();
-            $this->robotDanceOffHistoryRepository->save($battle);
-
-            return $battle;
-        }
-
         $battle = $this->robotDanceOffHistoryRepository->findOneById($battleId);
 
         if ($battle === null) {
             throw new RobotServiceException("Robot Battle ID $battleId does not exist.");
         }
+
+        return $battle;
+    }
+
+    private function createNewBattle(?int $originBattleId): RobotDanceOffHistory
+    {
+        $battle = new RobotDanceOffHistory();
+        $battle->setOriginBattleId($originBattleId);
+        $this->robotDanceOffHistoryRepository->save($battle);
 
         return $battle;
     }

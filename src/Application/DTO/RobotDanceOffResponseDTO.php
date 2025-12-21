@@ -4,26 +4,26 @@ namespace App\Infrastructure\Responder\DTO;
 
 class RobotDanceOffResponseDTO
 {
-    private int $id;
+    private int $battleReplayId;
     private array $teamOne;
     private array $teamTwo;
     private ?int $winningTeam;
 
     public function __construct(
-        int $id,
+        int $battleReplayId,
         array $teamOne,
         array $teamTwo,
         ?int $winningTeam = null
     ) {
-        $this->id = $id;
+        $this->battleReplayId = $battleReplayId;
         $this->teamOne = $teamOne;
         $this->teamTwo = $teamTwo;
         $this->winningTeam = $winningTeam;
     }
 
-    public function getId(): int
+    public function getBattleReplayId(): int
     {
-        return $this->id;
+        return $this->battleReplayId;
     }
 
     public function getTeamOne(): array

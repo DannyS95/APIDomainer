@@ -22,8 +22,9 @@ final class RobotDanceOffHistoryResponder
     private function assemble(RobotBattleViewInterface $danceOff): RobotDanceOffResponse
     {
         return new RobotDanceOffResponse(
-            $danceOff->getId(),
+            $danceOff->getBattleReplayId(),
             $danceOff->getBattleId(),
+            $danceOff->getOriginBattleId(),
             $danceOff->getTeamOne(),
             $danceOff->getTeamTwo(),
             $danceOff->getWinningTeam(),

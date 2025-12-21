@@ -20,7 +20,7 @@ final class Version20240518000100 extends AbstractMigration
         $this->addSql(<<<'SQL'
             CREATE VIEW robot_battle_view AS
             SELECT
-                rdo.id AS dance_off_id,
+                rdo.id AS battle_replay_id,
                 rb.id AS battle_id,
                 rdo.created_at,
                 t1.id AS team_one_id,
@@ -71,7 +71,7 @@ final class Version20240518000100 extends AbstractMigration
         $this->addSql(<<<'SQL'
             CREATE VIEW robot_battle_view AS
             SELECT
-                rdo.id AS dance_off_id,
+                rdo.id AS battle_replay_id,
                 rb.id AS battle_id,
                 rdo.created_at,
                 t1.id AS team_one_id,
