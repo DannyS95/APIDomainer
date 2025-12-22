@@ -24,7 +24,6 @@ final class RobotDanceOffHistoryResponder
         return new RobotDanceOffResponse(
             $danceOff->getBattleReplayId(),
             $danceOff->getBattleId(),
-            $danceOff->getOriginBattleId(),
             $danceOff->getTeamOne(),
             $danceOff->getTeamTwo(),
             $danceOff->getWinningTeam(),

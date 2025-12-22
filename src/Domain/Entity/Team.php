@@ -18,18 +18,25 @@ class Team
     #[ORM\Column(length: 100)]
     private string $name;
 
+    #[ORM\Column(name: 'code_name', length: 150)]
+    private string $codeName;
+
+    #[ORM\Column(name: 'composition_signature', length: 255)]
+    private string $compositionSignature;
+
+    #[ORM\Column(name: 'robot_order', type: 'json')]
+    private array $robotOrder = [];
+
     #[ORM\ManyToMany(targetEntity: Robot::class)]
     #[ORM\JoinTable(name: 'team_robots')]
     private Collection $robots;
 
-    #[ORM\ManyToOne(targetEntity: RobotDanceOff::class, inversedBy: 'teams')]
-    #[ORM\JoinColumn(name: 'dance_off_id', referencedColumnName: 'id', nullable: true)]
-    private ?RobotDanceOff $danceOff = null;
-
-
-    public function __construct(string $name)
+    public function __construct(string $name, string $codeName, string $compositionSignature, array $robotOrder = [])
     {
         $this->name = $name;
+        $this->codeName = $codeName;
+        $this->compositionSignature = $compositionSignature;
+        $this->robotOrder = $robotOrder;
         $this->robots = new ArrayCollection();
     }
 
@@ -41,6 +48,42 @@ class Team
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getCodeName(): string
+    {
+        return $this->codeName;
+    }
+
+    public function setCodeName(string $codeName): void
+    {
+        $this->codeName = $codeName;
+    }
+
+    public function getCompositionSignature(): string
+    {
+        return $this->compositionSignature;
+    }
+
+    public function setCompositionSignature(string $compositionSignature): void
+    {
+        $this->compositionSignature = $compositionSignature;
+    }
+
+    /**
+     * @return array<int>
+     */
+    public function getRobotOrder(): array
+    {
+        return $this->robotOrder;
+    }
+
+    /**
+     * @param array<int> $robotOrder
+     */
+    public function setRobotOrder(array $robotOrder): void
+    {
+        $this->robotOrder = $robotOrder;
     }
 
     public function getRobots(): Collection
@@ -62,16 +105,5 @@ class Team
             $this->robots->removeElement($robot);
         }
         return $this;
-    }
-
-    public function setDanceOff(RobotDanceOff $danceOff): self
-    {
-        $this->danceOff = $danceOff;
-        return $this;
-    }
-
-    public function getDanceOff(): ?RobotDanceOff
-    {
-        return $this->danceOff;
     }
 }

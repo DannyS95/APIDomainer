@@ -41,7 +41,6 @@ final class RobotDanceOffTeamsAction
         return array_map(
             static fn (RobotBattleViewInterface $danceOff): RobotDanceOffTeamsResponse => new RobotDanceOffTeamsResponse(
                 $danceOff->getBattleId(),
-                $danceOff->getOriginBattleId(),
                 $danceOff->getBattleReplayId(),
                 $danceOff->getTeamOneRobotIds(),
                 $danceOff->getTeamTwoRobotIds()

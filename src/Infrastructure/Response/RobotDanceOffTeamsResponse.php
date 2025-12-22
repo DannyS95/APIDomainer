@@ -10,7 +10,6 @@ final class RobotDanceOffTeamsResponse
      */
     public function __construct(
         private int $battleId,
-        private ?int $originBattleId,
         private int $battleReplayId,
         private array $teamOneRobotIds,
         private array $teamTwoRobotIds
@@ -25,11 +24,6 @@ final class RobotDanceOffTeamsResponse
     public function getBattleReplayId(): int
     {
         return $this->battleReplayId;
-    }
-
-    public function getOriginBattleId(): ?int
-    {
-        return $this->originBattleId;
     }
 
     /**

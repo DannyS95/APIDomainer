@@ -41,7 +41,15 @@ composer-require:
 console:
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/console $(cmd)'
 
+composer:
+	@$(MAKE) composer-install
+
+ifeq (,$(filter composer,$(MAKECMDGOALS)))
 install: composer-install migrate
+else
+install:
+	@echo "Skipping install because the composer target was requested."
+endif
 
 sh:
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh
@@ -70,6 +78,6 @@ phpstan:
 	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'vendor/bin/phpstan analyse src --level max'
 
 test:
-	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'php bin/phpunit'
+	$(DOCKER_EXEC) $(CONTAINER_NAME) sh -c 'if [ -x vendor/bin/phpunit ]; then vendor/bin/phpunit; elif [ -x bin/phpunit ]; then php bin/phpunit; else echo "phpunit not found. Run make composer-install." >&2; exit 1; fi'
 
-.PHONY: migrate migrations-clear migrations-diff migrations-generate composer-install composer-update composer-require console install sh cache-clear refresh routes services phpstan test up up-foreground stop
+.PHONY: migrate migrations-clear migrations-diff migrations-generate composer composer-install composer-update composer-require console install sh cache-clear refresh routes services phpstan test up up-foreground stop

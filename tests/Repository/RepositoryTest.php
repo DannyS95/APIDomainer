@@ -12,8 +12,8 @@ use App\Infrastructure\Repository\RobotBattleViewQueryBuilder;
 use App\Infrastructure\Repository\RobotDanceOffRepository;
 use App\Infrastructure\Repository\RobotQueryBuilder;
 use App\Infrastructure\Repository\RobotRepository;
-use Tests\Stub\FakeDoctrineRepository;
 use Tests\Stub\FakeEntityManager;
+use Tests\Stub\FakeManagerRegistry;
 
 function assertTrue(bool $condition, string $message): void
 {
@@ -75,10 +75,11 @@ $entityManager = new FakeEntityManager([
     RobotBattleView::class => $robotBattleDataset,
     RobotDanceOff::class => $danceOffEntities,
 ]);
+$registry = new FakeManagerRegistry($entityManager);
 
 $robotRepository = new RobotRepository(
-    new RobotQueryBuilder($entityManager),
-    new FakeDoctrineRepository()
+    $registry,
+    new RobotQueryBuilder($entityManager)
 );
 
 $firstRobots = $robotRepository->findAll(
@@ -109,7 +110,7 @@ assertTrue($robot !== null && $robot->getName() === 'Gamma', 'findOneBy should r
 assertTrue($robot->getExperience() === 7, 'findOneBy should hydrate experience property.');
 
 $robotDanceOffRepository = new RobotDanceOffRepository(
-    $entityManager,
+    $registry,
     new RobotBattleViewQueryBuilder($entityManager)
 );
 

@@ -52,7 +52,6 @@ final class GetRobotDanceOffScoreboardQueryHandler
                 $history->getId() ?? 0,
                 $danceOffs->count(),
                 $latest->getId() ?? 0,
-                $history->getOriginBattleId(),
                 $latest->getCreatedAt(),
                 $latest->getWinningTeam()?->getName(),
                 $latest->getTeamOne()?->getName() ?? 'Team One',

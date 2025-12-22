@@ -6,6 +6,8 @@ require_once __DIR__ . '/Stubs/DoctrineMappingStubs.php';
 require_once __DIR__ . '/Stubs/DoctrineCollectionsStubs.php';
 require_once __DIR__ . '/Stubs/DoctrineComparisonStubs.php';
 require_once __DIR__ . '/Stubs/DoctrineOrmStubs.php';
+require_once __DIR__ . '/Stubs/DoctrinePersistenceStubs.php';
+require_once __DIR__ . '/Stubs/DoctrineBundleStubs.php';
 
 spl_autoload_register(function (string $class): void {
     $prefix = 'App\\';
@@ -29,4 +31,4 @@ require_once __DIR__ . '/../src/Infrastructure/Doctrine/QueryBuilder/DoctrineCom
 
 require_once __DIR__ . '/Stubs/FakeEntityManager.php';
 require_once __DIR__ . '/Stubs/FakeObjectRepository.php';
-require_once __DIR__ . '/Stubs/FakeDoctrineRepository.php';
+require_once __DIR__ . '/Stubs/FakeManagerRegistry.php';

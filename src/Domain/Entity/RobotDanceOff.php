@@ -13,11 +13,11 @@ class RobotDanceOff
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Team::class, cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Team::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'team_one_id', referencedColumnName: 'id', nullable: false)]
     private ?Team $teamOne = null;
 
-    #[ORM\ManyToOne(targetEntity: Team::class, cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Team::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'team_two_id', referencedColumnName: 'id', nullable: false)]
     private ?Team $teamTwo = null;
 

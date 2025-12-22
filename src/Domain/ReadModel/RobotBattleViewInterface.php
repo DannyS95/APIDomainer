@@ -12,11 +12,6 @@ interface RobotBattleViewInterface
     public function getBattleReplayId(): int;
 
     /**
-     * Identifier of the original battle this replay is derived from, or null if this is the original.
-     */
-    public function getOriginBattleId(): ?int;
-
-    /**
      * Identifier of the aggregate battle that groups original match and its replays.
      */
     public function getBattleId(): int;
@@ -24,21 +19,25 @@ interface RobotBattleViewInterface
     public function getCreatedAt(): DateTimeImmutable;
 
     /**
-     * @return array{id: int, name: string, robots: array<int, array<string, mixed>>}
+     * @return array{id: int, name: string, codeName: string, robots: array<int, array<string, mixed>>}
      */
     public function getTeamOne(): array;
+
+    public function getTeamOneCodeName(): string;
 
     public function getTeamOnePower(): int;
 
     /**
-     * @return array{id: int, name: string, robots: array<int, array<string, mixed>>}
+     * @return array{id: int, name: string, codeName: string, robots: array<int, array<string, mixed>>}
      */
     public function getTeamTwo(): array;
+
+    public function getTeamTwoCodeName(): string;
 
     public function getTeamTwoPower(): int;
 
     /**
-     * @return array{id: int, name: string, robots: array<int, array<string, mixed>>}|null
+     * @return array{id: int, name: string, codeName: string, robots: array<int, array<string, mixed>>}|null
      */
     public function getWinningTeam(): ?array;
 

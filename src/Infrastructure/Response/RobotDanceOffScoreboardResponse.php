@@ -10,7 +10,6 @@ final class RobotDanceOffScoreboardResponse
         private int $battleId,
         private int $totalMatches,
         private int $lastBattleReplayId,
-        private ?int $originBattleId,
         private DateTimeInterface $lastPlayedAt,
         private ?string $winningTeamName,
         private string $teamOneName,
@@ -31,11 +30,6 @@ final class RobotDanceOffScoreboardResponse
     public function getLastBattleReplayId(): int
     {
         return $this->lastBattleReplayId;
-    }
-
-    public function getOriginBattleId(): ?int
-    {
-        return $this->originBattleId;
     }
 
     public function getLastPlayedAt(): string
@@ -64,7 +58,6 @@ final class RobotDanceOffScoreboardResponse
             'battleId' => $this->getBattleId(),
             'totalMatches' => $this->getTotalMatches(),
             'lastBattleReplayId' => $this->getLastBattleReplayId(),
-            'originBattleId' => $this->getOriginBattleId(),
             'lastPlayedAt' => $this->getLastPlayedAt(),
             'winningTeamName' => $this->getWinningTeamName(),
             'teamOneName' => $this->getTeamOneName(),

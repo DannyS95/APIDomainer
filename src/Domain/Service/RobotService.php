@@ -34,19 +34,11 @@ final class RobotService
 
         $this->robotValidatorService->validateRobotIds($robotIds);
 
-        $battle = $this->createNewBattle(null);
+        $battle = $this->createNewBattle();
 
         // Create the teams and associate robots
-        $teamOne = new Team('Team One');
-        $teamTwo = new Team('Team Two');
-
-        foreach ($danceOffTeams->teamOneRobotIds() as $robotId) {
-            $teamOne->addRobot($this->loadRobot($robotId));
-        }
-
-        foreach ($danceOffTeams->teamTwoRobotIds() as $robotId) {
-            $teamTwo->addRobot($this->loadRobot($robotId));
-        }
+        $teamOne = $this->buildTeam($danceOffTeams->teamOneRobotIds());
+        $teamTwo = $this->buildTeam($danceOffTeams->teamTwoRobotIds());
 
         // Persist teams
         $this->teamRepository->save($teamOne);
@@ -98,7 +90,7 @@ final class RobotService
         $this->guardReplacementLimit($instruction->teamOneReplacements());
         $this->guardReplacementLimit($instruction->teamTwoReplacements());
 
-        $originalBattle = $this->resolveBattle(battleId: $instruction->battleId());
+        $originalBattle = $this->resolveBattle($instruction->battleId());
         $latestDanceOff = $this->robotDanceOffRepository->findLatestByBattle($originalBattle);
 
         if ($latestDanceOff === null) {
@@ -108,15 +100,16 @@ final class RobotService
             ));
         }
 
-        $teamOne = $this->cloneTeamForReplay($latestDanceOff->getTeamOne(), $instruction->teamOneReplacements());
-        $teamTwo = $this->cloneTeamForReplay($latestDanceOff->getTeamTwo(), $instruction->teamTwoReplacements());
+        $teamOne = $latestDanceOff->getTeamOne();
+        $teamTwo = $latestDanceOff->getTeamTwo();
+
+        $this->updateTeamForReplay($teamOne, $instruction->teamOneReplacements());
+        $this->updateTeamForReplay($teamTwo, $instruction->teamTwoReplacements());
 
         $this->teamRepository->save($teamOne);
         $this->teamRepository->save($teamTwo);
 
-        $newBattle = $this->createNewBattle($originalBattle->getId());
-
-        $this->createDanceOff($newBattle, $teamOne, $teamTwo);
+        $this->createDanceOff($originalBattle, $teamOne, $teamTwo);
     }
 
     /**
@@ -132,50 +125,52 @@ final class RobotService
     /**
      * @param list<RobotReplacement> $replacements
      */
-    private function cloneTeamForReplay(?Team $originalTeam, array $replacements): Team
+    private function updateTeamForReplay(?Team $team, array $replacements): void
     {
-        if ($originalTeam === null) {
+        if ($team === null) {
             throw new RobotServiceException('Original team could not be determined for replay.');
         }
 
-        $team = new Team($originalTeam->getName());
-
-        foreach ($originalTeam->getRobots() as $robot) {
-            $team->addRobot($robot);
-        }
+        $order = $this->resolveRobotOrder($team);
 
         foreach ($replacements as $replacement) {
-            $this->applyReplacement($team, $replacement);
+            $order = $this->applyReplacement($team, $replacement, $order);
         }
 
-        return $team;
+        $team->setRobotOrder($order);
+        $team->setCompositionSignature($this->generateCompositionSignature($order));
     }
 
-    private function applyReplacement(Team $team, RobotReplacement $replacement): void
+    /**
+     * @param list<int> $order
+     */
+    private function applyReplacement(Team $team, RobotReplacement $replacement, array $order): array
     {
-        $removed = $this->removeRobotFromTeam($team, $replacement->outRobotId());
+        $outRobotId = $replacement->outRobotId();
+        $inRobotId = $replacement->inRobotId();
 
-        if ($removed === false) {
-            throw new RobotServiceException(sprintf(
-                'Robot ID %d is not part of the current roster and cannot be replaced.',
-                $replacement->outRobotId()
-            ));
-        }
+        $order = $this->removeRobotFromOrder($order, $outRobotId);
 
-        $incomingRobot = $this->loadRobot($replacement->inRobotId());
+        $incomingRobot = $this->loadRobot($inRobotId);
 
-        $alreadyPresent = $team->getRobots()->exists(static function (int $_, Robot $robot) use ($incomingRobot): bool {
-            return $robot->getId() === $incomingRobot->getId();
-        });
-
-        if ($alreadyPresent) {
+        if (in_array($incomingRobot->getId(), $order, true)) {
             throw new RobotServiceException(sprintf(
                 'Robot ID %d is already on this team.',
                 $incomingRobot->getId()
             ));
         }
 
+        if ($this->removeRobotFromTeam($team, $outRobotId) === false) {
+            throw new RobotServiceException(sprintf(
+                'Robot ID %d is not part of the current roster and cannot be replaced.',
+                $outRobotId
+            ));
+        }
         $team->addRobot($incomingRobot);
+
+        $order[] = $incomingRobot->getId();
+
+        return $order;
     }
 
     private function removeRobotFromTeam(Team $team, int $robotId): bool
@@ -191,7 +186,7 @@ final class RobotService
         return false;
     }
 
-    private function resolveBattle(?int $battleId): RobotDanceOffHistory
+    private function resolveBattle(int $battleId): RobotDanceOffHistory
     {
         $battle = $this->robotDanceOffHistoryRepository->findOneById($battleId);
 
@@ -202,10 +197,9 @@ final class RobotService
         return $battle;
     }
 
-    private function createNewBattle(?int $originBattleId): RobotDanceOffHistory
+    private function createNewBattle(): RobotDanceOffHistory
     {
         $battle = new RobotDanceOffHistory();
-        $battle->setOriginBattleId($originBattleId);
         $this->robotDanceOffHistoryRepository->save($battle);
 
         return $battle;
@@ -217,8 +211,6 @@ final class RobotService
         $battle->addDanceOff($danceOff);
         $danceOff->setTeamOne($teamOne);
         $danceOff->setTeamTwo($teamTwo);
-        $teamOne->setDanceOff($danceOff);
-        $teamTwo->setDanceOff($danceOff);
 
         $teamOnePower = $this->calculateTeamPower($teamOne);
         $teamTwoPower = $this->calculateTeamPower($teamTwo);
@@ -229,5 +221,83 @@ final class RobotService
         $danceOff->setWinningTeam($winningTeam);
 
         $this->robotDanceOffRepository->save($danceOff);
+    }
+
+    /**
+     * @param list<int> $robotIds
+     */
+    private function buildTeam(array $robotIds): Team
+    {
+        $signature = $this->generateCompositionSignature($robotIds);
+        $name = $this->generateTeamName();
+        $team = new Team($name, $name, $signature, $robotIds);
+
+        foreach ($robotIds as $robotId) {
+            $team->addRobot($this->loadRobot($robotId));
+        }
+
+        return $team;
+    }
+
+    /**
+     * @param list<int> $robotIds
+     */
+    private function generateCompositionSignature(array $robotIds): string
+    {
+        return hash('sha256', json_encode($robotIds, JSON_THROW_ON_ERROR));
+    }
+
+    private function generateTeamName(): string
+    {
+        $adjectives = ['Crimson', 'Electric', 'Atomic', 'Neon', 'Galactic', 'Midnight'];
+        $nouns = ['Falcons', 'Golems', 'Circuits', 'Dynamos', 'Rangers', 'Titans'];
+
+        return sprintf(
+            '%s %s #%d',
+            $adjectives[array_rand($adjectives)],
+            $nouns[array_rand($nouns)],
+            random_int(100, 999)
+        );
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function resolveRobotOrder(Team $team): array
+    {
+        $order = $team->getRobotOrder();
+
+        if ($order !== []) {
+            return array_values($order);
+        }
+
+        $ids = [];
+
+        foreach ($team->getRobots() as $robot) {
+            $ids[] = (int) $robot->getId();
+        }
+
+        return $ids;
+    }
+
+    /**
+     * @param list<int> $order
+     * @return list<int>
+     */
+    private function removeRobotFromOrder(array $order, int $robotId): array
+    {
+        $filtered = array_values(array_filter(
+            $order,
+            static fn (int $id): bool => $id !== $robotId
+        ));
+
+        if (count($filtered) === count($order)) {
+            throw new RobotServiceException(sprintf(
+                'Robot ID %d is not part of the current roster and cannot be replaced.',
+                $robotId
+            ));
+        }
+
+        return $filtered;
     }
 }

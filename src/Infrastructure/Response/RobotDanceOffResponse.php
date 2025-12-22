@@ -6,7 +6,6 @@ final class RobotDanceOffResponse
 {
     private int $battleReplayId;
     private int $battleId;
-    private ?int $originBattleId;
     private array $teamOne;
     private array $teamTwo;
     private ?array $winningTeam;
@@ -16,7 +15,6 @@ final class RobotDanceOffResponse
     public function __construct(
         int $battleReplayId,
         int $battleId,
-        ?int $originBattleId,
         array $teamOne,
         array $teamTwo,
         ?array $winningTeam,
@@ -25,7 +23,6 @@ final class RobotDanceOffResponse
     ) {
         $this->battleReplayId = $battleReplayId;
         $this->battleId = $battleId;
-        $this->originBattleId = $originBattleId;
         $this->teamOne = $teamOne;
         $this->teamTwo = $teamTwo;
         $this->winningTeam = $winningTeam;
@@ -41,11 +38,6 @@ final class RobotDanceOffResponse
     public function getBattleId(): int
     {
         return $this->battleId;
-    }
-
-    public function getOriginBattleId(): ?int
-    {
-        return $this->originBattleId;
     }
 
     /**

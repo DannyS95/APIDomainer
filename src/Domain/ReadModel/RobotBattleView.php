@@ -16,9 +16,6 @@ final class RobotBattleView implements RobotBattleViewInterface
     #[ORM\Column(name: 'battle_id', type: 'integer')]
     private int $battleId;
 
-    #[ORM\Column(name: 'origin_battle_id', type: 'integer', nullable: true)]
-    private ?int $originBattleId = null;
-
     #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
     private DateTimeImmutable $createdAt;
 
@@ -27,6 +24,9 @@ final class RobotBattleView implements RobotBattleViewInterface
 
     #[ORM\Column(name: 'team_one_name', type: 'string', length: 100)]
     private string $teamOneName;
+
+    #[ORM\Column(name: 'team_one_code_name', type: 'string', length: 150)]
+    private string $teamOneCodeName;
 
     #[ORM\Column(name: 'team_one_power', type: 'integer')]
     private int $teamOnePower;
@@ -42,6 +42,9 @@ final class RobotBattleView implements RobotBattleViewInterface
 
     #[ORM\Column(name: 'team_two_name', type: 'string', length: 100)]
     private string $teamTwoName;
+
+    #[ORM\Column(name: 'team_two_code_name', type: 'string', length: 150)]
+    private string $teamTwoCodeName;
 
     #[ORM\Column(name: 'team_two_power', type: 'integer')]
     private int $teamTwoPower;
@@ -73,28 +76,30 @@ final class RobotBattleView implements RobotBattleViewInterface
         DateTimeImmutable $createdAt,
         int $teamOneId,
         string $teamOneName,
+        string $teamOneCodeName,
         int $teamOnePower,
         array $teamOneRobots,
         int $teamTwoId,
         string $teamTwoName,
+        string $teamTwoCodeName,
         int $teamTwoPower,
         array $teamTwoRobots,
         ?int $winningTeamId,
         ?string $winningTeamName,
-        int $battleId,
-        ?int $originBattleId
+        int $battleId
     ): self {
         $instance = new self();
         $instance->battleReplayId = $id;
         $instance->battleId = $battleId;
-        $instance->originBattleId = $originBattleId;
         $instance->createdAt = $createdAt;
         $instance->teamOneId = $teamOneId;
         $instance->teamOneName = $teamOneName;
+        $instance->teamOneCodeName = $teamOneCodeName;
         $instance->teamOnePower = $teamOnePower;
         $instance->teamOneRobots = $teamOneRobots;
         $instance->teamTwoId = $teamTwoId;
         $instance->teamTwoName = $teamTwoName;
+        $instance->teamTwoCodeName = $teamTwoCodeName;
         $instance->teamTwoPower = $teamTwoPower;
         $instance->teamTwoRobots = $teamTwoRobots;
         $instance->winningTeamId = $winningTeamId;
@@ -106,11 +111,6 @@ final class RobotBattleView implements RobotBattleViewInterface
     public function getBattleReplayId(): int
     {
         return $this->battleReplayId;
-    }
-
-    public function getOriginBattleId(): ?int
-    {
-        return $this->originBattleId;
     }
 
     /**
@@ -133,7 +133,12 @@ final class RobotBattleView implements RobotBattleViewInterface
 
     public function getTeamOne(): array
     {
-        return $this->buildTeamData($this->teamOneId, $this->teamOneName, $this->teamOneRobots);
+        return $this->buildTeamData($this->teamOneId, $this->teamOneName, $this->teamOneCodeName, $this->teamOneRobots);
+    }
+
+    public function getTeamOneCodeName(): string
+    {
+        return $this->teamOneCodeName;
     }
 
     public function getTeamOnePower(): int
@@ -143,7 +148,12 @@ final class RobotBattleView implements RobotBattleViewInterface
 
     public function getTeamTwo(): array
     {
-        return $this->buildTeamData($this->teamTwoId, $this->teamTwoName, $this->teamTwoRobots);
+        return $this->buildTeamData($this->teamTwoId, $this->teamTwoName, $this->teamTwoCodeName, $this->teamTwoRobots);
+    }
+
+    public function getTeamTwoCodeName(): string
+    {
+        return $this->teamTwoCodeName;
     }
 
     public function getTeamTwoPower(): int
@@ -165,7 +175,7 @@ final class RobotBattleView implements RobotBattleViewInterface
             return $this->getTeamTwo();
         }
 
-        return $this->buildTeamData($this->winningTeamId, $this->winningTeamName ?? 'Unknown Team', []);
+        return $this->buildTeamData($this->winningTeamId, $this->winningTeamName ?? 'Unknown Team', $this->winningTeamName ?? 'Unknown Team', []);
     }
 
     public function getTeamOneRobotIds(): array
@@ -181,11 +191,12 @@ final class RobotBattleView implements RobotBattleViewInterface
     /**
      * @param list<array<string, mixed>>|null $robots
      */
-    private function buildTeamData(int $id, string $name, ?array $robots): array
+    private function buildTeamData(int $id, string $name, string $codeName, ?array $robots): array
     {
         return [
             'id' => $id,
             'name' => $name,
+            'codeName' => $codeName,
             'robots' => $robots ?? [],
         ];
     }
