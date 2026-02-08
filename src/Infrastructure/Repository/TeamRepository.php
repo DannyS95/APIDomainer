@@ -4,7 +4,7 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\Team;
 use App\Domain\Repository\TeamRepositoryInterface;
-use App\Infrastructure\Repository\Doctrine\DoctrineRepository;
+use App\Infrastructure\Doctrine\DoctrineRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 class TeamRepository extends DoctrineRepository implements TeamRepositoryInterface

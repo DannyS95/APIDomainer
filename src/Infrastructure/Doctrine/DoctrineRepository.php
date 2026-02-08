@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\Repository\Doctrine;
+namespace App\Infrastructure\Doctrine;
 
 use App\Domain\ValueObject\FilterCriteria;
 use App\Infrastructure\Doctrine\QueryBuilder\AbstractDoctrineQueryBuilder;

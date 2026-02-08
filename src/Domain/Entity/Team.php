@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'teams')]
+#[ORM\Table(name: 'battle_teams')]
 class Team
 {
     #[ORM\Id]
@@ -28,7 +28,7 @@ class Team
     private array $robotOrder = [];
 
     #[ORM\ManyToMany(targetEntity: Robot::class)]
-    #[ORM\JoinTable(name: 'team_robots')]
+    #[ORM\JoinTable(name: 'battle_team_robots')]
     private Collection $robots;
 
     public function __construct(string $name, string $codeName, string $compositionSignature, array $robotOrder = [])

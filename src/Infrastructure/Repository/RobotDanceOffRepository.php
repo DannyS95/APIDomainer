@@ -5,7 +5,7 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Entity\RobotDanceOffHistory;
 use App\Domain\Entity\RobotDanceOff;
 use App\Domain\Repository\RobotDanceOffRepositoryInterface;
-use App\Infrastructure\Repository\Doctrine\DoctrineRepository;
+use App\Infrastructure\Doctrine\DoctrineRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 final class RobotDanceOffRepository extends DoctrineRepository implements RobotDanceOffRepositoryInterface

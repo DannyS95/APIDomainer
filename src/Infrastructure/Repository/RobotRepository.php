@@ -4,7 +4,7 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\Robot;
 use App\Domain\Repository\RobotRepositoryInterface;
-use App\Infrastructure\Repository\Doctrine\DoctrineRepository;
+use App\Infrastructure\Doctrine\DoctrineRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 final class RobotRepository extends DoctrineRepository implements RobotRepositoryInterface

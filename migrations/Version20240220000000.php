@@ -17,10 +17,10 @@ final class Version20240220000000 extends AbstractMigration
             SELECT
                 rdo.id AS battle_id,
                 rdo.created_at,
-                t1.id AS team_one_id,
+                rdo.team_one_id,
                 t1.name AS team_one_name,
-                COALESCE((
-                    SELECT JSON_ARRAYAGG(JSON_OBJECT(
+                COALESCE(
+                    (SELECT JSON_ARRAYAGG(JSON_OBJECT(
                         'id', r.id,
                         'name', r.name,
                         'powermove', r.powermove,
@@ -30,12 +30,13 @@ final class Version20240220000000 extends AbstractMigration
                     ))
                     FROM team_robots tr
                     INNER JOIN robots r ON r.id = tr.robot_id
-                    WHERE tr.team_id = t1.id
-                ), JSON_ARRAY()) AS team_one_robots,
-                t2.id AS team_two_id,
+                    WHERE tr.team_id = rdo.team_one_id),
+                    JSON_ARRAY()
+                ) AS team_one_robots,
+                rdo.team_two_id,
                 t2.name AS team_two_name,
-                COALESCE((
-                    SELECT JSON_ARRAYAGG(JSON_OBJECT(
+                COALESCE(
+                    (SELECT JSON_ARRAYAGG(JSON_OBJECT(
                         'id', r.id,
                         'name', r.name,
                         'powermove', r.powermove,
@@ -45,9 +46,10 @@ final class Version20240220000000 extends AbstractMigration
                     ))
                     FROM team_robots tr
                     INNER JOIN robots r ON r.id = tr.robot_id
-                    WHERE tr.team_id = t2.id
-                ), JSON_ARRAY()) AS team_two_robots,
-                wt.id AS winning_team_id,
+                    WHERE tr.team_id = rdo.team_two_id),
+                    JSON_ARRAY()
+                ) AS team_two_robots,
+                rdo.winning_team_id,
                 wt.name AS winning_team_name
             FROM robot_dance_offs rdo
             INNER JOIN teams t1 ON t1.id = rdo.team_one_id
