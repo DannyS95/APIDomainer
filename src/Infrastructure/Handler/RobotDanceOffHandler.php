@@ -10,10 +10,8 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 final class RobotDanceOffHandler
 {
-    private RobotService $robotService;
-
-    public function __construct(RobotService $robotService) {
-        $this->robotService = $robotService;
+    public function __construct(private readonly RobotService $robotService)
+    {
     }
 
     public function __invoke(RobotDanceOffRequest $request): void

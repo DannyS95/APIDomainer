@@ -2,6 +2,7 @@
 
 namespace App\Application\Request;
 
+use App\Application\DTO\ApiFiltersDTO;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -80,6 +81,32 @@ final class RequestDataMapper
             'page' => (int) $parameterBag->get('page', 1),
             'itemsPerPage' => (int) $parameterBag->get('itemsPerPage', 10),
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $additionalFilters
+     * @param array<string, string> $additionalOperations
+     */
+    public function toApiFiltersDTO(
+        array $additionalFilters = [],
+        array $additionalOperations = [],
+        ?int $itemsPerPageOverride = null
+    ): ApiFiltersDTO {
+        $filters = array_merge($this->getFilters(), $additionalFilters);
+        $operations = array_merge($this->getOperations(), $additionalOperations);
+        $pagination = $this->getPagination();
+
+        if ($itemsPerPageOverride !== null) {
+            $pagination['itemsPerPage'] = $itemsPerPageOverride;
+        }
+
+        return new ApiFiltersDTO(
+            filters: $filters,
+            operations: $operations,
+            sorts: $this->getSorts(),
+            page: $pagination['page'],
+            itemsPerPage: $pagination['itemsPerPage']
+        );
     }
 
     /**

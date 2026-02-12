@@ -11,7 +11,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 final class RobotDanceOffHistoryReplayHandler
 {
-    public function __construct(private RobotService $robotService)
+    public function __construct(private readonly RobotService $robotService)
     {
     }
 

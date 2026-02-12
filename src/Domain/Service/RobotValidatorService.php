@@ -2,18 +2,17 @@
 
 namespace App\Domain\Service;
 
-use RobotServiceException;
 use App\Domain\Repository\RobotRepositoryInterface;
 
-class RobotValidatorService
+final class RobotValidatorService
 {
-    private RobotRepositoryInterface $robotRepository;
-
-    public function __construct(RobotRepositoryInterface $robotRepository)
+    public function __construct(private readonly RobotRepositoryInterface $robotRepository)
     {
-        $this->robotRepository = $robotRepository;
     }
 
+    /**
+     * @param list<int> $ids
+     */
     public function validateRobotIds(array $ids): void
     {
         foreach ($ids as $id) {

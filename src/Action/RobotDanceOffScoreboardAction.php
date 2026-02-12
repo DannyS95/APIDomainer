@@ -3,20 +3,16 @@
 namespace App\Action;
 
 use App\Application\Query\GetRobotDanceOffScoreboardQuery;
+use App\Application\Query\QueryBusDispatcher;
 use App\Application\Request\RequestDataMapper;
 use App\Responder\RobotDanceOffScoreboardResponder;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Stamp\HandledStamp;
-use RuntimeException;
 
 #[AsController]
 final class RobotDanceOffScoreboardAction
 {
     public function __construct(
-        #[Autowire(service: 'query.bus')]
-        private MessageBusInterface $queryBus,
+        private QueryBusDispatcher $queryBusDispatcher,
         private RequestDataMapper $requestDataMapper,
         private RobotDanceOffScoreboardResponder $scoreboardResponder
     ) {
@@ -34,24 +30,8 @@ final class RobotDanceOffScoreboardAction
             $pagination['itemsPerPage'] ?? null
         );
 
-        $envelope = $this->queryBus->dispatch($query);
-        $handled = $envelope->last(HandledStamp::class);
-
-        if (!$handled instanceof HandledStamp) {
-            throw new RuntimeException('No handler returned a result for GetRobotDanceOffScoreboardQuery.');
-        }
-
-        $result = $handled->getResult();
-
-        if (!is_array($result)) {
-            throw new RuntimeException('Unexpected response type for GetRobotDanceOffScoreboardQuery.');
-        }
+        $result = $this->queryBusDispatcher->askArray($query);
 
         return $this->scoreboardResponder->respond($result);
-    }
-
-    private function currentQuarter(): int
-    {
-        return (int) ceil((int) date('n') / 3);
     }
 }

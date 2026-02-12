@@ -2,7 +2,6 @@
 
 namespace App\Domain\Service;
 
-use RobotServiceException;
 use App\Domain\Entity\Robot;
 use App\Domain\Entity\RobotDanceOffHistory;
 use App\Domain\Entity\RobotDanceOff;
@@ -18,11 +17,11 @@ use App\Domain\ValueObject\RobotReplacement;
 final class RobotService
 {
     public function __construct(
-        private RobotRepositoryInterface $robotRepository,
-        private RobotDanceOffRepositoryInterface $robotDanceOffRepository,
-        private RobotDanceOffHistoryRepositoryInterface $robotDanceOffHistoryRepository,
-        private TeamRepositoryInterface $teamRepository,
-        private RobotValidatorService $robotValidatorService
+        private readonly RobotRepositoryInterface $robotRepository,
+        private readonly RobotDanceOffRepositoryInterface $robotDanceOffRepository,
+        private readonly RobotDanceOffHistoryRepositoryInterface $robotDanceOffHistoryRepository,
+        private readonly TeamRepositoryInterface $teamRepository,
+        private readonly RobotValidatorService $robotValidatorService
     ) {}
 
     /**
@@ -87,9 +86,6 @@ final class RobotService
 
     public function replayRobotBattle(BattleReplayInstruction $instruction): void
     {
-        $this->guardReplacementLimit($instruction->teamOneReplacements());
-        $this->guardReplacementLimit($instruction->teamTwoReplacements());
-
         $originalBattle = $this->resolveBattle($instruction->battleId());
         $latestDanceOff = $this->robotDanceOffRepository->findLatestByBattle($originalBattle);
 
@@ -110,16 +106,6 @@ final class RobotService
         $this->teamRepository->save($teamTwo);
 
         $this->createDanceOff($originalBattle, $teamOne, $teamTwo);
-    }
-
-    /**
-     * @param list<RobotReplacement> $replacements
-     */
-    private function guardReplacementLimit(array $replacements): void
-    {
-        if (count($replacements) > 2) {
-            throw new RobotServiceException('A maximum of two robot replacements may be submitted per team.');
-        }
     }
 
     /**

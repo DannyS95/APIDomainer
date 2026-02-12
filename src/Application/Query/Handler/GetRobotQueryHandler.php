@@ -5,8 +5,8 @@ namespace App\Application\Query\Handler;
 use App\Application\Query\GetRobotQuery;
 use App\Domain\Entity\Robot;
 use App\Domain\Repository\RobotRepositoryInterface;
+use App\Domain\Service\RobotServiceException;
 use App\Domain\Service\RobotValidatorService;
-use RobotServiceException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(bus: 'query.bus')]

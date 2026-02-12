@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Domain\Service;
+
+use Throwable;
+
 final class RobotServiceException extends \Exception
 {
     public function __construct($message = "", $code = 0, ?Throwable $previous = null)

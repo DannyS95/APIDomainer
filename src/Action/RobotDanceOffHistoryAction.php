@@ -2,24 +2,19 @@
 
 namespace App\Action;
 
-use App\Application\DTO\ApiFiltersDTO;
 use App\Application\Query\GetRobotDanceOffQuery;
+use App\Application\Query\QueryBusDispatcher;
 use App\Application\Request\RequestDataMapper;
 use App\Responder\RobotDanceOffHistoryResponder;
-use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 #[AsController]
 final class RobotDanceOffHistoryAction
 {
     public function __construct(
-        #[Autowire(service: 'query.bus')]
-        private MessageBusInterface $queryBus,
+        private QueryBusDispatcher $queryBusDispatcher,
         private RequestDataMapper $requestDataMapper,
         private RobotDanceOffHistoryResponder $historyResponder
     ) {
@@ -34,34 +29,14 @@ final class RobotDanceOffHistoryAction
             throw new BadRequestHttpException('Battle ID must be a positive integer.');
         }
 
-        $filters = $this->requestDataMapper->getFilters();
-        $operations = $this->requestDataMapper->getOperations();
-        $sorts = $this->requestDataMapper->getSorts();
-        $pagination = $this->requestDataMapper->getPagination();
-
-        $filters['battleId'] = $battleId;
-
-        if (!$request->query->has('itemsPerPage')) {
-            $pagination['itemsPerPage'] = 0;
-        }
-
-        $apiFiltersDTO = new ApiFiltersDTO(
-            filters: $filters,
-            operations: $operations,
-            sorts: $sorts,
-            page: $pagination['page'],
-            itemsPerPage: $pagination['itemsPerPage']
+        $apiFiltersDTO = $this->requestDataMapper->toApiFiltersDTO(
+            additionalFilters: ['battleId' => $battleId],
+            additionalOperations: ['battleId' => 'eq'],
+            itemsPerPageOverride: !$request->query->has('itemsPerPage') ? 0 : null
         );
 
         $query = new GetRobotDanceOffQuery($apiFiltersDTO);
-        $envelope = $this->queryBus->dispatch($query);
-        $handledStamp = $envelope->last(HandledStamp::class);
-
-        if (!$handledStamp instanceof HandledStamp) {
-            throw new RuntimeException('No handler returned a result for GetRobotDanceOffQuery.');
-        }
-
-        $danceOffs = $handledStamp->getResult();
+        $danceOffs = $this->queryBusDispatcher->askArray($query);
 
         return $this->historyResponder->respond($danceOffs);
     }

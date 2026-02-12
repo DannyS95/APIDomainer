@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Application\Request;
 
+use App\Application\DTO\ApiFiltersDTO;
 use App\Application\Request\RequestDataMapper;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -105,5 +106,34 @@ final class RequestDataMapperTest extends TestCase
 
         self::assertEquals(['id' => '2'], $requestDataMapper->getFilters());
         self::assertEquals(['id' => 'eq'], $requestDataMapper->getOperations());
+    }
+
+    public function testToApiFiltersDtoBuildsMergedCriteriaWithPaginationOverride(): void
+    {
+        $requestStack = new RequestStack();
+        $request = Request::create(
+            '/robot-battles/7/dance-offs',
+            'GET',
+            [
+                'filter' => ['name' => ['lk' => 'Atlas']],
+                'page' => '2',
+                'itemsPerPage' => '25',
+            ]
+        );
+
+        $requestStack->push($request);
+
+        $requestDataMapper = new RequestDataMapper($requestStack);
+        $dto = $requestDataMapper->toApiFiltersDTO(
+            additionalFilters: ['battleId' => 7],
+            additionalOperations: ['battleId' => 'eq'],
+            itemsPerPageOverride: 0
+        );
+
+        self::assertInstanceOf(ApiFiltersDTO::class, $dto);
+        self::assertEquals(['name' => 'Atlas', 'battleId' => 7], $dto->getFilters());
+        self::assertEquals(['name' => 'lk', 'battleId' => 'eq'], $dto->getOperations());
+        self::assertSame(2, $dto->getPage());
+        self::assertSame(0, $dto->getItemsPerPage());
     }
 }
