@@ -19,18 +19,28 @@ final class RobotBattleViewReadRepository extends DoctrineReadRepository impleme
      * @var array<string, string>
      */
     private const DEFAULT_SORTS = ['createdAt' => 'DESC'];
+    /**
+     * API-facing field aliases mapped to Doctrine property names.
+     *
+     * @var array<string, string>
+     */
+    private const FIELD_ALIASES = ['id' => 'battleReplayId'];
 
     /**
      * @return list<RobotBattleViewInterface>
      */
     public function findByCriteria(FilterCriteria $filterCriteria): array
     {
-        [$page, $itemsPerPage, $sorts] = $this->resolvePaginationAndSorts(
+        [$page, $itemsPerPage, $requestedSorts] = $this->resolvePaginationAndSorts(
             $filterCriteria,
             self::DEFAULT_SORTS,
             self::DEFAULT_ITEMS_PER_PAGE,
             self::MAX_ITEMS_PER_PAGE
         );
+
+        $filters = $this->normalizeFields($filterCriteria->getFilters());
+        $operations = $this->normalizeFields($filterCriteria->getOperations());
+        $sorts = $this->normalizeFields($requestedSorts);
 
         $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select(self::ALIAS)
@@ -38,8 +48,8 @@ final class RobotBattleViewReadRepository extends DoctrineReadRepository impleme
 
         $this->applyFilters(
             $queryBuilder,
-            $filterCriteria->getFilters(),
-            $filterCriteria->getOperations(),
+            $filters,
+            $operations,
             self::ALIAS
         );
         $this->applySorts($queryBuilder, $sorts, self::ALIAS);
@@ -61,5 +71,27 @@ final class RobotBattleViewReadRepository extends DoctrineReadRepository impleme
 
             throw UnexpectedQueryResultException::forRobotBattleView($result);
         }, $results);
+    }
+
+    /**
+     * @param array<string, mixed> $values
+     * @return array<string, mixed>
+     */
+    private function normalizeFields(array $values): array
+    {
+        $normalized = [];
+
+        foreach ($values as $field => $value) {
+            $resolvedField = self::FIELD_ALIASES[$field] ?? $field;
+
+            // Keep explicit canonical fields when both alias and canonical are provided.
+            if ($resolvedField !== $field && array_key_exists($resolvedField, $values)) {
+                continue;
+            }
+
+            $normalized[$resolvedField] = $value;
+        }
+
+        return $normalized;
     }
 }

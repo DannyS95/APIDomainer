@@ -139,10 +139,30 @@ final class Version20251210011000 extends AbstractMigration
             $this->addSql('ALTER TABLE robot_battles DROP CONSTRAINT IF EXISTS FK_ROBOT_BATTLES_ORIGIN');
             $this->addSql('DROP INDEX IF EXISTS IDX_ROBOT_BATTLES_ORIGIN');
             $this->addSql('ALTER TABLE robot_battles DROP COLUMN IF EXISTS origin_battle_id');
-        } else {
-            // MySQL 8+ supports IF EXISTS on drop column; the FK/index were never added in the current schema.
-            $this->addSql('ALTER TABLE robot_battles DROP COLUMN IF EXISTS origin_battle_id');
+
+            return;
         }
+
+        if ($platform === 'mysql') {
+            $this->dropColumnIfPresent('robot_battles', 'origin_battle_id');
+
+            return;
+        }
+
+        throw new \RuntimeException(sprintf('Unsupported database platform "%s".', $platform));
+    }
+
+    private function dropColumnIfPresent(string $table, string $column): void
+    {
+        $columns = $this->connection
+            ->createSchemaManager()
+            ->listTableColumns($table);
+
+        if (!array_key_exists($column, $columns)) {
+            return;
+        }
+
+        $this->addSql(sprintf('ALTER TABLE %s DROP COLUMN %s', $table, $column));
     }
 
     private function addTeamMetadataColumns(): void

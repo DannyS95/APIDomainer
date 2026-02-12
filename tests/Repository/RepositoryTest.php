@@ -154,4 +154,27 @@ $battleReplay = $robotBattleViewReadRepository->findByCriteria(
 assertTrue(count($battleReplay) === 1, 'Filtering by battleId should limit the dataset.');
 assertTrue($battleReplay[0]->getBattleId() === 1001, 'Filtered battle should match the requested aggregate.');
 
+$battleReplayByLegacyId = $robotBattleViewReadRepository->findByCriteria(
+    (new ApiFiltersDTO(
+        ['id' => 2],
+        [],
+        [],
+        1,
+        10
+    ))->toFilterCriteria()
+);
+assertTrue(count($battleReplayByLegacyId) === 1, 'Filtering by legacy id alias should return one battle replay.');
+assertTrue($battleReplayByLegacyId[0]->getId() === 2, 'Legacy id alias should map to battle replay identifier.');
+
+$battleReplayOrderedByLegacyId = $robotBattleViewReadRepository->findByCriteria(
+    (new ApiFiltersDTO(
+        [],
+        [],
+        ['id' => 'DESC'],
+        1,
+        10
+    ))->toFilterCriteria()
+);
+assertTrue($battleReplayOrderedByLegacyId[0]->getId() === 2, 'Sorting by legacy id alias should map to battle replay identifier.');
+
 echo "Repository tests completed successfully.\n";
