@@ -3,7 +3,7 @@
 namespace App\Action;
 
 use App\Domain\ReadModel\RobotBattleViewInterface;
-use App\Domain\Repository\RobotDanceOffRepositoryInterface;
+use App\Domain\Repository\RobotBattleViewReadRepositoryInterface;
 use App\Domain\ValueObject\FilterCriteria;
 use App\Infrastructure\Response\RobotDanceOffTeamsResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 #[AsController]
 final class RobotDanceOffTeamsAction
 {
-    public function __construct(private RobotDanceOffRepositoryInterface $robotDanceOffRepository)
+    public function __construct(private RobotBattleViewReadRepositoryInterface $robotBattleViewReadRepository)
     {
     }
 
@@ -36,7 +36,7 @@ final class RobotDanceOffTeamsAction
             50
         );
 
-        $danceOffs = $this->robotDanceOffRepository->findByCriteria($filterCriteria);
+        $danceOffs = $this->robotBattleViewReadRepository->findByCriteria($filterCriteria);
 
         return array_map(
             static fn (RobotBattleViewInterface $danceOff): RobotDanceOffTeamsResponse => new RobotDanceOffTeamsResponse(

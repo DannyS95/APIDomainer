@@ -9,10 +9,8 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class TeamRepository extends DoctrineRepository implements TeamRepositoryInterface
 {
-    public function __construct(
-        ManagerRegistry $registry,
-        private TeamQueryBuilder $teamQueryBuilder
-    ) {
+    public function __construct(ManagerRegistry $registry)
+    {
         parent::__construct($registry);
     }
 
@@ -36,18 +34,8 @@ class TeamRepository extends DoctrineRepository implements TeamRepositoryInterfa
         return $entity;
     }
 
-    protected function queryBuilder(): TeamQueryBuilder
-    {
-        return $this->teamQueryBuilder;
-    }
-
     protected function entityClass(): string
     {
         return Team::class;
-    }
-
-    protected function defaultSorts(): array
-    {
-        return ['id' => 'ASC'];
     }
 }

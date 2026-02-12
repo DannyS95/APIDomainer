@@ -9,10 +9,8 @@ use Doctrine\Persistence\ManagerRegistry;
 
 final class RobotRepository extends DoctrineRepository implements RobotRepositoryInterface
 {
-    public function __construct(
-        ManagerRegistry $registry,
-        private RobotQueryBuilder $robotQueryBuilder
-    ) {
+    public function __construct(ManagerRegistry $registry)
+    {
         parent::__construct($registry);
     }
 
@@ -50,18 +48,8 @@ final class RobotRepository extends DoctrineRepository implements RobotRepositor
         $this->removeEntity($robot);
     }
 
-    protected function queryBuilder(): RobotQueryBuilder
-    {
-        return $this->robotQueryBuilder;
-    }
-
     protected function entityClass(): string
     {
         return Robot::class;
-    }
-
-    protected function defaultSorts(): array
-    {
-        return ['id' => 'ASC'];
     }
 }

@@ -21,7 +21,12 @@ services:
     App\Infrastructure\Serializer\RobotDanceOffNormalizer:
         tags: ['serializer.normalizer']
 
+    App\Domain\Repository\RobotRepositoryInterface: '@App\Infrastructure\Repository\RobotRepository'
+    App\Domain\Repository\RobotDanceOffRepositoryInterface: '@App\Infrastructure\Repository\RobotDanceOffRepository'
+    App\Domain\Repository\TeamRepositoryInterface: '@App\Infrastructure\Repository\TeamRepository'
     App\Domain\Repository\RobotDanceOffHistoryRepositoryInterface: '@App\Infrastructure\Repository\RobotDanceOffHistoryRepository'
+    App\Domain\Repository\RobotReadRepositoryInterface: '@App\Infrastructure\Repository\RobotReadRepository'
+    App\Domain\Repository\RobotBattleViewReadRepositoryInterface: '@App\Infrastructure\Repository\RobotBattleViewReadRepository'
 
     App\Infrastructure\Repository\RobotRepository:
         tags: ['doctrine.repository_service']

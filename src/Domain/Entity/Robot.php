@@ -5,9 +5,8 @@ namespace App\Domain\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use App\Infrastructure\Repository\RobotRepository;
 
-#[ORM\Entity(repositoryClass: RobotRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: 'robots')]
 class Robot
 {

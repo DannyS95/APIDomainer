@@ -10,17 +10,15 @@ use Doctrine\Persistence\ManagerRegistry;
 
 final class RobotDanceOffRepository extends DoctrineRepository implements RobotDanceOffRepositoryInterface
 {
-    public function __construct(
-        ManagerRegistry $registry,
-        private RobotBattleViewQueryBuilder $robotBattleViewQueryBuilder
-    ) {
+    public function __construct(ManagerRegistry $registry)
+    {
         parent::__construct($registry);
     }
 
     /**
      * Save a single dance-off.
      */
-    public function save(RobotDanceOff $danceOff): void # these mthods will repeat
+    public function save(RobotDanceOff $danceOff): void
     {
         $this->persistEntity($danceOff);
     }
@@ -45,42 +43,33 @@ final class RobotDanceOffRepository extends DoctrineRepository implements RobotD
 
     /**
      * Bulk save multiple dance-offs.
+     *
+     * @param array<int, RobotDanceOff> $danceOffs
      */
-    public function bulkSave(array $RobotDanceOff): void
+    public function bulkSave(array $danceOffs): void
     {
-        $this->persistEntities($RobotDanceOff);
+        $this->persistEntities($danceOffs);
     }
 
     public function findLatestByBattle(RobotDanceOffHistory $battle): ?RobotDanceOff
     {
-        return $this->entityManager->getRepository(RobotDanceOff::class)
-            ->createQueryBuilder('rdo')
+        $result = $this->createQueryBuilder('rdo')
             ->where('rdo.battle = :battle')
             ->setParameter('battle', $battle)
             ->orderBy('rdo.createdAt', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
-    }
 
-    protected function queryBuilder(): RobotBattleViewQueryBuilder
-    {
-        return $this->robotBattleViewQueryBuilder;
-    }
+        if ($result === null) {
+            return null;
+        }
 
-    protected function defaultSorts(): array
-    {
-        return ['createdAt' => 'DESC'];
-    }
+        if (!$result instanceof RobotDanceOff) {
+            throw new \LogicException(sprintf('Expected %s, got %s', RobotDanceOff::class, get_debug_type($result)));
+        }
 
-    protected function defaultItemsPerPage(): int
-    {
-        return 50;
-    }
-
-    protected function maxItemsPerPage(): int
-    {
-        return 100;
+        return $result;
     }
 
     protected function entityClass(): string

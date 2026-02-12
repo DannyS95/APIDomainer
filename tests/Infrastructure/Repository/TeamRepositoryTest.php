@@ -3,9 +3,7 @@
 namespace App\Tests\Infrastructure\Repository;
 
 use App\Application\DTO\ApiFiltersDTO;
-use App\Domain\Entity\Team;
-use App\Infrastructure\Repository\TeamQueryBuilder;
-use App\Infrastructure\Repository\TeamRepository;
+use App\Infrastructure\Repository\RobotReadRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use InvalidArgumentException;
@@ -13,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 final class TeamRepositoryTest extends TestCase
 {
-    public function testFindAllThrowsWhenOperatorIsNotAllowed(): void
+    public function testFindByCriteriaThrowsWhenOperatorIsNotAllowed(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $queryBuilder = $this->createMock(QueryBuilder::class);
@@ -26,13 +24,13 @@ final class TeamRepositoryTest extends TestCase
         $queryBuilder
             ->expects(self::once())
             ->method('select')
-            ->with('t')
+            ->with('r')
             ->willReturnSelf();
 
         $queryBuilder
             ->expects(self::once())
             ->method('from')
-            ->with(Team::class, 't')
+            ->with('App\\Domain\\Entity\\Robot', 'r')
             ->willReturnSelf();
 
         $queryBuilder->expects(self::never())->method('andWhere');
@@ -46,12 +44,11 @@ final class TeamRepositoryTest extends TestCase
             itemsPerPage: 10
         );
 
-        $teamQueryBuilder = new TeamQueryBuilder($entityManager);
-        $repository = new TeamRepository($entityManager, $teamQueryBuilder);
+        $repository = new RobotReadRepository($entityManager);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid operation: INVALID');
 
-        $repository->findAll($apiFilters->toFilterCriteria());
+        $repository->findByCriteria($apiFilters->toFilterCriteria());
     }
 }

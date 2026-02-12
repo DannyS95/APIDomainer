@@ -3,11 +3,8 @@
 namespace App\Domain\Repository;
 
 use App\Domain\Entity\Robot;
-use App\Domain\ValueObject\FilterCriteria;
 
 interface RobotRepositoryInterface
 {
-    public function findByCriteria(FilterCriteria $filterCriteria): array;
-
     public function findOneById(int $id): ?Robot;
 }

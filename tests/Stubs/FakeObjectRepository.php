@@ -9,7 +9,7 @@ final class FakeObjectRepository
     /**
      * @param array<int, array<string, mixed>> $rows
      */
-    public function __construct(private array $rows)
+    public function __construct(private array $rows, private ?string $entityClass = null)
     {
     }
 
@@ -17,7 +17,7 @@ final class FakeObjectRepository
     {
         foreach ($this->rows as $row) {
             if (is_array($row) && ($row['id'] ?? null) === $id) {
-                return (object) $row;
+                return $this->hydrateEntity($row);
             }
 
             if (is_object($row) && $this->extractId($row) === $id) {
@@ -26,6 +26,43 @@ final class FakeObjectRepository
         }
 
         return null;
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     */
+    private function hydrateEntity(array $row): object
+    {
+        if ($this->entityClass === null || !class_exists($this->entityClass)) {
+            return (object) $row;
+        }
+
+        $entityClass = $this->entityClass;
+        $entity = new $entityClass();
+
+        foreach ($row as $field => $value) {
+            $method = 'set' . ucfirst($field);
+            if (method_exists($entity, $method)) {
+                $entity->$method($value);
+                continue;
+            }
+
+            $this->setProperty($entity, $field, $value);
+        }
+
+        return $entity;
+    }
+
+    private function setProperty(object $entity, string $field, mixed $value): void
+    {
+        $reflection = new \ReflectionObject($entity);
+        if (!$reflection->hasProperty($field)) {
+            return;
+        }
+
+        $property = $reflection->getProperty($field);
+        $property->setAccessible(true);
+        $property->setValue($entity, $value);
     }
 
     private function extractId(object $entity): ?int

@@ -4,13 +4,13 @@ namespace App\Application\Query\Handler;
 
 use App\Application\Query\GetRobotDanceOffQuery;
 use App\Domain\ReadModel\RobotBattleViewInterface;
-use App\Domain\Repository\RobotDanceOffRepositoryInterface;
+use App\Domain\Repository\RobotBattleViewReadRepositoryInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(bus: 'query.bus')]
 final class GetRobotDanceOffQueryHandler
 {
-    public function __construct(private readonly RobotDanceOffRepositoryInterface $robotDanceOffRepository)
+    public function __construct(private readonly RobotBattleViewReadRepositoryInterface $robotBattleViewReadRepository)
     {
     }
 
@@ -19,7 +19,7 @@ final class GetRobotDanceOffQueryHandler
      */
     public function __invoke(GetRobotDanceOffQuery $query): array
     {
-        return $this->robotDanceOffRepository->findByCriteria(
+        return $this->robotBattleViewReadRepository->findByCriteria(
             $query->getApiFiltersDTO()->toFilterCriteria()
         );
     }

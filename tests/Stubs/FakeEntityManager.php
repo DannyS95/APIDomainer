@@ -35,6 +35,6 @@ final class FakeEntityManager implements EntityManagerInterface
 
     public function getRepository(string $className): object
     {
-        return new FakeObjectRepository($this->datasets[$className] ?? []);
+        return new FakeObjectRepository($this->datasets[$className] ?? [], $className);
     }
 }
