@@ -38,10 +38,32 @@ make up
 Visit the 🌐 [API endpoint](http://localhost:8085/api)
 
 ## 🧭 Architecture at a Glance
-- **Domain** – Entities (`Robot`, `Team`, `RobotDanceOff`, `RobotBattle`), repositories, and services such as `RobotService`, plus value objects like `DanceOffTeams` that keep the domain framework-agnostic.
-- **Application** – Query handlers (e.g., `GetRobotDanceOffQueryHandler`) and orchestration logic that coordinate domain services via Symfony Messenger.
-- **Infrastructure** – Doctrine repositories, query builders, API Platform filters, and request DTOs. Handlers translate transport objects into domain value objects before delegating.
-- **Action / Responder** – ADR-style actions act as controllers and responders turn domain models into API responses.
+- **Domain (pure business logic)**  
+  Entities (`Robot`, `Team`, `RobotDanceOff`, `RobotDanceOffHistory`), value objects (`DanceOffTeams`, `BattleReplayInstruction`, `FilterCriteria`), and service rules (`RobotService`, `RobotValidatorService`).  
+  Repository contracts live here in `src/Domain/Repository/*Interface.php`.
+- **Infrastructure (repo implementations + transport)**  
+  Doctrine-backed repository implementations live in `src/Infrastructure/Repository/*Repository.php` and satisfy the domain interfaces.  
+  API Platform resources, filters, request models, normalizers, and HTTP handlers live here too.
+- **Application (query use-cases)**  
+  Query objects + handlers in `src/Application/Query` and `src/Application/Query/Handler` coordinate read workflows through the query bus.
+- **Action / Responder (HTTP edge)**  
+  Actions receive HTTP requests and dispatch use-cases; responders shape final API payloads.
+
+### Folder Map
+- `src/Domain` - Business rules + repository interfaces
+- `src/Application` - Query DTOs, queries, handlers, request mapping
+- `src/Infrastructure/Repository` - Doctrine repository implementations
+- `src/Infrastructure/ApiResource` - API Platform route definitions
+- `src/Infrastructure/Handler` - Messenger handlers for write operations
+- `src/Action` and `src/Responder` - Controller/responder boundary
+
+### Doctrine Repository Structure
+- Domain defines the contracts (`*RepositoryInterface`) so business logic depends on abstractions, not Doctrine.
+- Infrastructure implements those contracts with Doctrine classes (`*Repository`) and keeps ORM/query details isolated.
+- `DoctrineReadRepository` is the query helper for read models: it applies `FilterCriteria` filters + operations (`eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `lk`, `in`), applies sorts, and enforces pagination defaults/limits before execution.
+- `DoctrineRepository` is the entity repository base: it centralizes persist/delete and batched persistence, and can still perform focused entity reads (for example `find(id)`-style lookups).
+- In practice: read repositories are for rich, query-style retrieval; entity repositories may still read when needed to support domain workflows.
+- This split keeps services easy to test and lets read/write repositories evolve independently without touching domain rules.
 
 ### Read Models & CQRS
 - Write-side commands persist canonical aggregates (`RobotDanceOff`, `Team`, `Robot`).
